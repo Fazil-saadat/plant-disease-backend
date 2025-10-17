@@ -1,4 +1,5 @@
 from fastapi import FastAPI, File, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 import tensorflow as tf
@@ -22,6 +23,15 @@ with open(CLASSES_JSON, "r") as f:
     classes_dict = json.load(f)
 
 app = FastAPI(title="Plant Disease Classifier")
+
+# Allow mobile app or frontend to access the backend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Mount static directories
 app.mount("/css", StaticFiles(directory="static/css"), name="css")
@@ -58,6 +68,7 @@ async def predict(file: UploadFile = File(...)):
         class_info = classes_dict.get(str(pred_idx), {})
         pred_class = class_info.get("class_name", "Unknown")
         treatment = class_info.get("treatment", "Not available")
+        print("🚀 New version deployed — no crop_type expected")
 
         return JSONResponse(
             content={
