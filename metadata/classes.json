@@ -1,0 +1,42 @@
+{
+  "0": {
+    "class_name": "Apple___Apple_scab",
+    "treatment": "Remove infected leaves, apply fungicide, and practice crop rotation."
+  },
+  "1": {
+    "class_name": "Apple___Black_rot",
+    "treatment": "Prune affected areas, use fungicide sprays, and avoid overhead watering."
+  },
+  "2": {
+    "class_name": "Apple___Cedar_apple_rust",
+    "treatment": "Remove nearby juniper hosts, apply protective fungicides."
+  },
+  "3": {
+    "class_name": "Apple___Healthy",
+    "treatment": "No treatment needed."
+  },
+  "4": {
+    "class_name": "Cherry___Powdery_mildew",
+    "treatment": "Apply sulfur or potassium bicarbonate sprays; ensure good air circulation."
+  },
+  "5": {
+    "class_name": "Cherry___Healthy",
+    "treatment": "No treatment needed."
+  },
+  "6": {
+    "class_name": "Grape___Black_rot",
+    "treatment": "Remove affected leaves, use fungicide sprays, maintain proper spacing."
+  },
+  "7": {
+    "class_name": "Grape___Esca_(Black_Measles)",
+    "treatment": "Prune infected wood and apply fungicides if necessary."
+  },
+  "8": {
+    "class_name": "Grape___Leaf_blight_(Isariopsis_Leaf_Spot)",
+    "treatment": "Remove infected leaves, apply copper-based fungicides."
+  },
+  "9": {
+    "class_name": "Grape___Healthy",
+    "treatment": "No treatment needed."
+  }
+}
