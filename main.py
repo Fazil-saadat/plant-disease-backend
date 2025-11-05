@@ -63,7 +63,7 @@ async def predict(
 ):
     # Validate language
     if language not in ["en", "fa", "ps"]:
-        language = "en"  # Default to English if invalid language
+        language  # Default to English if invalid language
     
     # Read and process image
     image = read_file_as_image(await file.read())
@@ -99,7 +99,7 @@ async def predict(
     )
 
 @app.get("/diseases")
-async def get_diseases(language: str = "en"):
+async def get_diseases(language):
     """Get all available diseases information in specified language"""
     if language not in ["en", "fa", "ps"]:
         language = "en"
