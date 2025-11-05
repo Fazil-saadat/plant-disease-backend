@@ -377,3 +377,4 @@ async def get_all_diseases(language: str = "en"):
     for disease_key in DISEASE_DATABASE:
         result[disease_key] = get_localized_disease_info(disease_key, language)
     return result
+# Run the app
