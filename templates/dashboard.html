@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.dashboard }}</h1>
+
+<!-- Upload Area -->
+<div class="upload-area" id="uploadArea" onclick="window.location.href='/scan'">
+    <div class="upload-icon">📸</div>
+    <h2 class="upload-text" id="uploadText">{{ t.drag_image }}</h2>
+    <button class="upload-button">
+        <span>{{ t.select_image }}</span>
+    </button>
+</div>
+
+<!-- Quick Statistics -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_scans }}</div>
+        <div class="stat-label">{{ t.total_scans }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.plants_in_garden }}</div>
+        <div class="stat-label">{{ t.plants_in_garden }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_confidence }}%</div>
+        <div class="stat-label">{{ t.avg_confidence }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.top_disease }}</div>
+        <div class="stat-label">{{ t.top_disease }}</div>
+    </div>
+</div>
+
+<!-- Recent History -->
+<h2 class="section-title">{{ t.recent_history }}</h2>
+{% if recent_scans %}
+<div class="history-list">
+    {% for scan in recent_scans %}
+    <a href="/saved-result/{{ scan.id }}" class="history-item">
+        <div class="history-thumbnail-container">
+            <img src="{{ scan.image_url if scan.image_url else '/static/images/placeholder-plant.jpg' }}" 
+                 alt="{{ scan.disease_name or t.unknown_disease }}" 
+                 class="history-thumbnail"
+                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iI0Y4RjZGMiIvPgo8cGF0aCBkPSJNMzAgMjBDMjYuMTM0IDIwIDIzIDIzLjEzNCAyMyAyN0MyMyAzMC44NjYgMjYuMTM0IDM0IDMwIDM0QzMzLjg2NiAzNCAzNyAzMC44NjYgMzcgMjdDMzcgMjMuMTM0IDMzLjg2NiAyMCAzMCAyMFpNMzAgMzZDMjQuNDggMzYgMjAgNDAuNDggMjAgNDZWMjBINDBWNDZDMzkuOTk5OSA0MC40OCAzNS41MiAzNiAzMCAzNloiIGZpbGw9IiNENkQ2RDYiLz4KPC9zdmc+'">
+        </div>
+        <div class="history-details">
+            <div class="history-plant">{{ scan.disease_name or scan.prediction or t.unknown_disease }}</div>
+            <div class="history-disease">{{ scan.plant_type or t.unknown_plant }}</div>
+            <div class="history-date">
+                {% if scan.timestamp %}
+                    {{ scan.timestamp[:10] }}
+                {% else %}
+                    {{ t.unknown_date }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="history-confidence">{{ scan.confidence or 0 }}%</div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align: center; padding: 2rem; background-color: var(--white); border-radius: 12px;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+    <p style="color: #666; margin-bottom: 1rem;">{{ t.no_saved_results }}</p>
+    <button class="cta-button" onclick="window.location.href='/scan'">
+        {{ t.new_scan }}
+    </button>
+</div>
+{% endif %}
+
+<style>
+.history-list {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--grey-light);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.history-item:hover {
+    background-color: var(--grey-light);
+    transform: translateY(-2px);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-thumbnail-container {
+    width: 60px;
+    height: 60px;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.history-thumbnail {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-plant {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--charcoal);
+}
+
+.history-disease {
+    color: var(--forest-green);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.history-date {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.history-confidence {
+    background-color: var(--light-green);
+    color: var(--forest-green);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+</style>
+{% endblock %}

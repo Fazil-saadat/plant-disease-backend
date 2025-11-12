@@ -1,0 +1,557 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.dashboard }}</h1>
+
+<div class="results-container">
+    <div class="result-image-container">
+        <div class="image-wrapper">
+            <img src="{{ result.image_url if result.image_url and result.image_url.startswith('/') else '/static/images/placeholder-plant.jpg' }}" 
+                 alt="{{ result.disease_name or t.unknown_disease }}" 
+                 class="result-image"
+                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiByeD0iOCIgZmlsbD0iI0Y4RjZGMiIvPgo8cGF0aCBkPSJNMTUwIDEwMEMxMjUuNjcgMTAwIDEwNiAxMTkuNjcgMTA2IDE0NEMxMDYgMTY4LjMzIDEyNS42NyAxODggMTUwIDE4OEMxNzQuMzMgMTg4IDE5NCAxNjguMzMgMTk0IDE0NEMxOTQgMTE5LjY3IDE3NC4zMyAxMDAgMTUwIDEwMFpNMTUwIDE4MEMxMjIuNCAxODAgMTAwIDIwMi40IDEwMCAyMzBWMTAwSDIwMFYyMzBDMTk5Ljk5OSAyMDIuNCAxNzcuNiAxODAgMTUwIDE4MFoiIGZpbGw9IiNENkQ2RDYiLz4KPC9zdmc+'">
+        </div>
+        <div class="confidence-score">
+            {{ t.confidence }}: {{ result.confidence or 0 }}%
+        </div>
+        
+        <div style="margin-top: 1rem; text-align: center;">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">
+                {{ t.scanned_on }}
+            </div>
+            <div style="font-size: 0.8rem; color: #888;">
+                {% if result.timestamp %}
+                    {{ result.timestamp[:10] }} {{ t.at }} {{ result.timestamp[11:16] }}
+                {% else %}
+                    {{ t.unknown_date }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="result-details">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; gap: 1rem;">
+            <div style="flex: 1;">
+                <h2 style="margin-bottom: 0.5rem; color: var(--forest-green);">{{ result.disease_name or result.prediction or t.unknown_disease }}</h2>
+                <p style="color: #666; margin: 0 0 0.5rem 0;">{{ t.detected_in }} {{ result.plant_type or t.unknown_plant }}</p>
+                <p style="color: #888; font-size: 0.9rem; margin: 0;">
+                    {{ t.scan_id }}: #{{ result.id or 'N/A' }}
+                </p>
+            </div>
+            <button class="delete-btn" data-result-id="{{ result.id }}" title="{{ t.delete_this_result }}">
+                🗑️
+            </button>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="overview">{{ t.overview }}</button>
+            <button class="tab" data-tab="symptoms">{{ t.symptoms }}</button>
+            <button class="tab" data-tab="treatment">{{ t.treatment }}</button>
+            <button class="tab" data-tab="prevention">{{ t.prevention }}</button>
+        </div>
+        
+        <div id="overview" class="tab-content active">
+            <h3>{{ t.disease_overview }}</h3>
+            <div class="content-box">
+                {{ (result.description or t.no_information_available) | replace('\n', '<br>') | safe }}
+            </div>
+        </div>
+        
+        <div id="symptoms" class="tab-content">
+            <h3>{{ t.symptoms_overview }}</h3>
+            <div class="content-box">
+                {{ (result.symptoms or t.no_information_available) | replace('\n', '<br>') | replace('•', '•') | safe }}
+            </div>
+        </div>
+        
+        <div id="treatment" class="tab-content">
+            <h3>{{ t.recommended_treatment }}</h3>
+            <div class="content-box">
+                {{ (result.treatment or t.no_information_available) | replace('\n', '<br>') | replace('•', '•') | safe }}
+            </div>
+        </div>
+        
+        <div id="prevention" class="tab-content">
+            <h3>{{ t.prevention_tips }}</h3>
+            <div class="content-box">
+                {{ (result.prevention or t.no_information_available) | replace('\n', '<br>') | replace('•', '•') | safe }}
+            </div>
+        </div>
+        
+        <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="cta-button" onclick="window.location.href='/history'">
+                ← {{ t.back_to_history }}
+            </button>
+            <button class="cta-button" onclick="window.location.href='/scan'">
+                {{ t.scan_another }}
+            </button>
+            <button class="upload-button" onclick="window.location.href='/library'" style="background-color: var(--grey-medium); color: var(--charcoal);">
+                📚 {{ t.disease_library }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="deleteConfirmModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3>{{ t.confirm_delete_title }}</h3>
+            <span class="close" onclick="closeDeleteModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1.5rem;">{{ t.confirm_delete_result }}</p>
+            <p style="margin-bottom: 1.5rem; color: #666; font-size: 0.9rem;">{{ t.action_cannot_undone }}</p>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="upload-button" onclick="closeDeleteModal()" style="background-color: var(--grey-medium);">
+                    {{ t.cancel }}
+                </button>
+                <button class="cta-button" id="confirmDeleteBtn" style="background-color: #f44336;">
+                    {{ t.yes_delete }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.results-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.result-image-container {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    text-align: center;
+}
+
+.image-wrapper {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 1rem auto;
+}
+
+.result-image {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.confidence-score {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--forest-green);
+    margin-bottom: 1rem;
+}
+
+.result-details {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.delete-btn:hover {
+    background-color: #ffebee;
+    transform: scale(1.1);
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--grey-medium);
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--charcoal);
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.tab:hover {
+    color: var(--forest-green);
+    background-color: var(--light-green);
+}
+
+.tab.active {
+    color: var(--forest-green);
+    border-bottom-color: var(--forest-green);
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.content-box {
+    background-color: var(--grey-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    line-height: 1.6;
+    color: #666;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.content-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content-box::-webkit-scrollbar-track {
+    background: var(--grey-medium);
+    border-radius: 3px;
+}
+
+.content-box::-webkit-scrollbar-thumb {
+    background: var(--forest-green);
+    border-radius: 3px;
+}
+
+.content-box::-webkit-scrollbar-thumb:hover {
+    background: var(--sprout-green);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--grey-light);
+    background-color: var(--light-green);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+    color: var(--forest-green);
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.close {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--charcoal);
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: var(--forest-green);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .results-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .image-wrapper {
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .results-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .result-details {
+        padding: 1rem;
+    }
+    
+    .tabs {
+        flex-direction: column;
+    }
+    
+    .tab {
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid var(--grey-medium);
+        border-left: 2px solid transparent;
+    }
+    
+    .tab.active {
+        border-bottom: 1px solid var(--grey-medium);
+        border-left: 2px solid var(--forest-green);
+    }
+    
+    .content-box {
+        padding: 1rem;
+        max-height: 200px;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+        max-height: 95vh;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+}
+
+/* RTL Support */
+[dir="rtl"] .tabs {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .tab.active {
+    border-left: none;
+    border-right: 2px solid var(--forest-green);
+}
+
+[dir="rtl"] .result-image-container {
+    text-align: right;
+}
+
+[dir="rtl"] .content-box {
+    text-align: right;
+    direction: rtl;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Global variables
+let currentResultId = "{{ result.id or '' }}";
+
+// Function to delete result
+function deleteThisResult(resultId) {
+    currentResultId = resultId;
+    const modal = document.getElementById('deleteConfirmModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// Function to close delete modal
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteConfirmModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Function to confirm delete
+async function confirmDelete() {
+    const deleteBtn = document.getElementById('confirmDeleteBtn');
+    if (!deleteBtn) return;
+    
+    const originalText = deleteBtn.innerHTML;
+    
+    try {
+        deleteBtn.innerHTML = '<div class="loading" style="display: inline-block; margin-right: 0.5rem;"></div>{{ t.loading_please_wait }}';
+        deleteBtn.disabled = true;
+        
+        const response = await fetch('/delete-result/' + currentResultId, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Show success message and redirect
+            showNotification('{{ t.result_deleted_success }}', 'success');
+            setTimeout(function() {
+                window.location.href = '/history';
+            }, 1000);
+        } else {
+            alert('{{ t.error_deleting_result }}: ' + data.message);
+            closeDeleteModal();
+        }
+    } catch (error) {
+        alert('{{ t.error_deleting_result }}: ' + error.message);
+        closeDeleteModal();
+    } finally {
+        deleteBtn.innerHTML = originalText;
+        deleteBtn.disabled = false;
+    }
+}
+
+// Function to show notification
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-' + type;
+    notification.style.cssText = 'position: fixed; top: 100px; right: 20px; z-index: 1001; animation: slideIn 0.3s ease;';
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(function() {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+
+// Set up confirm delete button
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', confirmDelete);
+    }
+    
+    // Use data-result-id to handle delete button clicks (avoids inline JS parsing issues)
+    document.addEventListener('click', function(event) {
+        const btn = event.target.closest && event.target.closest('.delete-btn');
+        if (btn) {
+            const id = btn.getAttribute('data-result-id');
+            if (id) {
+                deleteThisResult(id);
+            }
+        }
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('deleteConfirmModal');
+        if (event.target === modal) {
+            closeDeleteModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeDeleteModal();
+        }
+    });
+    
+    // Tab functionality
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            
+            // Update active tab
+            tabs.forEach(function(t) {
+                t.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // Update active tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(function(content) {
+                content.classList.remove('active');
+                if (content.id === tabName) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+    
+    // Add animation when page loads
+    const resultImage = document.querySelector('.result-image-container');
+    const resultDetails = document.querySelector('.result-details');
+    
+    if (resultImage) {
+        resultImage.style.opacity = '0';
+        resultImage.style.transform = 'translateX(-20px)';
+    }
+    if (resultDetails) {
+        resultDetails.style.opacity = '0';
+        resultDetails.style.transform = 'translateX(20px)';
+    }
+    
+    setTimeout(function() {
+        if (resultImage) {
+            resultImage.style.transition = 'all 0.5s ease';
+            resultImage.style.opacity = '1';
+            resultImage.style.transform = 'translateX(0)';
+        }
+        if (resultDetails) {
+            resultDetails.style.transition = 'all 0.5s ease';
+            resultDetails.style.opacity = '1';
+            resultDetails.style.transform = 'translateX(0)';
+        }
+    }, 100);
+    
+    // Add CSS for notification animation
+    const style = document.createElement('style');
+    style.textContent = '@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }';
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}

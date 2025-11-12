@@ -1,17 +1,20 @@
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, Request, Cookie, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import tensorflow as tf
 import numpy as np
 import json
 import os
 from PIL import Image
-
+from datetime import datetime
+from typing import List, Dict, Any
 IMG_SIZE = 160
 MODEL_PATH = "model/model.keras"
 CLASSES_JSON = "metadata/classes.json"
 UPLOAD_DIR = "uploads"
+RESULTS_FILE = "saved_results.json"
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -22,7 +25,7 @@ model = tf.keras.models.load_model(MODEL_PATH)
 with open(CLASSES_JSON, "r") as f:
     classes_dict = json.load(f)
 
-app = FastAPI(title="Plant Disease Classifier")
+app = FastAPI(title="Plant Guard - Plant Disease Classifier")
 
 # Allow mobile app or frontend to access the backend
 app.add_middleware(
@@ -33,12 +36,452 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static directories
-app.mount("/css", StaticFiles(directory="static/css"), name="css")
-app.mount("/js", StaticFiles(directory="static/js"), name="js")
-app.mount("/images", StaticFiles(directory="static/images"), name="images")
+# Mount static directories FIRST
+app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
+# Setup templates AFTER static files
+templates = Jinja2Templates(directory="templates")
+
+# Add static URL function to templates
+templates.env.globals['url_for'] = lambda name, **params: f"/static/{params.get('filename', '')}"
+
+# Language translations for UI
+# Add these complete translations to your UI_TRANSLATIONS in main.py
+UI_TRANSLATIONS = {
+    "en": {
+        # Navigation & Pages
+        "dashboard": "Dashboard",
+        "new_scan": "New Scan",
+        "scan_history": "Scan History",
+        "disease_library": "Disease Library",
+        "my_garden": "My Garden",
+        "settings": "Settings",
+        
+        # Dashboard Statistics
+        "total_scans": "Total Scans",
+        "plants_in_garden": "Plants in Garden",
+        "avg_confidence": "Avg. Confidence Score",
+        "top_disease": "Top Disease",
+        "recent_history": "Recent History",
+        "recent_scans": "Recent Scans",
+        "view_all_history": "View All History",
+        
+        # Scan & Upload
+        "drag_image": "Drag image here or click to upload",
+        "select_image": "Select Image",
+        "select_language": "Select Language",
+        "supported_formats": "Supported formats: JPEG, PNG, GIF (Max 10MB)",
+        "scan_another": "Scan Another Plant",
+        "scan_again": "Scan Again",
+        
+        # Results & Saving
+        "save_results": "Save Results",
+        "confidence": "Confidence",
+        "detected_in": "Detected in",
+        "saving": "Saving...",
+        "result_saved": "Result saved successfully!",
+        "save_error": "Error saving result",
+        "no_data_save": "No result data to save",
+        "save_successful": "Save successful",
+        "save_failed_try_again": "Save failed, please try again",
+        
+        # Disease Information
+        "overview": "Overview",
+        "treatment": "Treatment",
+        "prevention": "Prevention",
+        "symptoms": "Symptoms",
+        "disease_overview": "Disease Overview",
+        "recommended_treatment": "Recommended Treatment",
+        "prevention_tips": "Prevention Tips",
+        "symptoms_overview": "Symptoms Overview",
+        "disease_information": "Disease Information",
+        "prevention_methods": "Prevention Methods",
+        "treatment_options": "Treatment Options",
+        
+        # Health Status
+        "healthy": "Healthy",
+        "disease": "Disease",
+        "healthy_plants": "Healthy Plants",
+        "needs_attention": "Needs Attention",
+        "under_treatment": "Under Treatment",
+        "total_plants": "Total Plants",
+        
+        # Tips
+        "tips_best_results": "Tips for Best Results",
+        "tip_1": "Take photos in good lighting conditions",
+        "tip_2": "Focus on the affected leaves or areas",
+        "tip_3": "Include both healthy and unhealthy parts for comparison",
+        "tip_4": "Take multiple angles if possible",
+        "tip_5": "Ensure the image is clear and not blurry",
+        
+        # Library & Search
+        "search_diseases": "Search diseases...",
+        "search_placeholder": "Search diseases or plants...",
+        "all_plants": "All Plants",
+        "all_conditions": "All Conditions",
+        "diseases_only": "Diseases Only",
+        "healthy_plants_only": "Healthy Plants Only",
+        "clear_filters": "Clear Filters",
+        "total_conditions": "Total Conditions",
+        "plant_types": "Plant Types",
+        "showing_all_conditions": "Showing all conditions",
+        "no_diseases_found": "No diseases found",
+        "try_adjusting_search": "Try adjusting your search or filters",
+        "scan_this_disease": "Scan for this disease",
+        "view_details": "View Details",
+        "view_in_library": "View in Library",
+        
+        # History & Management
+        "delete_result": "Delete",
+        "delete_result_title": "Delete this result",
+        "delete_this_result": "Delete this result",
+        "clear_all": "Clear All Results",
+        "confirm_delete": "Are you sure you want to delete this result?",
+        "confirm_delete_result": "Are you sure you want to delete this result?",
+        "confirm_delete_title": "Confirm Delete",
+        "confirm_clear_all": "Are you sure you want to delete all saved results?",
+        "confirm_clear": "Confirm Clear All",
+        "action_cannot_undone": "This action cannot be undone.",
+        "yes_delete": "Yes, Delete",
+        "yes_clear_all": "Yes, Clear All",
+        "back_history": "Back to History",
+        "back_to_history": "Back to History",
+        "back_to_dashboard": "Back to Dashboard",
+        "scanned_on": "Scanned on",
+        "at": "at",
+        "total_saved_results": "Total saved results",
+        "no_saved_results": "No Saved Results",
+        "history_will_appear": "Your scan history will appear here once you save some results.",
+        "result_deleted": "Result deleted successfully",
+        "result_deleted_success": "Result deleted successfully",
+        "all_results_cleared": "All results cleared successfully",
+        "error_deleting": "Error deleting result",
+        "error_deleting_result": "Error deleting result",
+        "error_clearing": "Error clearing results",
+        "error_clearing_results": "Error clearing results",
+        
+        # General UI
+        "close": "Close",
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "loading_please_wait": "Loading, please wait...",
+        "scan_for_disease": "Scan for this Disease",
+        "redirecting_scan": "Redirecting to scan page for",
+        "proceed_scan": "Proceed to Scan",
+        "scan_id": "ID",
+        "unknown_disease": "Unknown Disease",
+        "unknown_plant": "Unknown Plant",
+        "unknown_date": "Unknown date",
+        "no_information_available": "No information available",
+        "no_results_found": "No results found",
+        "start_scanning_to_see_results": "Start scanning to see results here",
+        "scan_details": "Scan Details",
+        "quick_actions": "Quick Actions",
+        
+        # Filter & Sort
+        "filter_by_plant": "Filter by Plant",
+        "filter_by_disease": "Filter by Disease",
+        "sort_by_date": "Sort by Date",
+        "sort_by_confidence": "Sort by Confidence",
+        "newest_first": "Newest First",
+        "oldest_first": "Oldest First",
+        "high_confidence_first": "High Confidence First",
+        "low_confidence_first": "Low Confidence First",
+        
+        # Delete & Error Messages
+        "delete_failed": "Delete failed",
+        "delete_failed_try_again": "Delete failed, please try again"
+    },
+    "fa": {
+        # Navigation & Pages
+        "dashboard": "داشبورد",
+        "new_scan": "اسکن جدید",
+        "scan_history": "تاریخچه اسکن",
+        "disease_library": "کتابخانه بیماری‌ها",
+        "my_garden": "باغ من",
+        "settings": "تنظیمات",
+        
+        # Dashboard Statistics
+        "total_scans": "کل اسکن‌ها",
+        "plants_in_garden": "گیاهان در باغ",
+        "avg_confidence": "میانگین امتیاز اطمینان",
+        "top_disease": "بیماری شایع",
+        "recent_history": "تاریخچه اخیر",
+        "recent_scans": "اسکن‌های اخیر",
+        "view_all_history": "مشاهده تمام تاریخچه",
+        
+        # Scan & Upload
+        "drag_image": "عکس را اینجا بکشید یا کلیک کنید",
+        "select_image": "انتخاب عکس",
+        "select_language": "انتخاب زبان",
+        "supported_formats": "فرمت‌های پشتیبانی شده: JPEG, PNG, GIF (حداکثر ۱۰ مگابایت)",
+        "scan_another": "اسکن گیاه دیگر",
+        "scan_again": "اسکن مجدد",
+        
+        # Results & Saving
+        "save_results": "ذخیره نتایج",
+        "confidence": "اطمینان",
+        "detected_in": "تشخیص داده شده در",
+        "saving": "در حال ذخیره...",
+        "result_saved": "نتیجه با موفقیت ذخیره شد!",
+        "save_error": "خطا در ذخیره نتیجه",
+        "no_data_save": "داده‌ای برای ذخیره وجود ندارد",
+        "save_successful": "ذخیره سازی موفق",
+        "save_failed_try_again": "ذخیره سازی ناموفق، لطفا دوباره تلاش کنید",
+        
+        # Disease Information
+        "overview": "بررسی کلی",
+        "treatment": "درمان",
+        "prevention": "پیشگیری",
+        "symptoms": "علائم",
+        "disease_overview": "بررسی کلی بیماری",
+        "recommended_treatment": "درمان توصیه شده",
+        "prevention_tips": "نکات پیشگیری",
+        "symptoms_overview": "بررسی علائم",
+        "disease_information": "اطلاعات بیماری",
+        "prevention_methods": "روش‌های پیشگیری",
+        "treatment_options": "گزینه‌های درمان",
+        
+        # Health Status
+        "healthy": "سالم",
+        "disease": "بیماری",
+        "healthy_plants": "گیاهان سالم",
+        "needs_attention": "نیاز به توجه",
+        "under_treatment": "در حال درمان",
+        "total_plants": "کل گیاهان",
+        
+        # Tips
+        "tips_best_results": "نکات برای بهترین نتایج",
+        "tip_1": "عکس‌ها را در شرایط نوری مناسب بگیرید",
+        "tip_2": "بر روی برگ‌ها یا مناطق آسیب دیده تمرکز کنید",
+        "tip_3": "قسمت‌های سالم و ناسالم را برای مقایسه شامل شوید",
+        "tip_4": "در صورت امکان از زوایای مختلف عکس بگیرید",
+        "tip_5": "اطمینان حاصل کنید که تصویر واضح و بدون تاری باشد",
+        
+        # Library & Search
+        "search_diseases": "جستجوی بیماری‌ها...",
+        "search_placeholder": "جستجوی بیماری‌ها یا گیاهان...",
+        "all_plants": "تمام گیاهان",
+        "all_conditions": "تمام شرایط",
+        "diseases_only": "فقط بیماری‌ها",
+        "healthy_plants_only": "فقط گیاهان سالم",
+        "clear_filters": "پاک کردن فیلترها",
+        "total_conditions": "کل شرایط",
+        "plant_types": "انواع گیاهان",
+        "showing_all_conditions": "نمایش تمام شرایط",
+        "no_diseases_found": "هیچ بیماری یافت نشد",
+        "try_adjusting_search": "سعی کنید جستجو یا فیلترهای خود را تنظیم کنید",
+        "scan_this_disease": "اسکن برای این بیماری",
+        "view_details": "مشاهده جزئیات",
+        "view_in_library": "مشاهده در کتابخانه",
+        
+        # History & Management
+        "delete_result": "حذف",
+        "delete_result_title": "این نتیجه را حذف کنید",
+        "delete_this_result": "این نتیجه را حذف کنید",
+        "clear_all": "پاک کردن تمام نتایج",
+        "confirm_delete": "آیا مطمئن هستید که می‌خواهید این نتیجه را حذف کنید؟",
+        "confirm_delete_result": "آیا مطمئن هستید که می‌خواهید این نتیجه را حذف کنید؟",
+        "confirm_delete_title": "تأیید حذف",
+        "confirm_clear_all": "آیا مطمئن هستید که می‌خواهید تمام نتایج ذخیره شده را حذف کنید؟",
+        "confirm_clear": "تأیید پاک کردن همه",
+        "action_cannot_undone": "این عمل قابل بازگشت نیست.",
+        "yes_delete": "بله، حذف کن",
+        "yes_clear_all": "بله، همه را پاک کن",
+        "back_history": "بازگشت به تاریخچه",
+        "back_to_history": "بازگشت به تاریخچه",
+        "back_to_dashboard": "بازگشت به داشبورد",
+        "scanned_on": "اسکن شده در",
+        "at": "ساعت",
+        "total_saved_results": "تعداد کل نتایج ذخیره شده",
+        "no_saved_results": "هیچ نتیجه ذخیره شده‌ای وجود ندارد",
+        "history_will_appear": "تاریخچه اسکن شما پس از ذخیره چند نتیجه در اینجا ظاهر می‌شود.",
+        "result_deleted": "نتیجه با موفقیت حذف شد",
+        "result_deleted_success": "نتیجه با موفقیت حذف شد",
+        "all_results_cleared": "تمامی نتایج با موفقیت پاک شدند",
+        "error_deleting": "خطا در حذف نتیجه",
+        "error_deleting_result": "خطا در حذف نتیجه",
+        "error_clearing": "خطا در پاک کردن نتایج",
+        "error_clearing_results": "خطا در پاک کردن نتایج",
+        
+        # General UI
+        "close": "بستن",
+        "cancel": "لغو",
+        "loading": "در حال بارگذاری...",
+        "loading_please_wait": "در حال بارگذاری، لطفا صبر کنید...",
+        "scan_for_disease": "اسکن برای این بیماری",
+        "redirecting_scan": "در حال انتقال به صفحه اسکن برای",
+        "proceed_scan": "ادامه به اسکن",
+        "scan_id": "شناسه",
+        "unknown_disease": "بیماری ناشناخته",
+        "unknown_plant": "گیاه ناشناخته",
+        "unknown_date": "تاریخ نامعلوم",
+        "no_information_available": "هیچ اطلاعاتی در دسترس نیست",
+        "no_results_found": "هیچ نتیجه‌ای یافت نشد",
+        "start_scanning_to_see_results": "برای دیدن نتایج اینجا، اسکن را شروع کنید",
+        "scan_details": "جزئیات اسکن",
+        "quick_actions": "اقدامات سریع",
+        
+        # Filter & Sort
+        "filter_by_plant": "فیلتر بر اساس گیاه",
+        "filter_by_disease": "فیلتر بر اساس بیماری",
+        "sort_by_date": "مرتب سازی بر اساس تاریخ",
+        "sort_by_confidence": "مرتب سازی بر اساس اطمینان",
+        "newest_first": "جدیدترین اول",
+        "oldest_first": "قدیمی‌ترین اول",
+        "high_confidence_first": "اطمینان بالا اول",
+        "low_confidence_first": "اطمینان پایین اول",
+        
+        # Delete & Error Messages
+        "delete_failed": "حذف ناموفق بود",
+        "delete_failed_try_again": "حذف ناموفق بود، لطفا دوباره تلاش کنید"
+    },
+    "ps": {
+        # Navigation & Pages
+        "dashboard": "ډشبورډ",
+        "new_scan": "نۍ سکان",
+        "scan_history": "د سکان تاریخ",
+        "disease_library": "د ناروغیو کتابتون",
+        "my_garden": "زما بڼۍ",
+        "settings": "امستنې",
+        
+        # Dashboard Statistics
+        "total_scans": "ټول سکانونه",
+        "plants_in_garden": "په بڼۍ کې نباتات",
+        "avg_confidence": "د اطمینان منځنی نمره",
+        "top_disease": "مشهوره ناروغي",
+        "recent_history": "تازه تاریخ",
+        "recent_scans": "تازه سکانونه",
+        "view_all_history": "ټول تاریخ وګورئ",
+        
+        # Scan & Upload
+        "drag_image": "انځور دلته راکاږئ یا کلیک وکړئ",
+        "select_image": "انځور غوره کړئ",
+        "select_language": "ژبه غوره کړئ",
+        "supported_formats": "مترلودل شوي فورمټونه: JPEG, PNG, GIF (اعظمي ۱۰ میګابایټ)",
+        "scan_another": "بل نبات سکان کړئ",
+        "scan_again": "بیا سکان کړئ",
+        
+        # Results & Saving
+        "save_results": "پایلې خوندي کړئ",
+        "confidence": "اطمینان",
+        "detected_in": "په کې کشف شو",
+        "saving": "په خوندي کولو کې...",
+        "result_saved": "پایله په بریالیتوب سره خوندي شوه!",
+        "save_error": "په پایله خوندي کولو کې ستونزه",
+        "no_data_save": "د خوندي کولو لپاره هیڅ معلومات نشته",
+        "save_successful": "خوندي کول بریالي شول",
+        "save_failed_try_again": "خوندي کول ناکام شول، بیا هڅه وکړئ",
+        
+        # Disease Information
+        "overview": "کتنه",
+        "treatment": "درملنه",
+        "prevention": "مخنیوی",
+        "symptoms": "نښې نښانې",
+        "disease_overview": "د ناروغۍ کتنه",
+        "recommended_treatment": "مشوره شوې درملنه",
+        "prevention_tips": "د مخنیوي لارښوونې",
+        "symptoms_overview": "د نښو کتنه",
+        "disease_information": "د ناروغۍ معلومات",
+        "prevention_methods": "د مخنیوي لارې",
+        "treatment_options": "د درملنې انتخابونه",
+        
+        # Health Status
+        "healthy": "تندرست",
+        "disease": "ناروغي",
+        "healthy_plants": "تندرست نباتات",
+        "needs_attention": "پاملرنې ته اړتیا لري",
+        "under_treatment": "په درملنه کې",
+        "total_plants": "ټول نباتات",
+        
+        # Tips
+        "tips_best_results": "د غوره پایلو لپاره لارښوونې",
+        "tip_1": "عکسونه په ښه رڼا شرایطو کې واخلئ",
+        "tip_2": "په ناروغه پاڼو یا سیمو تمرکز وکړئ",
+        "tip_3": "د پرتلې لپاره تندرستې او ناروغې برخې شاملې کړئ",
+        "tip_4": "که ممکنه وي له مختلفو زاویو عکس واخلئ",
+        "tip_5": "ډاډمن اسیږئ چې انځور واضح او بې ګډوډي وي",
+        
+        # Library & Search
+        "search_diseases": "د ناروغیو لټون...",
+        "search_placeholder": "د ناروغیو یا نباتاتو لټون...",
+        "all_plants": "ټول نباتات",
+        "all_conditions": "ټول حالتونه",
+        "diseases_only": "یوازې ناروغۍ",
+        "healthy_plants_only": "یوازې تندرست نباتات",
+        "clear_filters": "فیلترونه پاک کړئ",
+        "total_conditions": "ټول حالتونه",
+        "plant_types": "د نباتاتو ډولونه",
+        "showing_all_conditions": "ټول حالتونه ښکاره کوي",
+        "no_diseases_found": "هیڅ ناروغي ونه موندل شوه",
+        "try_adjusting_search": "خپل لټون یا فیلترونه سم کړئ",
+        "scan_this_disease": "د دې ناروغۍ لپاره سکان کړئ",
+        "view_details": "تفصیلات وګورئ",
+        "view_in_library": "په کتابتون کې وګورئ",
+        
+        # History & Management
+        "delete_result": "ړنګول",
+        "delete_result_title": "دا پایله ړنګه کړئ",
+        "delete_this_result": "دا پایله ړنګه کړئ",
+        "clear_all": "ټولې پایلې پاکې کړئ",
+        "confirm_delete": "آیا تاسو ډاډه یاست چې غواړئ دا پایله ړنګه کړئ؟",
+        "confirm_delete_result": "آیا تاسو ډاډه یاست چې غواړئ دا پایله ړنګه کړئ؟",
+        "confirm_delete_title": "د ړنګولو تصدیق",
+        "confirm_clear_all": "آیا تاسو ډاډه یاست چې غواړئ ټولې خوندي شوې پایلې ړنګې کړئ؟",
+        "confirm_clear": "د ټولو پاکولو تصدیق",
+        "action_cannot_undone": "دا عمل بیرته اخیستل کیدی نه شي.",
+        "yes_delete": "هو، ړنګه کړئ",
+        "yes_clear_all": "هو، ټولې پاکې کړئ",
+        "back_history": "بیرته تاریخ ته",
+        "back_to_history": "بیرته تاریخ ته",
+        "back_to_dashboard": "بیرته ډشبورډ ته",
+        "scanned_on": "سکان شوی په",
+        "at": "کې",
+        "total_saved_results": "ټولې خوندي شوې پایلې",
+        "no_saved_results": "هیڅ خوندي شوې پایله نشته",
+        "history_will_appear": "ستاسو د سکان تاریخ به دلته ښکاره شي کله چې تاسو یو څو پایلې خوندي کړئ.",
+        "result_deleted": "پایله په بریالیتوب سره ړنګه شوه",
+        "result_deleted_success": "پایله په بریالیتوب سره ړنګه شوه",
+        "all_results_cleared": "ټولې پایلې په بریالیتوب سره پاکې شوې",
+        "error_deleting": "په پایله ړنګولو کې ستونزه",
+        "error_deleting_result": "په پایله ړنګولو کې ستونزه",
+        "error_clearing": "په پایلې پاکولو کې ستونزه",
+        "error_clearing_results": "په پایلې پاکولو کې ستونزه",
+        
+        # General UI
+        "close": "تړل",
+        "cancel": "لغوه کول",
+        "loading": "په بار کولو کې...",
+        "loading_please_wait": "په بار کولو کې، لطفا انتظار وکړئ...",
+        "scan_for_disease": "د دې ناروغۍ لپاره سکان کړئ",
+        "redirecting_scan": "د سکان پاڼې ته لیږدول کيږي لپاره",
+        "proceed_scan": "سکان ته ادامه ورکړئ",
+        "scan_id": "آی ډي",
+        "unknown_disease": "ناجوړه ناروغي",
+        "unknown_plant": "ناجوړ نبات",
+        "unknown_date": "ناجوړه نیټه",
+        "no_information_available": "هیڅ معلومات نشته",
+        "no_results_found": "هیڅ پایله ونه موندل شوه",
+        "start_scanning_to_see_results": "د پایلو د لیدلو لپاره دلته، سکان پیل کړئ",
+        "scan_details": "د سکان تفصیلات",
+        "quick_actions": "چټک عملونه",
+        
+        # Filter & Sort
+        "filter_by_plant": "د نبات په اساس فلټر کړئ",
+        "filter_by_disease": "د ناروغۍ په اساس فلټر کړئ",
+        "sort_by_date": "د نیټې په اساس ترتیب کړئ",
+        "sort_by_confidence": "د اطمینان په اساس ترتیب کړئ",
+        "newest_first": "نوي لومړی",
+        "oldest_first": "زوړ لومړی",
+        "high_confidence_first": "لوړ اطمینان لومړی",
+        "low_confidence_first": "ټیټ اطمینان لومړی",
+        
+        # Delete & Error Messages
+        "delete_failed": "ړنګول ناکام شول",
+        "delete_failed_try_again": "ړنګول ناکام شول، بیا هڅه وکړئ"
+    }
+}
 # Multi-language disease database
 # disease_data.py
 DISEASE_DATABASE = {
@@ -283,6 +726,153 @@ DISEASE_DATABASE = {
 }
 }
 
+def load_saved_results() -> List[Dict[str, Any]]:
+    """Load saved results from JSON file"""
+    try:
+        if os.path.exists(RESULTS_FILE):
+            with open(RESULTS_FILE, 'r', encoding='utf-8') as f:
+                results = json.load(f)
+                # Ensure each result has all required fields
+                for result in results:
+                    if 'timestamp' not in result:
+                        result['timestamp'] = datetime.now().isoformat()
+                    if 'plant_type' not in result:
+                        result['plant_type'] = result.get('prediction', 'Unknown').split('___')[0] if '___' in result.get('prediction', '') else 'Unknown'
+                return results
+    except Exception as e:
+        print(f"Error loading saved results: {e}")
+    return []
+def save_results_to_file(results: List[Dict[str, Any]]) -> None:
+    """Save results to JSON file"""
+    try:
+        with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(results, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Error saving results: {e}")
+
+# Update your add_saved_result function to ensure proper image paths
+def add_saved_result(result_data: Dict[str, Any]) -> None:
+    """Add a new result to saved results"""
+    results = load_saved_results()
+    
+    # Extract plant type from prediction
+    prediction = result_data.get("prediction", "Unknown")
+    if '___' in prediction:
+        plant_type = prediction.split('___')[0]
+    else:
+        plant_type = "Unknown"
+    
+    # Handle image URL - ensure it's a proper path
+    uploaded_image = result_data.get("uploaded_image", "")
+    if uploaded_image and not uploaded_image.startswith('/'):
+        uploaded_image = '/uploads/' + uploaded_image
+    
+    # Create a new result with ID and timestamp
+    new_result = {
+        "id": len(results) + 1,
+        "timestamp": datetime.now().isoformat(),
+        "disease_name": result_data.get("disease_name", "Unknown"),
+        "prediction": prediction,
+        "confidence": result_data.get("confidence", 0),
+        "plant_type": plant_type,
+        "image_url": uploaded_image or "/static/images/placeholder-plant.jpg",
+        "description": result_data.get("description", ""),
+        "symptoms": result_data.get("symptoms", ""),
+        "treatment": result_data.get("treatment", ""),
+        "prevention": result_data.get("prevention", ""),
+        "language": result_data.get("language", "en")
+    }
+    
+    results.append(new_result)
+    save_results_to_file(results)
+    print(f"Saved result with image URL: {new_result['image_url']}")  # Debug
+
+def delete_saved_result(result_id: int) -> bool:
+    """Delete a specific result by ID"""
+    results = load_saved_results()
+    original_count = len(results)
+    results = [r for r in results if r["id"] != result_id]
+    
+    if len(results) < original_count:
+        save_results_to_file(results)
+        return True
+    return False
+
+def clear_all_results() -> None:
+    """Clear all saved results"""
+    save_results_to_file([])
+
+def get_user_stats_from_results() -> Dict[str, Any]:
+    """Calculate statistics from saved results"""
+    results = load_saved_results()
+    
+    if not results:
+        return {
+            'total_scans': 0,
+            'plants_in_garden': 0,
+            'avg_confidence': 0,
+            'top_disease': 'No scans yet'
+        }
+    
+    total_scans = len(results)
+    
+    # Count unique plants (simplified - you might want to track this differently)
+    plants_in_garden = len(set(r.get('plant_type', 'Unknown') for r in results))
+    
+    # Calculate average confidence
+    avg_confidence = sum(r.get('confidence', 0) for r in results) / total_scans
+    
+    # Find most common disease
+    disease_counts = {}
+    for result in results:
+        disease = result.get('disease_name', 'Unknown')
+        disease_counts[disease] = disease_counts.get(disease, 0) + 1
+    
+    top_disease = max(disease_counts.items(), key=lambda x: x[1])[0] if disease_counts else 'No diseases'
+    
+    return {
+        'total_scans': total_scans,
+        'plants_in_garden': plants_in_garden,
+        'avg_confidence': round(avg_confidence, 1),
+        'top_disease': top_disease
+    }
+
+def get_user_stats():
+    return {
+        'total_scans': 42,
+        'plants_in_garden': 15,
+        'avg_confidence': 89,
+        'top_disease': 'Powdery Mildew'
+    }
+
+def get_recent_scans():
+    return [
+        {
+            'id': 1,
+            'plant_name': 'Tomato Plant',
+            'disease': 'Early Blight',
+            'confidence': 92,
+            'date': '2 hours ago',
+            'image': '/static/images/placeholder-plant.jpg'
+        },
+        {
+            'id': 2,
+            'plant_name': 'Rose Bush',
+            'disease': 'Powdery Mildew',
+            'confidence': 87,
+            'date': 'Yesterday',
+            'image': '/static/images/placeholder-plant.jpg'
+        },
+        {
+            'id': 3,
+            'plant_name': 'Basil',
+            'disease': 'Healthy',
+            'confidence': 95,
+            'date': '2 days ago',
+            'image': '/static/images/placeholder-plant.jpg'
+        }
+    ]
+
 def get_localized_disease_info(class_name: str, language: str = "en"):
     """
     Get localized disease information for the given class name and language
@@ -312,16 +902,190 @@ def preprocess_image(file_path):
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
+# Language setting endpoint
+@app.post("/set-language")
+async def set_language(language: str = Form(...), response: Response = None):
+    """Set the language preference"""
+    response = JSONResponse(content={"status": "success", "language": language})
+    response.set_cookie(key="language", value=language, max_age=365*24*60*60)  # 1 year
+    return response
+
+@app.get("/current-language")
+async def get_current_language(request: Request):
+    """Get current language from cookie"""
+    language = request.cookies.get("language", "en")
+    return {"language": language}
+
 # Routes
 @app.get("/", response_class=HTMLResponse)
-async def home():
-    with open(os.path.join(os.path.dirname(__file__), "templates/home.html"), "r", encoding="utf-8") as f:
-        return f.read()
+async def home(request: Request):
+    return await dashboard(request)
+
+@app.get("/dashboard")
+async def dashboard(request: Request):
+    language = request.cookies.get("language", "en")
+    stats = get_user_stats_from_results()
+    recent_scans = load_saved_results()[-5:]  # Get last 5 scans
+    recent_scans.reverse()  # Show newest first
+    
+    return templates.TemplateResponse("dashboard.html", {
+        "request": request,
+        "stats": stats,
+        "recent_scans": recent_scans,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+@app.get("/scan")
+async def scan_page(request: Request):
+    language = request.cookies.get("language", "en")
+    return templates.TemplateResponse("scan.html", {
+        "request": request,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+
+@app.get("/results")
+async def results_page(request: Request):
+    language = request.cookies.get("language", "en")
+    # This would typically receive results from session or database
+    # For now, using mock data
+    result_data = {
+        'disease': 'Early Blight',
+        'confidence': 92,
+        'plant_type': 'Tomato',
+        'image_url': '/static/images/placeholder-plant.jpg',
+        'treatment': 'Remove affected leaves and apply copper-based fungicide. Ensure proper spacing between plants for air circulation.',
+        'prevention': 'Water at the base of plants early in the day. Rotate crops yearly and remove plant debris at season end.',
+        'symptoms': 'Dark, concentric spots on leaves, yellowing around spots, spots may have target-like appearance'
+    }
+    return templates.TemplateResponse("results.html", {
+        "request": request,
+        "result": result_data,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+
+@app.get("/history")
+async def history_page(request: Request):
+    language = request.cookies.get("language", "en")
+    scans = load_saved_results()
+    # Reverse to show newest first and ensure each scan has timestamp
+    scans.reverse()
+    
+    # Debug: Print scans to see the actual structure
+    print("Scans data:", scans)
+    
+    return templates.TemplateResponse("history.html", {
+        "request": request,
+        "scans": scans,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+
+@app.post("/save-result")
+async def save_result(request: Request):
+    """Save a scan result"""
+    try:
+        data = await request.json()
+        print("Received data for saving:", data)  # Debug print
+        
+        # Ensure required fields are present
+        if not data.get("disease_name"):
+            data["disease_name"] = data.get("prediction", "Unknown")
+        
+        add_saved_result(data)
+        return JSONResponse(content={"status": "success", "message": "Result saved successfully"})
+    except Exception as e:
+        print(f"Error saving result: {e}")  # Debug print
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+
+@app.delete("/delete-result/{result_id}")
+async def delete_result(result_id: int):
+    """Delete a specific result"""
+    try:
+        if delete_saved_result(result_id):
+            return JSONResponse(content={"status": "success", "message": "Result deleted successfully"})
+        else:
+            return JSONResponse(content={"status": "error", "message": "Result not found"}, status_code=404)
+    except Exception as e:
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+@app.post("/clear-all-results")
+async def clear_results():
+    """Clear all saved results"""
+    try:
+        clear_all_results()
+        return JSONResponse(content={"status": "success", "message": "All results cleared successfully"})
+    except Exception as e:
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+@app.get("/saved-result/{result_id}")
+async def get_saved_result(result_id: int, request: Request):
+    """Get a specific saved result"""
+    try:
+        results = load_saved_results()
+        result = next((r for r in results if r["id"] == result_id), None)
+        
+        print(f"Looking for result {result_id}, found: {result}")  # Debug print
+        
+        if result:
+            language = request.cookies.get("language", "en")
+            return templates.TemplateResponse("saved_result.html", {
+                "request": request,
+                "result": result,
+                "t": UI_TRANSLATIONS[language],
+                "current_language": language
+            })
+        else:
+            return JSONResponse(content={"status": "error", "message": "Result not found"}, status_code=404)
+    except Exception as e:
+        print(f"Error getting saved result: {e}")  # Debug print
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+
+# Add this to your existing main.py in the library_page function
+@app.get("/library")
+async def library_page(request: Request):
+    language = request.cookies.get("language", "en")
+    # Get all diseases for the library with complete information
+    diseases = {}
+    for disease_key in DISEASE_DATABASE:
+        disease_info = get_localized_disease_info(disease_key, language)
+        # Add the original key for reference
+        disease_info['original_key'] = disease_key
+        diseases[disease_key] = disease_info
+    
+    # Get unique plant types for filtering
+    plant_types = set()
+    for disease_key in DISEASE_DATABASE:
+        # Extract plant type from disease key (e.g., "Apple___Apple_scab" -> "Apple")
+        if '___' in disease_key:
+            plant_type = disease_key.split('___')[0]
+            plant_types.add(plant_type)
+    
+    return templates.TemplateResponse("library.html", {
+        "request": request,
+        "diseases": diseases,
+        "plant_types": sorted(list(plant_types)),
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+
+@app.get("/garden")
+async def garden_page(request: Request):
+    language = request.cookies.get("language", "en")
+    return templates.TemplateResponse("garden.html", {
+        "request": request,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
 
 @app.post("/predict")
 async def predict(
+    request: Request,
     file: UploadFile = File(...),
-    language: str = Form("en")  # Language parameter with default 'en'
+    language: str = Form("en")
 ):
     try:
         file_path = os.path.join(UPLOAD_DIR, file.filename)
@@ -364,8 +1128,8 @@ async def get_supported_languages():
     return {
         "supported_languages": [
             {"code": "en", "name": "English"},
-            {"code": "fa", "name": "فارسی"}, 
-            {"code": "ps", "name": "پښتو"}
+            {"code": "fa", "name": "فارسی (Dari)"}, 
+            {"code": "ps", "name": "پښتو (Pashto)"}
         ]
     }
 
@@ -377,4 +1141,7 @@ async def get_all_diseases(language: str = "en"):
     for disease_key in DISEASE_DATABASE:
         result[disease_key] = get_localized_disease_info(disease_key, language)
     return result
-# Run the app
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

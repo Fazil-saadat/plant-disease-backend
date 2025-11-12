@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.new_scan }}</h1>
+
+<div class="upload-area" id="uploadArea" style="min-height: 400px;">
+    <div class="upload-icon">📸</div>
+    <h2 class="upload-text" id="uploadText">{{ t.drag_image }}</h2>
+    <p style="margin-bottom: 1.5rem; color: #666;">{{ t.supported_formats }}</p>
+    
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" class="file-input" accept="image/*" name="file">
+        <button type="button" class="upload-button" id="uploadButton">
+            <span>{{ t.select_image }}</span>
+            <div class="loading" id="loadingSpinner" style="display: none;"></div>
+        </button>
+    </form>
+    
+    <!-- Language selection is now in the header -->
+</div>
+
+<div style="margin-top: 2rem; background-color: var(--white); padding: 1.5rem; border-radius: 12px;">
+    <h3 style="margin-bottom: 1rem; color: var(--charcoal);">{{ t.tips_best_results }}:</h3>
+    <ul style="color: #666; list-style-position: inside;">
+        <li>{{ t.tip_1 }}</li>
+        <li>{{ t.tip_2 }}</li>
+        <li>{{ t.tip_3 }}</li>
+        <li>{{ t.tip_4 }}</li>
+        <li>{{ t.tip_5 }}</li>
+    </ul>
+</div>
+
+<div id="resultAlert" style="display: none;"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const uploadButton = document.getElementById('uploadButton');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const uploadText = document.getElementById('uploadText');
+    const resultAlert = document.getElementById('resultAlert');
+
+    // Click on upload area triggers file input
+    uploadArea.addEventListener('click', function(e) {
+        if (e.target !== fileInput && e.target !== uploadButton) {
+            fileInput.click();
+        }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            handleFileSelection(this.files[0]);
+        }
+    });
+
+    async function handleFileSelection(file) {
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            showAlert('Please select a valid image file (JPEG, PNG, or GIF).', 'error');
+            return;
+        }
+
+        // Validate file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            showAlert('File size must be less than 10MB.', 'error');
+            return;
+        }
+
+        // Show loading state
+        uploadButton.disabled = true;
+        uploadText.textContent = 'Processing...';
+        loadingSpinner.style.display = 'inline-block';
+
+        // Create FormData and send to server
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Get current language from the global selector
+        const language = document.getElementById('globalLanguage').value;
+        formData.append('language', language);
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // Store results and redirect to results page
+            // In the handleFileSelection function, after getting the prediction
+// Store results in localStorage and redirect to results page
+localStorage.setItem('lastScanResult', JSON.stringify(data));
+console.log("Result stored in localStorage:", data);
+
+// Ensure the uploaded_image path is correct
+if (data.uploaded_image && !data.uploaded_image.startsWith('/')) {
+    data.uploaded_image = '/uploads/' + data.uploaded_image;
+    localStorage.setItem('lastScanResult', JSON.stringify(data));
+}
+
+window.location.href = '/results';
+            
+        } catch (error) {
+            showAlert('Error uploading file: ' + error.message, 'error');
+        } finally {
+            // Reset loading state
+            uploadButton.disabled = false;
+            uploadText.textContent = '{{ t.drag_image }}';
+            loadingSpinner.style.display = 'none';
+            fileInput.value = '';
+        }
+    }
+
+    function showAlert(message, type = 'error') {
+        resultAlert.innerHTML = `
+            <div class="alert alert-${type}">
+                ${message}
+            </div>
+        `;
+        resultAlert.style.display = 'block';
+        
+        setTimeout(() => {
+            resultAlert.style.display = 'none';
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}
