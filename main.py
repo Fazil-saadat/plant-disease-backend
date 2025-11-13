@@ -1131,8 +1131,8 @@ async def get_supported_languages():
     return {
         "supported_languages": [
             {"code": "en", "name": "English"},
-            {"code": "fa", "name": "فارسی (Dari)"}, 
-            {"code": "ps", "name": "پښتو (Pashto)"}
+            {"code": "fa", "name": "فارسی"}, 
+            {"code": "ps", "name": "پښتو"}
         ]
     }
 
