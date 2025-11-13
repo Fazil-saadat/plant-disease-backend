@@ -1085,12 +1085,25 @@ async def garden_page(request: Request):
 async def predict(
     request: Request,
     file: UploadFile = File(...),
-    language: str = Form("en")  # Default to English if not provided
+    language: str = Form("en")
 ):
     try:
-        # Debug: Print received language
-        print(f"🔍 Received language parameter: {language}")
+        # DEBUG first
+        form_data = await request.form()
+        print("🔍 FORM DATA:", dict(form_data))
+        print("🔍 Headers:", dict(request.headers))
         
+        # If language is still English, try to get from headers
+        if language == "en":
+            # Check for custom header
+            custom_lang = request.headers.get("x-app-language")
+            if custom_lang in ["ps", "fa"]:
+                language = custom_lang
+                print(f"🔁 Overriding language from header: {language}")
+        
+        print(f"🎯 Final language being used: {language}")
+        
+        # Rest of your prediction code...
         file_path = os.path.join(UPLOAD_DIR, file.filename)
         with open(file_path, "wb") as f:
             f.write(await file.read())
@@ -1103,10 +1116,9 @@ async def predict(
         class_info = classes_dict.get(str(pred_idx), {})
         pred_class = class_info.get("class_name", "Unknown")
         
-        # Get localized disease information
         localized_info = get_localized_disease_info(pred_class, language)
         
-        print(f"🚀 Prediction: {pred_class}, Language: {language}, Confidence: {confidence:.2f}%")
+        print(f"🚀 FINAL - Prediction: {pred_class}, Language: {language}, Confidence: {confidence:.2f}%")
 
         return JSONResponse(
             content={
@@ -1118,7 +1130,8 @@ async def predict(
                 "prevention": localized_info["prevention"],
                 "confidence": round(confidence, 2),
                 "uploaded_image": f"/uploads/{file.filename}",
-                "language": language
+                "language": language,
+                "debug_note": "Make sure your app sends 'language' parameter in form data"
             }
         )
     except Exception as e:
