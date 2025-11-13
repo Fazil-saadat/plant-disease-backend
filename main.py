@@ -1085,9 +1085,12 @@ async def garden_page(request: Request):
 async def predict(
     request: Request,
     file: UploadFile = File(...),
-    language: str = Form("en")
+    language: str = Form("en")  # Default to English if not provided
 ):
     try:
+        # Debug: Print received language
+        print(f"🔍 Received language parameter: {language}")
+        
         file_path = os.path.join(UPLOAD_DIR, file.filename)
         with open(file_path, "wb") as f:
             f.write(await file.read())
@@ -1119,8 +1122,8 @@ async def predict(
             }
         )
     except Exception as e:
+        print(f"❌ Prediction error: {str(e)}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
-
 # New endpoint to get supported languages
 @app.get("/languages")
 async def get_supported_languages():
