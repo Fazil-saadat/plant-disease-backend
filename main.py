@@ -1149,6 +1149,48 @@ async def get_supported_languages():
         ]
     }
 
+
+@app.get("/library-diseases")
+async def get_library_diseases(language: str = "en"):
+    """Get all diseases for the library in the specified language"""
+    try:
+        library_diseases = []
+        
+        for disease_key, disease_info in DISEASE_DATABASE.items():
+            # Get localized info for the requested language
+            localized_info = disease_info.get(language, disease_info['en'])
+            
+            # Extract plant type from disease key (e.g., "Apple___Apple_scab" -> "Apple")
+            plant_type = "Unknown"
+            if '___' in disease_key:
+                plant_type = disease_key.split('___')[0]
+            
+            library_diseases.append({
+                "id": disease_key,
+                "name": localized_info["disease_name"],
+                "description": localized_info["description"],
+                "symptoms": localized_info["symptoms"],
+                "treatment": localized_info["treatment"], 
+                "prevention": localized_info["prevention"],
+                "plant_type": plant_type,
+                "image_url": f"/static/images/{disease_key}.jpg",  # You can add images later
+                "is_healthy": "healthy" in disease_key.lower()
+            })
+        
+        return {
+            "status": "success",
+            "count": len(library_diseases),
+            "language": language,
+            "diseases": library_diseases
+        }
+        
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": str(e)}
+        )
+
+
 # New endpoint to get all diseases for a specific language
 @app.get("/diseases/{language}")
 async def get_all_diseases(language: str = "en"):
