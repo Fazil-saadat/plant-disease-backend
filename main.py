@@ -519,6 +519,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Frogeye leaf spots with purple margins\n• Black, rotting fruits with concentric rings\n• Red-brown cankers on branches\n• Premature fruit drop\n• Mummified fruits hanging on tree",
             "treatment": "• Prune and destroy infected branches\n• Apply fungicide sprays during growing season\n• Remove mummified fruits from tree\n• Improve air circulation through pruning\n• Use copper-based fungicides",
             "prevention": "• Practice good orchard sanitation\n• Remove infected plant material promptly\n• Avoid wounding fruits during handling\n• Use proper pruning techniques\n• Maintain tree vigor with proper nutrition"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "پوسیدگی سیاه سیب",
@@ -526,6 +527,7 @@ DISEASE_DATABASE = {
             "symptoms": "• لکه‌های چشم قورباغه‌ای روی برگ با حاشیه بنفش\n• میوه‌های سیاه و پوسیده با حلقه‌های متحدالمرکز\n• شانکرهای قهوه‌ای مایل به قرمز روی شاخه‌ها\n• ریزش زودرس میوه\n• میوه‌های مومیایی شده آویزان روی درخت",
             "treatment": "• هرس و نابودی شاخه‌های آلوده\n• استفاده از اسپری‌های قارچ‌کش در طول فصل رشد\n• حذف میوه‌های مومیایی شده از درخت\n• بهبود گردش هوا از طریق هرس\n• استفاده از قارچ‌کش‌های مبتنی بر مس",
             "prevention": "• رعایت بهداشت خوب باغ\n• حذف سریع مواد گیاهی آلوده\n• جلوگیری از زخمی شدن میوه‌ها در حین جابجایی\n• استفاده از تکنیک‌های هرس مناسب\n• حفظ قدرت درخت با تغذیه مناسب"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د سیب تور پوسیدگی",
@@ -533,6 +535,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو په سر د چنجې ښکارۍ داغونه د ارغواني څنډو سره\n• تورې، پوسیدلې میوې د متمرکزو حلقو سره\n• د څانګو په سر سور-نسواري شانکرونه\n• د میوو مخکینۍ لوېدل\n• په ونه کې د مومیایی شویو میوو ځوړندېدل",
             "treatment": "• ناروغې څانګې پرې کول او ویجاړول\n• د ودی په موسم کې د فنجي وژونکو اسپري کارول\n• د ونی څخه مومیایی شوې میوې لرې کول\n• د پرې کولو له لارې د هوا تبادله ښه کول\n• د مس پر بنسټ فنجي وژونکي کارول",
             "prevention": "• د باغ ښه بهداشت تمرین کول\n• په چټکۍ سره ناروغه نباتي مواد لرې کول\n• د میوو د لاسرسي په وخت کې د میوو زخمي کولو څخه مخنیوی\n• د مناسب پرې کولو تخنیکونو کارول\n• د مناسب تغذیې سره د ونی قوت ساتل"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -543,6 +546,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Yellow-orange spots on upper leaf surfaces\n• Tube-like structures on lower leaf surfaces\n• Cedar galls on juniper trees\n• Premature leaf drop\n• Reduced fruit quality and yield",
             "treatment": "• Remove nearby juniper hosts within 2 miles\n• Apply protective fungicides in early spring\n• Use resistant apple varieties\n• Prune infected branches\n• Apply fungicides at pink bud stage",
             "prevention": "• Plant resistant apple varieties\n• Eliminate juniper hosts in vicinity\n• Apply preventative fungicides before symptoms appear\n• Monitor trees regularly for early detection\n• Improve air circulation around trees"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "زنگار سدر و سیب",
@@ -550,6 +554,7 @@ DISEASE_DATABASE = {
             "symptoms": "• لکه‌های زرد-نارنجی روی سطوح بالایی برگ\n• ساختارهای لوله‌ای روی سطوح زیرین برگ\n• گال‌های سدر روی درختان سدر\n• ریزش زودرس برگ\n• کاهش کیفیت و عملکرد میوه",
             "treatment": "• حذف میزبان‌های سدر مجاور در فاصله ۲ مایلی\n• استفاده از قارچ‌کش‌های محافظ در اوایل بهار\n• استفاده از انواع مقاوم سیب\n• هرس شاخه‌های آلوده\n• استفاده از قارچ‌کش در مرحله غنچه صورتی",
             "prevention": "• کاشت انواع مقاوم سیب\n• حذف میزبان‌های سدر در مجاورت\n• استفاده از قارچ‌کش‌های پیشگیرانه قبل از ظهور علائم\n• نظارت منظم بر درختان برای تشخیص زودرس\n• بهبود گردش هوا در اطراف درختان"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د سدر او سیب زنگار",
@@ -557,6 +562,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو د پورتنۍ سطحو په سر ژیړ-نارنجي داغونه\n• د پاڼو د لاندینۍ سطحو په سر د ټیوب په څیر ساختمانونه\n• د سدر په ونسو کې د سدر ګالونه\n• د پاڼو مخکینۍ لوېدل\n• د میوو د کیفیت او حاصل کمښت",
             "treatment": "• د ۲ مایلونو په فاصله کې نږدې سدر میزبانان لرې کول\n• د پسرلي په لومړیو کې د ساتونکو فنجي وژونکو کارول\n• د سیب مقاوم ډولونه کارول\n• ناروغې څانګې پرې کول\n• د ګلابي غوټۍ په مرحله کې فنجي وژونکي کارول",
             "prevention": "• د سیب مقاوم ډولونه کرل\n• په شاوخوا کې د سدر میزبانان له منځه وړل\n• د نښو د څرګندیدو څخه مخکې د مخنیوي فنجي وژونکي کارول\n• د لومړنۍ تشخیص لپاره په منظم ډول ونی څارل\n• د ونی شاوخوا کې د هوا تبادله ښه کول"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -567,6 +573,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Vibrant green leaves with no discoloration\n• Normal fruit development and size\n• Strong, flexible branches\n• No visible spots, lesions, or abnormalities\n• Consistent growth pattern",
             "treatment": "• No chemical treatment required\n• Continue regular watering schedule\n• Maintain proper fertilization\n• Monitor for early signs of pests\n• Practice seasonal pruning",
             "prevention": "• Continue current maintenance practices\n• Regular inspection for pests and diseases\n• Proper spacing between trees\n• Balanced nutrition and soil management\n• Seasonal care and protection"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "سیب سالم",
@@ -574,6 +581,7 @@ DISEASE_DATABASE = {
             "symptoms": "• برگ‌های سبز پرجنب و جوش بدون تغییر رنگ\n• رشد و اندازه طبیعی میوه\n• شاخه‌های قوی و انعطاف‌پذیر\n• بدون لکه، زخم یا ناهنجاری قابل مشاهده\n• الگوی رشد یکنواخت",
             "treatment": "• نیاز به درمان شیمیایی ندارد\n• ادامه برنامه آبیاری منظم\n• حفظ کوددهی مناسب\n• نظارت بر علائم اولیه آفات\n• انجام هرس فصلی",
             "prevention": "• ادامه روش‌های نگهداری فعلی\n• بازرسی منظم برای آفات و بیماری‌ها\n• فاصله مناسب بین درختان\n• تغذیه متعادل و مدیریت خاک\n• مراقبت و محافظت فصلی"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "تندرسته سیب",
@@ -581,6 +589,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د رنګ بدلون پرته ژوندۍ شینې پاڼې\n• د میوو عادي وده او کچه\n• قوي، انعطاف منونکې څانګې\n• هېڅ لیدونکی داغ، زخم یا غیرعادي حالتونه نه\n• د ودې یو ډول نمونه",
             "treatment": "• د کیمیاوي درملنې اړتیا نشته\n• د اوبو کولو منظم برنامه دوام ورکړئ\n• مناسب سره ورکول ساتل\n• د زیان رسوونکو د لومړنیو نښو لپاره څارنه\n• د موسمي پرې کولو تمرین کول",
             "prevention": "• اوسنۍ ساتنې طریقې دوام ورکړئ\n• د زیان رسوونکو او ناروغیو لپاره منظم معاینه\n• د ونو ترمنځ مناسب فاصله\n• متوازنه تغذیه او خاورې مدیریت\n• د موسمي پالنې او ساتنې"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -591,6 +600,7 @@ DISEASE_DATABASE = {
             "symptoms": "• White powdery coating on leaves and shoots\n• Curled and distorted leaves\n• Stunted shoot growth\n• Reduced fruit quality and size\n• Premature leaf drop in severe cases",
             "treatment": "• Apply sulfur or potassium bicarbonate sprays\n• Use horticultural oils like neem oil\n• Remove severely infected leaves\n• Improve air circulation through pruning\n• Apply fungicides at first sign of infection",
             "prevention": "• Plant in sunny, well-ventilated locations\n• Ensure good air circulation around trees\n• Avoid overhead watering\n• Use resistant cherry varieties\n• Maintain proper tree spacing"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "کپک پودری گیلاس",
@@ -598,6 +608,7 @@ DISEASE_DATABASE = {
             "symptoms": "• پوشش پودری سفید روی برگ‌ها و شاخه‌ها\n• برگ‌های پیچ خورده و تغییر شکل یافته\n• رشد متوقف شده شاخه‌ها\n• کاهش کیفیت و اندازه میوه\n• ریزش زودرس برگ در موارد شدید",
             "treatment": "• استفاده از اسپری‌های گوگرد یا بی‌کربنات پتاسیم\n• استفاده از روغن‌های باغبانی مانند روغن نیم\n• حذف برگ‌های شدیداً آلوده\n• بهبود گردش هوا از طریق هرس\n• استفاده از قارچ‌کش در اولین نشانه عفونت",
             "prevention": "• کاشت در مکان‌های آفتابی و دارای تهویه مناسب\n• اطمینان از گردش هوای خوب در اطراف درختان\n• جلوگیری از آبیاری از بالا\n• استفاده از انواع مقاوم گیلاس\n• حفظ فاصله مناسب بین درختان"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د چیری پوډری میلډیو",
@@ -605,6 +616,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو او څانګو په سر سپین پوډري پوښ\n• تاو شوې او بې شکلې شوې پاڼې\n• د څانګو وده کمه شوې\n• د میوو د کیفیت او کچې کمښت\n• په شدیدو مواردو کې د پاڼو مخکینۍ لوېدل",
             "treatment": "• د ګوګړ یا پوتاشیم بایکاربونیټ اسپري کارول\n• د باغباني تیلو کارول لکه نیم تیل\n• شدید ناروغه پاڼې لرې کول\n• د پرې کولو له لارې د هوا تبادله ښه کول\n• د ناروغۍ په لومړۍ نښه کې فنجي وژونکي کارول",
             "prevention": "• په لمر لرونکو، ښه هوا لرونکو ځایونو کې کرل\n• د ونی شاوخوا کې د هوا د ښې تبادلې ډاډمنول\n• د پاسه اوبو کولو څخه مخنیوی\n• د چیری مقاوم ډولونه کارول\n• د ونو ترمنځ مناسب فاصله ساتل"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -615,6 +627,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Lush green foliage with no discoloration\n• Normal flowering and fruit set\n• Strong, well-structured branches\n• No powdery coating or spots\n• Vigorous growth throughout season",
             "treatment": "• No treatment necessary\n• Continue regular maintenance\n• Monitor for pest activity\n• Maintain proper watering\n• Apply balanced fertilization",
             "prevention": "• Continue current care practices\n• Regular inspection for issues\n• Proper pruning techniques\n• Soil health management\n• Seasonal monitoring and care"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "گیلاس سالم",
@@ -622,6 +635,7 @@ DISEASE_DATABASE = {
             "symptoms": "• شاخ و برگ سبز انبوه بدون تغییر رنگ\n• گلدهی و تشکیل میوه طبیعی\n• شاخه‌های قوی و دارای ساختار خوب\n• بدون پوشش پودری یا لکه\n• رشد قوی در طول فصل",
             "treatment": "• نیاز به درمان ندارد\n• ادامه نگهداری منظم\n• نظارت بر فعالیت آفات\n• حفظ آبیاری مناسب\n• استفاده از کوددهی متعادل",
             "prevention": "• ادامه روش‌های مراقبت فعلی\n• بازرسی منظم برای مشکلات\n• تکنیک‌های هرس مناسب\n• مدیریت سلامت خاک\n• نظارت و مراقبت فصلی"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "تندرسته چیری",
@@ -629,6 +643,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د رنګ بدلون پرته ډبرې شینې پاڼې\n• عادي ګل کول او میوه کول\n• قوي، ښه ساختمان لرونکې څانګې\n• هېڅ پوډري پوښ یا داغونه نه\n• د موسم په اوږدو کې قوي وده",
             "treatment": "• د درملنې اړتیا نشته\n• منظم ساتنه دوام ورکړئ\n• د زیان رسوونکو د فعالیت لپاره څارنه\n• مناسب اوبه کول ساتل\n• متوازن سره ورکول پلي کول",
             "prevention": "• اوسنۍ پالنې طریقې دوام ورکړئ\n• د ستونزو لپاره منظم معاینه\n• د مناسب پرې کولو تخنیکونه\n• د خاورې روغتیا مدیریت\n• د موسمي څارنې او پالنې"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -639,6 +654,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Brown leaf spots with black margins\n• Black, mummified fruits\n• Red-brown lesions on shoots\n• Premature fruit drop\n• Complete crop loss in severe cases",
             "treatment": "• Apply fungicides like mancozeb or captan\n• Remove and destroy infected plant material\n• Prune for better air circulation\n• Use protective sprays during flowering\n• Apply fungicides at 7-10 day intervals",
             "prevention": "• Plant resistant grape varieties\n• Ensure good vineyard sanitation\n• Proper canopy management\n• Avoid overhead irrigation\n• Regular monitoring and early treatment"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "پوسیدگی سیاه انگور",
@@ -646,6 +662,7 @@ DISEASE_DATABASE = {
             "symptoms": "• لکه‌های قهوه‌ای برگ با حاشیه سیاه\n• میوه‌های سیاه و مومیایی شده\n• زخم‌های قهوه‌ای مایل به قرمز روی شاخه‌ها\n• ریزش زودرس میوه\n• از دست دادن کامل محصول در موارد شدید",
             "treatment": "• استفاده از قارچ‌کش‌هایی مانند مانکوزب یا کاپتان\n• حذف و نابودی مواد گیاهی آلوده\n• هرس برای گردش هوای بهتر\n• استفاده از اسپری‌های محافظ در طول گلدهی\n• استفاده از قارچ‌کش با فواصل ۷-۱۰ روزه",
             "prevention": "• کاشت انواع مقاوم انگور\n• اطمینان از بهداشت خوب تاکستان\n• مدیریت مناسب سایبان\n• جلوگیری از آبیاری از بالا\n• نظارت منظم و درمان زودرس"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د انګور تور پوسیدگی",
@@ -653,6 +670,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو نسواري داغونه د تورو څنډو سره\n• تورې، مومیایی شوې میوې\n• د څانګو په سر سور-نسواري زخمونه\n• د میوو مخکینۍ لوېدل\n• په شدیدو مواردو کې د محصول بشپړ ضایع کیدل",
             "treatment": "• د مانکوزب یا کاپتان په څیر فنجي وژونکي کارول\n• ناروغه نباتي مواد لرې کول او ویجاړول\n• د هوا د غوره تبادلې لپاره پرې کول\n• د ګل کولو په وخت کې د ساتونکو اسپري کارول\n• په ۷-۱۰ ورځني وقفو کې فنجي وژونکي کارول",
             "prevention": "• د انګور مقاوم ډولونه کرل\n• د تاکستان د ښه بهداشت ډاډمنول\n• مناسب سایبان مدیریت\n• د پاسه اوبو کولو څخه مخنیوی\n• منظم څارنه او لومړنۍ درملنه"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -663,6 +681,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Tiger-stripe patterns on leaves\n• Wood decay and cankers\n• Reduced vine vigor\n• Fruit spots and rotting\n• Sudden vine collapse (apoplexy)",
             "treatment": "• Prune infected wood below symptoms\n• Protect pruning wounds with fungicides\n• Remove severely infected vines\n• Improve vineyard drainage\n• Use balanced fertilization",
             "prevention": "• Use certified disease-free planting material\n• Proper pruning wound protection\n• Avoid mechanical injuries to vines\n• Maintain vine balance and health\n• Regular vineyard monitoring"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "اسکای انگور (سرخک سیاه)",
@@ -670,6 +689,7 @@ DISEASE_DATABASE = {
             "symptoms": "• الگوهای راه راه ببر روی برگ‌ها\n• پوسیدگی چوب و شانکر\n• کاهش قدرت تاک\n• لکه‌های میوه و پوسیدگی\n• ریزش ناگهانی تاک (آپوپلکسی)",
             "treatment": "• هرس چوب آلوده زیر علائم\n• محافظت از زخم‌های هرس با قارچ‌کش\n• حذف تاک‌های شدیداً آلوده\n• بهبود زهکشی تاکستان\n• استفاده از کوددهی متعادل",
             "prevention": "• استفاده از مواد کاشت عاری از بیماری گواهی شده\n• محافظت مناسب از زخم هرس\n• جلوگیری از آسیب‌های مکانیکی به تاک‌ها\n• حفظ تعادل و سلامت تاک\n• نظارت منظم تاکستان"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د انګور اسکا (تورې پښتورۍ)",
@@ -677,6 +697,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو په سر د پښانګې د راه راه نمونه\n• د لرګیو پوسیدگی او شانکرونه\n• د تاک قوت کمښت\n• د میوو داغونه او پوسیدگی\n• د تاک ناڅاپي سقوط (اپوپلکسي)",
             "treatment": "• د نښو لاندې ناروغه لرګی پرې کول\n• د پرې کولو زخمونه د فنجي وژونکو سره ساتل\n• شدید ناروغه تاکونه لرې کول\n• د تاکستان تخلیه ښه کول\n• متوازن سره ورکول کارول",
             "prevention": "• د تصدیق شویو ناروغۍ څخه خوشې د کرلو موادو کارول\n• د پرې کولو زخمونو مناسب ساتنه\n• د تاکونو مکانیکي زیانونه مخنیوی\n• د تاک توازن او روغتیا ساتل\n• د تاکستان منظم څارنه"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -687,6 +708,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Angular brown spots on leaves\n• Yellow halos around spots\n• Premature leaf drop\n• Reduced fruit quality\n• Weakened vine growth",
             "treatment": "• Apply copper-based fungicides\n• Remove infected leaves\n• Improve air circulation\n• Use protective sprays\n• Maintain vine health",
             "prevention": "• Proper vineyard sanitation\n• Good air circulation\n• Avoid overhead watering\n• Regular monitoring\n• Balanced nutrition"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "بلایت برگ انگور",
@@ -694,6 +716,7 @@ DISEASE_DATABASE = {
             "symptoms": "• لکه‌های قهوه‌ای زاویه‌دار روی برگ‌ها\n• هاله‌های زرد اطراف لکه‌ها\n• ریزش زودرس برگ\n• کاهش کیفیت میوه\n• تضعیف رشد تاک",
             "treatment": "• استفاده از قارچ‌کش‌های مبتنی بر مس\n• حذف برگ‌های آلوده\n• بهبود گردش هوا\n• استفاده از اسپری‌های محافظ\n• حفظ سلامت تاک",
             "prevention": "• بهداشت مناسب تاکستان\n• گردش هوای خوب\n• جلوگیری از آبیاری از بالا\n• نظارت منظم\n• تغذیه متعادل"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د انګور د پاڼې بلایت",
@@ -701,6 +724,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو په سر زاویه لرونکې نسواري داغونه\n• د داغونو شاوخوا ژیړ هاله\n• د پاڼو مخکینۍ لوېدل\n• د میوو د کیفیت کمښت\n• د تاک ودې کمزوري کیدل",
             "treatment": "• د مس پر بنسټ فنجي وژونکي کارول\n• ناروغه پاڼې لرې کول\n• د هوا تبادله ښه کول\n• د ساتونکو اسپري کارول\n• د تاک روغتیا ساتل",
             "prevention": "• د تاکستان مناسب بهداشت\n• د هوا ښه تبادله\n• د پاسه اوبو کولو څخه مخنیوی\n• منظم څارنه\n• متوازنه تغذیه"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -711,6 +735,7 @@ DISEASE_DATABASE = {
         "symptoms": "• Green, vibrant leaves\n• Normal fruit cluster development\n• No visible spots or lesions\n• Strong vine growth\n• Healthy tendrils",
         "treatment": "• No treatment needed\n• Continue regular care\n• Monitor for early signs of disease\n• Maintain proper nutrition\n• Ensure adequate sunlight",
         "prevention": "• Continue good cultural practices\n• Regular watering and fertilization\n• Monitor for pests and diseases\n• Proper pruning and trellising\n• Good air circulation"
+        ,"image_name": "apple_scab"
     },
     "fa": {
         "disease_name": "انگور سالم",
@@ -718,6 +743,7 @@ DISEASE_DATABASE = {
         "symptoms": "• برگ‌های سبز و پرجنب و جوش\n• رشد طبیعی خوشه‌های میوه\n• بدون لکه یا زخم قابل مشاهده\n• رشد قوی درخت\n• پیچک‌های سالم",
         "treatment": "• نیاز به درمان ندارد\n• مراقبت منظم را ادامه دهید\n• نظارت بر علائم اولیه بیماری\n• حفظ تغذیه مناسب\n• اطمینان از نور کافی خورشید",
         "prevention": "• ادامه روش‌های فرهنگی خوب\n• آبیاری و کوددهی منظم\n• نظارت بر آفات و بیماری‌ها\n• هرس و داربست‌بندی مناسب\n• گردش هوای خوب"
+        ,"image_name": "apple_scab"
     },
     "ps": {
         "disease_name": "تندرسته انگور",
@@ -725,6 +751,7 @@ DISEASE_DATABASE = {
         "symptoms": "• شینې، ژوندۍ پاڼې\n• د میوو د ګڼو عادي وده\n• هېڅ لیدونکی داغ یا زخم نه\n• د ونې قوي وده\n• تندرسته پیچکونه",
         "treatment": "• د درملنې اړتیا نشته\n• منظم پالنه دوام ورکړئ\n• د ناروغۍ د لومړنیو نښو لپاره څارنه\n• مناسب تغذیه ساتل\n• د لمر د کافي رڼا ډاډمنول",
         "prevention": "• د ښو کلتوري طریقو دوام\n• منظم اوبه کول او سره ورکول\n• د زیان رسوونکو او ناروغیو لپاره څارنه\n• مناسب پرې کول او داربست کول\n• د هوا ښه جریان"
+        ,"image_name": "apple_scab"
     }
 }
 }
@@ -1167,6 +1194,8 @@ async def get_library_diseases(language: str = "en"):
             plant_type = "Unknown"
             if '___' in disease_key:
                 plant_type = disease_key.split('___')[0]
+
+            image_name = localized_info.get("image_name", "plant_default")
             
             library_diseases.append({
                 "id": disease_key,
@@ -1176,6 +1205,7 @@ async def get_library_diseases(language: str = "en"):
                 "treatment": localized_info["treatment"], 
                 "prevention": localized_info["prevention"],
                 "plant_type": plant_type,
+                "image_name": image_name,
                 "image_url": f"/static/images/{disease_key}.jpg",  # You can add images later
                 "is_healthy": "healthy" in disease_key.lower()
             })
