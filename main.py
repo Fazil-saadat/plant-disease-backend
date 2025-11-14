@@ -491,21 +491,24 @@ DISEASE_DATABASE = {
             "description": "A fungal disease caused by Venturia inaequalis that affects apple trees, causing dark, scaly lesions on leaves, fruits, and twigs.",
             "symptoms": "• Olive-green to black spots on leaves\n• Velvety, dark lesions on fruits\n• Yellowing and premature leaf drop\n• Cracked and deformed fruits\n• Twig lesions and cankers",
             "treatment": "• Apply fungicides like captan, myclobutanil, or sulfur\n• Remove and destroy infected leaves and fruits\n• Prune trees for better air circulation\n• Use resistant apple varieties like Liberty or Freedom\n• Apply dormant sprays in early spring",
-            "prevention": "• Plant resistant apple varieties\n• Ensure proper tree spacing (15-20 feet apart)\n• Clean up fallen leaves in autumn\n• Avoid overhead watering\n• Apply preventative fungicides before infection"
+            "prevention": "• Plant resistant apple varieties\n• Ensure proper tree spacing (15-20 feet apart)\n• Clean up fallen leaves in autumn\n• Avoid overhead watering\n• Apply preventative fungicides before infection",
+            "image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "زنگار سیب",
             "description": "یک بیماری قارچی ناشی از Venturia inaequalis که درختان سیب را تحت تاثیر قرار می‌دهد و باعث ایجاد زخم‌های تیره و پوسته پوسته بر روی برگ‌ها، میوه‌ها و شاخه‌ها می‌شود.",
             "symptoms": "• لکه‌های زیتونی تا سیاه روی برگ‌ها\n• زخم‌های مخملی و تیره روی میوه‌ها\n• زردی و ریزش زودرس برگ‌ها\n• میوه‌های ترک خورده و بدشکل\n• زخم و شانکر روی شاخه‌ها",
             "treatment": "• استفاده از قارچ‌کش‌هایی مانند کاپتان، میکلوبوتانیل یا گوگرد\n• حذف و نابودی برگ‌ها و میوه‌های آلوده\n• هرس درختان برای گردش هوای بهتر\n• استفاده از انواع مقاوم سیب مانند لیبرتی یا فریدم\n• استفاده از اسپری‌های خواب در اوایل بهار",
-            "prevention": "• کاشت انواع مقاوم سیب\n• اطمینان از فاصله مناسب بین درختان (۱۵-۲۰ فوت)\n• تمیز کردن برگ‌های ریخته در پاییز\n• جلوگیری از آبیاری از بالا\n• استفاده از قارچ‌کش‌های پیشگیرانه قبل از عفونت"
+            "prevention": "• کاشت انواع مقاوم سیب\n• اطمینان از فاصله مناسب بین درختان (۱۵-۲۰ فوت)\n• تمیز کردن برگ‌های ریخته در پاییز\n• جلوگیری از آبیاری از بالا\n• استفاده از قارچ‌کش‌های پیشگیرانه قبل از عفونت",
+            "image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د سیب زنگار",
             "description": "د Venturia inaequalis په واسطه یوه فنجي ناروغي ده چې د سیب ونی اغیزه کوي او د پاڼو، میوو او څاخو په سر تیاره او پوړ پوړ زخمونه رامنځته کوي.",
             "symptoms": "• د زیتون څخه تورو ته د پاڼو په سر داغونه\n• د میوو په سر مخملي، تیاره زخمونه\n• د پاڼو ژیړوالی او مخکینۍ لوېدل\n• ماتې شوې او بې شکلې میوې\n• د څاخو په سر زخمونه او شانکرونه",
             "treatment": "• د کاپتان، میکلوبوتانیل یا ګوګړ په څیر فنجي وژونکي کارول\n• ناروغه پاڼې او میوې لرې کول او ویجاړول\n• د هوا د غوره تبادلې لپاره ونی پرې کول\n• د سیب د مقاومو ډولونو کارول لکه لیبرتی یا فریدم\n• د پسرلي په لومړیو کې د خوب اسپري کارول",
-            "prevention": "• د سیب مقاوم ډولونه کرل\n• د ونو ترمنځ د مناسب فاصلې ډاډمنول (۱۵-۲۰ فټه)\n• په مني کې د تلو پاڼو پاکول\n• د پاسه اوبو کولو څخه مخنیوی\n• د ناروغۍ مخنیوي لپاره فنجي وژونکي کارول"
+            "prevention": "• د سیب مقاوم ډولونه کرل\n• د ونو ترمنځ د مناسب فاصلې ډاډمنول (۱۵-۲۰ فټه)\n• په مني کې د تلو پاڼو پاکول\n• د پاسه اوبو کولو څخه مخنیوی\n• د ناروغۍ مخنیوي لپاره فنجي وژونکي کارول",
+            "image_name": "apple_scab"
         }
     },
 
