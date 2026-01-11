@@ -64,6 +64,7 @@ function setupFileUpload() {
 
     if (!uploadArea || !fileInput) return;
 
+<<<<<<< HEAD
     // Only button triggers file input
     if (uploadButton) {
         uploadButton.addEventListener('click', function(e) {
@@ -71,6 +72,12 @@ function setupFileUpload() {
             fileInput.click();
         });
     }
+=======
+    // Click on upload area triggers file input
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+>>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
 
     // Drag and drop functionality
     uploadArea.addEventListener('dragover', function(e) {
@@ -114,9 +121,15 @@ function setupFileUpload() {
         }
 
         // Show loading state
+<<<<<<< HEAD
         if (uploadButton) uploadButton.disabled = true;
         if (uploadText) uploadText.textContent = 'Processing...';
         if (loadingSpinner) loadingSpinner.style.display = 'inline-block';
+=======
+        uploadButton.disabled = true;
+        uploadText.textContent = 'Processing...';
+        loadingSpinner.style.display = 'inline-block';
+>>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
 
         // Create FormData and send to server
         const formData = new FormData();
@@ -141,9 +154,15 @@ function setupFileUpload() {
         })
         .finally(() => {
             // Reset loading state
+<<<<<<< HEAD
             if (uploadButton) uploadButton.disabled = false;
             if (uploadText) uploadText.textContent = 'Drag image here or click to upload';
             if (loadingSpinner) loadingSpinner.style.display = 'none';
+=======
+            uploadButton.disabled = false;
+            uploadText.textContent = 'Drag image here or click to upload';
+            loadingSpinner.style.display = 'none';
+>>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
             fileInput.value = '';
         });
     }
@@ -157,12 +176,16 @@ function showAlert(message, type = 'error') {
     
     // Insert at the top of main content
     const mainContent = document.querySelector('.main-content');
+<<<<<<< HEAD
     if (mainContent) {
         mainContent.insertBefore(alertDiv, mainContent.firstChild);
     } else {
         // If main-content doesn't exist, append to body
         document.body.insertBefore(alertDiv, document.body.firstChild);
     }
+=======
+    mainContent.insertBefore(alertDiv, mainContent.firstChild);
+>>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
     
     // Remove alert after 5 seconds
     setTimeout(() => {

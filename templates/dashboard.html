@@ -3,6 +3,7 @@
 {% block content %}
 <h1 class="dashboard-title">{{ t.dashboard }}</h1>
 
+<<<<<<< HEAD
 <!-- Upload Area - REMOVED onClick redirect -->
 <div class="upload-area" id="uploadArea">
     <div class="upload-icon">📸</div>
@@ -15,6 +16,14 @@
     <button type="button" class="upload-button" id="uploadButton">
         <span>{{ t.select_image }}</span>
         <div class="loading" id="loadingSpinner" style="display: none;"></div>
+=======
+<!-- Upload Area -->
+<div class="upload-area" id="uploadArea" onclick="window.location.href='/scan'">
+    <div class="upload-icon">📸</div>
+    <h2 class="upload-text" id="uploadText">{{ t.drag_image }}</h2>
+    <button class="upload-button">
+        <span>{{ t.select_image }}</span>
+>>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
     </button>
 </div>
 
@@ -146,6 +155,7 @@
     font-weight: 500;
 }
 </style>
+<<<<<<< HEAD
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -271,4 +281,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+=======
+>>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
 {% endblock %}
