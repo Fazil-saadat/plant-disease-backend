@@ -1,0 +1,715 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.disease_library }}</h1>
+
+<!-- Search and Filter Section -->
+<div class="library-controls" style="margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+    <!-- Search Box -->
+    <div class="search-box" style="flex: 1; min-width: 250px;">
+        <input type="text" id="searchInput" placeholder="{{ t.search_diseases }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--grey-medium); border-radius: 8px; font-family: 'Inter', sans-serif;">
+    </div>
+    
+    <!-- Plant Type Filter -->
+    <div class="filter-box">
+        <select id="plantTypeFilter" style="padding: 0.75rem; border: 1px solid var(--grey-medium); border-radius: 8px; font-family: 'Inter', sans-serif; cursor: pointer;">
+            <option value="all">{{ t.all_plants }}</option>
+            {% for plant_type in plant_types %}
+            <option value="{{ plant_type }}">{{ plant_type }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <!-- Disease Type Filter -->
+    <div class="filter-box">
+        <select id="diseaseTypeFilter" style="padding: 0.75rem; border: 1px solid var(--grey-medium); border-radius: 8px; font-family: 'Inter', sans-serif; cursor: pointer;">
+            <option value="all">{{ t.all_conditions }}</option>
+            <option value="disease">{{ t.diseases_only }}</option>
+            <option value="healthy">{{ t.healthy_plants_only }}</option>
+        </select>
+    </div>
+    
+    <!-- Clear Filters -->
+    <button id="clearFilters" class="upload-button" style="background-color: var(--grey-medium); color: var(--charcoal);">
+        {{ t.clear_filters }}
+    </button>
+</div>
+
+<!-- Statistics -->
+<div class="library-stats" style="background-color: var(--white); padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px var(--shadow);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; gap: 2rem;">
+            <div>
+                <span style="font-weight: 600; color: var(--charcoal);">{{ t.total_conditions }}:</span>
+                <span style="color: var(--forest-green); margin-left: 0.5rem; font-weight: 600;" id="totalConditions">{{ diseases|length }}</span>
+            </div>
+            <div>
+                <span style="font-weight: 600; color: var(--charcoal);">{{ t.plant_types }}:</span>
+                <span style="color: var(--forest-green); margin-left: 0.5rem; font-weight: 600;" id="totalPlantTypes">{{ plant_types|length }}</span>
+            </div>
+        </div>
+        <div id="filterStats" style="color: var(--charcoal); font-size: 0.9rem;">
+            {{ t.showing_all_conditions }}
+        </div>
+    </div>
+</div>
+
+<!-- Disease Grid -->
+<div class="disease-grid" id="diseaseGrid">
+    {% for disease_key, disease in diseases.items() %}
+    <div class="disease-card" 
+         data-plant="{{ disease_key.split('___')[0] if '___' in disease_key else 'Other' }}" 
+         data-type="{{ 'healthy' if 'Healthy' in disease_key else 'disease' }}" 
+         data-disease-key="{{ disease_key }}">
+        <div class="disease-card-header">
+            <h3>{{ disease.disease_name }}</h3>
+            <span class="disease-badge {{ 'healthy-badge' if 'Healthy' in disease_key else 'disease-badge' }}">
+                {{ t.healthy if 'Healthy' in disease_key else t.disease }}
+            </span>
+        </div>
+        
+        <div class="disease-plants">
+            <span class="plant-tag">
+                {% if '___' in disease_key %}
+                    {{ disease_key.split('___')[0] }}
+                {% else %}
+                    {{ disease_key }}
+                {% endif %}
+            </span>
+        </div>
+        
+        <p class="disease-description">{{ disease.description[:120] }}{% if disease.description|length > 120 %}...{% endif %}</p>
+        
+        <div class="disease-symptoms-preview">
+            <strong>{{ t.symptoms }}:</strong>
+            <span>
+                {% if disease.symptoms and '•' in disease.symptoms %}
+                    {{ disease.symptoms.split('•')[1][:80] if disease.symptoms.split('•')[1] else disease.symptoms[:80] }}...
+                {% else %}
+                    {{ disease.symptoms[:80] if disease.symptoms else 'No symptoms information' }}...
+                {% endif %}
+            </span>
+        </div>
+        
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            <button class="view-details-btn" onclick="showDiseaseDetails('{{ disease_key }}')">
+                <span>{{ t.view_details }}</span>
+            </button>
+            <button class="quick-scan-btn" onclick="quickScan('{{ disease_key }}')" title="{{ t.scan_this_disease }}">
+                <span>🔍</span>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- No Results Message -->
+<div id="noResults" style="display: none; text-align: center; padding: 3rem; background-color: var(--white); border-radius: 12px;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+    <h3 style="color: var(--charcoal); margin-bottom: 0.5rem;">{{ t.no_diseases_found }}</h3>
+    <p style="color: #666;">{{ t.try_adjusting_search }}</p>
+</div>
+
+<!-- Disease Details Modal -->
+<div id="diseaseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalDiseaseName"></h2>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="modal-section">
+                <h3>📖 {{ t.overview }}</h3>
+                <p id="modalDescription"></p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>🩺 {{ t.symptoms }}</h3>
+                <div id="modalSymptoms" class="symptoms-list"></div>
+            </div>
+            
+            <div class="modal-section">
+                <h3>💊 {{ t.treatment }}</h3>
+                <div id="modalTreatment" class="treatment-list"></div>
+            </div>
+            
+            <div class="modal-section">
+                <h3>🛡️ {{ t.prevention }}</h3>
+                <div id="modalPrevention" class="prevention-list"></div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="cta-button" onclick="closeModal()">
+                    {{ t.close }}
+                </button>
+                <button class="upload-button" onclick="quickScanFromModal()" id="modalScanBtn">
+                    {{ t.scan_this_disease }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Scan Modal -->
+<div id="quickScanModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>{{ t.new_scan }}</h2>
+            <span class="close" onclick="closeQuickScanModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1.5rem; color: var(--charcoal);">
+                {{ t.redirecting_scan }}: <strong id="scanDiseaseName"></strong>
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="upload-button" onclick="closeQuickScanModal()" style="background-color: var(--grey-medium);">
+                    {{ t.cancel }}
+                </button>
+                <button class="cta-button" onclick="proceedToScan()">
+                    {{ t.proceed_scan }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Library Specific Styles */
+.library-controls {
+    background-color: var(--white);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--forest-green);
+    box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+}
+
+.disease-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.disease-card {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.disease-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px var(--shadow-hover);
+    border-color: var(--forest-green);
+}
+
+.disease-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.disease-card-header h3 {
+    color: var(--forest-green);
+    margin: 0;
+    flex: 1;
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.disease-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.healthy-badge {
+    background-color: var(--light-green);
+    color: var(--forest-green);
+}
+
+.disease-badge:not(.healthy-badge) {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.disease-plants {
+    margin-bottom: 1rem;
+}
+
+.plant-tag {
+    background-color: var(--grey-light);
+    color: var(--charcoal);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.disease-description {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.disease-symptoms-preview {
+    background-color: var(--grey-light);
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.disease-symptoms-preview strong {
+    color: var(--charcoal);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.view-details-btn {
+    background-color: var(--forest-green);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.view-details-btn:hover {
+    background-color: var(--sprout-green);
+    transform: translateY(-1px);
+}
+
+.quick-scan-btn {
+    background-color: var(--grey-light);
+    color: var(--charcoal);
+    border: none;
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-scan-btn:hover {
+    background-color: var(--grey-medium);
+    transform: scale(1.05);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--grey-light);
+    background-color: var(--light-green);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h2 {
+    color: var(--forest-green);
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--charcoal);
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: var(--forest-green);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-section {
+    margin-bottom: 2rem;
+}
+
+.modal-section h3 {
+    color: var(--charcoal);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-section p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.symptoms-list, .treatment-list, .prevention-list {
+    background-color: var(--grey-light);
+    padding: 3rem;
+    border-radius: 8px;
+    white-space: pre-line;
+    line-height: 1.6;
+    color: #666;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--grey-light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .library-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .disease-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .disease-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+        max-height: 95vh;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+}
+
+/* Animation for modal */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content {
+    animation: modalFadeIn 0.3s ease;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Disease data will be loaded from the server
+let diseaseData = {};
+
+// Current modal disease
+let currentModalDiseaseKey = '';
+
+// Load disease data from the page
+function loadDiseaseData() {
+    // Get all disease cards and extract data
+    const diseaseCards = document.querySelectorAll('.disease-card');
+    diseaseData = {};
+    
+    diseaseCards.forEach(card => {
+        const diseaseKey = card.getAttribute('data-disease-key');
+        const diseaseName = card.querySelector('h3').textContent;
+        const description = card.querySelector('.disease-description').textContent;
+        const symptoms = card.querySelector('.disease-symptoms-preview span').textContent;
+        
+        // Extract data from the card
+        diseaseData[diseaseKey] = {
+            disease_name: diseaseName,
+            description: description,
+            symptoms: symptoms,
+            treatment: 'Treatment information available',
+            prevention: 'Prevention information available'
+        };
+    });
+    
+    console.log('Loaded disease data:', diseaseData);
+}
+
+// Filter and Search functionality
+function initializeLibrary() {
+    const searchInput = document.getElementById('searchInput');
+    const plantFilter = document.getElementById('plantTypeFilter');
+    const diseaseTypeFilter = document.getElementById('diseaseTypeFilter');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    const diseaseCards = document.querySelectorAll('.disease-card');
+    const noResults = document.getElementById('noResults');
+    const filterStats = document.getElementById('filterStats');
+    const totalConditions = document.getElementById('totalConditions');
+    const totalPlantTypes = document.getElementById('totalPlantTypes');
+
+    function filterDiseases() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const plantType = plantFilter.value;
+        const diseaseType = diseaseTypeFilter.value;
+        
+        let visibleCount = 0;
+        
+        diseaseCards.forEach(card => {
+            const plant = card.getAttribute('data-plant');
+            const type = card.getAttribute('data-type');
+            const diseaseName = card.querySelector('h3').textContent.toLowerCase();
+            const description = card.querySelector('.disease-description').textContent.toLowerCase();
+            
+            const matchesSearch = diseaseName.includes(searchTerm) || 
+                                description.includes(searchTerm) || 
+                                searchTerm === '';
+            const matchesPlant = plantType === 'all' || plant === plantType;
+            const matchesDiseaseType = diseaseType === 'all' || type === diseaseType;
+            
+            if (matchesSearch && matchesPlant && matchesDiseaseType) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Show/hide no results message
+        if (visibleCount === 0) {
+            noResults.style.display = 'block';
+            document.getElementById('diseaseGrid').style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            document.getElementById('diseaseGrid').style.display = 'grid';
+        }
+        
+        // Update filter stats
+        updateFilterStats(visibleCount, searchTerm, plantType, diseaseType);
+    }
+    
+    function updateFilterStats(count, searchTerm, plantType, diseaseType) {
+        let statsText = `Showing ${count} of ${totalConditions.textContent} conditions`;
+        
+        const filters = [];
+        if (searchTerm) filters.push(`search: "${searchTerm}"`);
+        if (plantType !== 'all') filters.push(`plant: ${plantType}`);
+        if (diseaseType !== 'all') filters.push(`type: ${diseaseType}`);
+        
+        if (filters.length > 0) {
+            statsText += ` (filtered by ${filters.join(', ')})`;
+        } else {
+            statsText = `Showing all ${count} conditions`;
+        }
+        
+        filterStats.textContent = statsText;
+    }
+    
+    function clearFilters() {
+        searchInput.value = '';
+        plantFilter.value = 'all';
+        diseaseTypeFilter.value = 'all';
+        filterDiseases();
+    }
+    
+    // Event listeners
+    searchInput.addEventListener('input', filterDiseases);
+    plantFilter.addEventListener('change', filterDiseases);
+    diseaseTypeFilter.addEventListener('change', filterDiseases);
+    clearFiltersBtn.addEventListener('click', clearFilters);
+    
+    // Initial filter
+    filterDiseases();
+}
+
+// Modal functionality - FIXED VERSION
+function showDiseaseDetails(diseaseKey) {
+    console.log('Showing details for:', diseaseKey);
+    
+    // Find the disease card using the data-disease-key attribute
+    const targetCard = document.querySelector(`.disease-card[data-disease-key="${diseaseKey}"]`);
+    
+    if (!targetCard) {
+        console.error('Disease card not found for key:', diseaseKey);
+        alert('Disease details not found. Please try again.');
+        return;
+    }
+    
+    currentModalDiseaseKey = diseaseKey;
+    
+    // Get basic info from the card
+    const diseaseName = targetCard.querySelector('h3').textContent;
+    const description = targetCard.querySelector('.disease-description').textContent;
+    const symptoms = targetCard.querySelector('.disease-symptoms-preview span').textContent;
+    const plantType = targetCard.getAttribute('data-plant');
+    const isHealthy = targetCard.getAttribute('data-type') === 'healthy';
+    
+    // Populate modal content
+    document.getElementById('modalDiseaseName').textContent = diseaseName;
+    document.getElementById('modalDescription').textContent = description;
+    
+    // Enhanced symptoms content
+    document.getElementById('modalSymptoms').innerHTML = 
+        `<p><strong>Primary Symptoms:</strong> ${symptoms}</p>
+         <p><strong>Plant Type:</strong> ${plantType}</p>
+         <p><strong>Condition:</strong> ${isHealthy ? 'Healthy Plant' : 'Disease Affected'}</p>
+         <p>Complete symptom analysis and progression details would be loaded from our comprehensive plant health database.</p>`;
+    
+    // Enhanced treatment content
+    document.getElementById('modalTreatment').innerHTML = 
+        `<p><strong>Recommended Treatments:</strong></p>
+         <ul>
+             <li>Organic fungicides or pesticides specific to ${plantType}</li>
+             <li>Proper pruning and sanitation techniques</li>
+             <li>Soil amendment and fertilization recommendations</li>
+             <li>Environmental adjustments (light, humidity, temperature)</li>
+             <li>Biological control methods where applicable</li>
+         </ul>`;
+    
+    // Enhanced prevention content
+    document.getElementById('modalPrevention').innerHTML = 
+        `<p><strong>Prevention Strategies:</strong></p>
+         <ul>
+             <li>Regular monitoring and early detection systems</li>
+             <li>Proper watering schedules and techniques</li>
+             <li>Soil health management and testing</li>
+             <li>Crop rotation and companion planting</li>
+             <li>Quarantine procedures for new plants</li>
+             <li>Optimal growing conditions maintenance</li>
+         </ul>`;
+    
+    // Update scan button
+    document.getElementById('modalScanBtn').setAttribute('data-disease', diseaseKey);
+    
+    // Show modal
+    document.getElementById('diseaseModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('diseaseModal').style.display = 'none';
+    currentModalDiseaseKey = '';
+}
+
+function quickScan(diseaseKey) {
+    console.log('Quick scan for:', diseaseKey);
+    
+    // Find the disease card
+    const targetCard = document.querySelector(`.disease-card[data-disease-key="${diseaseKey}"]`);
+    
+    if (!targetCard) {
+        console.error('Disease card not found for key:', diseaseKey);
+        return;
+    }
+    
+    const diseaseName = targetCard.querySelector('h3').textContent;
+    document.getElementById('scanDiseaseName').textContent = diseaseName;
+    document.getElementById('quickScanModal').style.display = 'flex';
+    currentModalDiseaseKey = diseaseKey;
+}
+
+function closeQuickScanModal() {
+    document.getElementById('quickScanModal').style.display = 'none';
+    currentModalDiseaseKey = '';
+}
+
+function quickScanFromModal() {
+    if (currentModalDiseaseKey) {
+        closeModal();
+        quickScan(currentModalDiseaseKey);
+    }
+}
+
+function proceedToScan() {
+    if (currentModalDiseaseKey) {
+        // Store the target disease for reference
+        localStorage.setItem('targetDisease', currentModalDiseaseKey);
+        console.log('Proceeding to scan for:', currentModalDiseaseKey);
+    }
+    // Redirect to scan page
+    window.location.href = '/scan';
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const diseaseModal = document.getElementById('diseaseModal');
+    const quickScanModal = document.getElementById('quickScanModal');
+    
+    if (event.target === diseaseModal) {
+        closeModal();
+    }
+    if (event.target === quickScanModal) {
+        closeQuickScanModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeModal();
+        closeQuickScanModal();
+    }
+});
+
+// Initialize library when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing disease library...');
+    initializeLibrary();
+    loadDiseaseData();
+    console.log('Disease library initialized successfully');
+});
+</script>
+{% endblock %}

@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "timestamp": "2026-01-11T23:11:49.155345",
+    "disease_name": "Apple Scab",
+    "prediction": "Apple___Apple_scab",
+    "confidence": 99.08,
+    "plant_type": "Apple",
+    "image_url": "/uploads/download (2).jpg",
+    "description": "A fungal disease caused by Venturia inaequalis that affects apple trees, causing dark, scaly lesions on leaves, fruits, and twigs.",
+    "symptoms": "• Olive-green to black spots on leaves\n• Velvety, dark lesions on fruits\n• Yellowing and premature leaf drop\n• Cracked and deformed fruits\n• Twig lesions and cankers",
+    "treatment": "• Apply fungicides like captan, myclobutanil, or sulfur\n• Remove and destroy infected leaves and fruits\n• Prune trees for better air circulation\n• Use resistant apple varieties like Liberty or Freedom\n• Apply dormant sprays in early spring",
+    "prevention": "• Plant resistant apple varieties\n• Ensure proper tree spacing (15-20 feet apart)\n• Clean up fallen leaves in autumn\n• Avoid overhead watering\n• Apply preventative fungicides before infection",
+    "language": "en"
+  }
+]

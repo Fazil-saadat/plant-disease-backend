@@ -1,0 +1,41 @@
+
+MODEL EVALUATION SUMMARY REPORT
+============================================================
+
+DATASET INFORMATION:
+- Total samples: 11336
+- Number of classes: 10
+- Classes: Apple___Apple_scab, Apple___Black_rot, Apple___Cedar_apple_rust, Apple___healthy, Cherry___Powdery_mildew, Cherry___healthy, Grape___Black_rot, Grape___Esca_(Black_Measles), Grape___Leaf_blight_(Isariopsis_Leaf_Spot), Grape___healthy
+
+OVERALL TESTING (Complete Dataset):
+----------------------------------------
+- Test Accuracy: 0.9235
+- Test Loss: 0.2109
+- Precision (Weighted): 0.9360
+- Recall (Weighted): 0.9235
+- F1-Score (Weighted): 0.9231
+
+5-FOLD CROSS-VALIDATION RESULTS:
+----------------------------------------
+- Mean Accuracy: 0.9235
+- Mean Precision: 0.9235
+- Mean Recall: 0.9235
+- Mean F1-Score: 0.9235
+
+PERFORMANCE COMPARISON:
+----------------------------------------
+Overall Test Accuracy: 0.9235
+5-Fold Mean Accuracy: 0.9235
+Difference: 0.0000
+
+FILES GENERATED:
+----------------------------------------
+1. overall_test_results.csv - Overall evaluation metrics
+2. overall_confusion_matrix_counts.png - Overall confusion matrix (counts)
+3. overall_confusion_matrix_normalized.png - Overall confusion matrix (normalized)
+4. overall_per_class_accuracy.png - Per-class accuracy bar chart
+5. overall_classification_report.txt - Detailed classification report
+6. 5fold_results_complete.csv - 5-fold cross-validation results
+7. 5fold_accuracy_bar_chart.png - 5-fold accuracy visualization
+8. confusion_matrix_counts_foldX.png - Per-fold confusion matrices
+9. confusion_matrix_normalized_foldX.png - Per-fold normalized matrices

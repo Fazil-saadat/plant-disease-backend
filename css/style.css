@@ -580,12 +580,8 @@ body {
     box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
 }
 
-/* RTL Support */
-[dir="rtl"] {
-    text-align: right;
-    direction: rtl;
-}
-
+/* RTL support for Persian and Pashto */
+/* RTL Support for Persian and Pashto */
 [dir="rtl"] .header {
     direction: rtl;
 }
@@ -593,26 +589,11 @@ body {
 [dir="rtl"] .sidebar {
     direction: rtl;
     text-align: right;
-    box-shadow: -2px 0 10px var(--shadow);
 }
 
 [dir="rtl"] .main-content {
     direction: rtl;
     text-align: right;
-}
-
-[dir="rtl"] .nav-link {
-    flex-direction: row-reverse;
-}
-
-[dir="rtl"] .history-thumbnail {
-    margin-right: 0;
-    margin-left: 1rem;
-}
-
-[dir="rtl"] .history-confidence {
-    margin-left: 0;
-    margin-right: auto;
 }
 
 [dir="rtl"] .disease-card-header {
@@ -642,18 +623,17 @@ body {
     direction: rtl;
 }
 
+/* RTL specific adjustments */
+body[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .nav-link {
+    flex-direction: row-reverse;
+}
+
 [dir="rtl"] .mobile-nav-item {
     flex-direction: column-reverse;
-}
-
-[dir="rtl"] .mobile-nav-icon {
-    margin-bottom: 0;
-    margin-top: 0.25rem;
-}
-
-[dir="rtl"] .language-selector {
-    margin-right: 0;
-    margin-left: 1rem;
 }
 
 /* Alert Styles */
@@ -691,18 +671,8 @@ body {
     to { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
-@media (max-width: 1200px) {
-    .disease-grid {
-        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
-    
-    .stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 1024px) {
+/* Responsive Styles */
+@media (max-width: 1023px) {
     .sidebar {
         position: fixed;
         top: 80px;
@@ -719,6 +689,14 @@ body {
         display: flex;
     }
 
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .results-container {
+        grid-template-columns: 1fr;
+    }
+
     .library-container {
         grid-template-columns: 1fr;
     }
@@ -731,39 +709,19 @@ body {
         display: block;
         margin-bottom: 1rem;
     }
-    
-    .results-container {
-        grid-template-columns: 1fr;
-        gap: 1.5rem;
-    }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .header {
-        padding: 0.75rem 1rem;
+        padding: 1rem;
     }
-    
-    .logo {
-        font-size: 1.1rem;
-    }
-    
-    .logo-icon {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .cta-button {
-        padding: 0.6rem 1.2rem;
-        font-size: 0.9rem;
-    }
-    
+
     .main-content {
         padding: 1.5rem 1rem;
     }
 
     .stats-grid {
         grid-template-columns: 1fr;
-        gap: 1rem;
     }
 
     .mobile-nav {
@@ -773,14 +731,11 @@ body {
     .history-item {
         flex-direction: column;
         align-items: flex-start;
-        padding: 1rem;
     }
 
     .history-thumbnail {
         margin-right: 0;
         margin-bottom: 1rem;
-        width: 100%;
-        height: 150px;
     }
 
     .history-details {
@@ -789,199 +744,10 @@ body {
     }
 
     .history-confidence {
-        align-self: flex-start;
+        align-self: flex-end;
     }
 
     .disease-grid {
         grid-template-columns: 1fr;
-    }
-    
-    .upload-area {
-        padding: 2rem 1rem;
-        min-height: 300px;
-    }
-    
-    .upload-icon {
-        font-size: 2.5rem;
-    }
-    
-    .upload-text {
-        font-size: 1.1rem;
-    }
-    
-    .upload-button {
-        padding: 0.6rem 1.2rem;
-        font-size: 0.9rem;
-    }
-    
-    .dashboard-title {
-        font-size: 1.5rem;
-    }
-    
-    .section-title {
-        font-size: 1.2rem;
-    }
-    
-    .result-image-container,
-    .result-details {
-        padding: 1rem;
-    }
-    
-    .tabs {
-        flex-wrap: wrap;
-    }
-    
-    .tab {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-    }
-}
-
-@media (max-width: 480px) {
-    .header {
-        padding: 0.5rem;
-    }
-    
-    .logo span {
-        display: none;
-    }
-    
-    .language-selector select {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.85rem;
-    }
-    
-    .cta-button {
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
-    }
-    
-    .main-content {
-        padding: 1rem;
-    }
-    
-    .upload-area {
-        padding: 1.5rem 1rem;
-        min-height: 250px;
-    }
-    
-    .upload-icon {
-        font-size: 2rem;
-        margin-bottom: 0.75rem;
-    }
-    
-    .upload-text {
-        font-size: 1rem;
-        margin-bottom: 0.75rem;
-    }
-    
-    .stats-grid {
-        gap: 0.75rem;
-    }
-    
-    .stat-card {
-        padding: 1rem;
-    }
-    
-    .stat-value {
-        font-size: 1.5rem;
-    }
-    
-    .stat-label {
-        font-size: 0.85rem;
-    }
-    
-    .dashboard-title {
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-    }
-    
-    .section-title {
-        font-size: 1.1rem;
-        margin-bottom: 0.75rem;
-    }
-    
-    .mobile-nav {
-        padding: 0.5rem;
-    }
-    
-    .mobile-nav-item {
-        padding: 0.4rem;
-        font-size: 0.7rem;
-    }
-    
-    .mobile-nav-icon {
-        font-size: 1rem;
-        margin-bottom: 0.2rem;
-    }
-}
-
-/* Extra small devices */
-@media (max-width: 360px) {
-    .header {
-        padding: 0.5rem;
-    }
-    
-    .language-selector {
-        margin-right: 0.5rem;
-    }
-    
-    .cta-button {
-        padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
-    }
-    
-    .upload-button {
-        padding: 0.5rem 1rem;
-        font-size: 0.85rem;
-    }
-}
-
-/* Large screens */
-@media (min-width: 1400px) {
-    .app-container {
-        max-width: 1400px;
-        margin: 0 auto;
-    }
-    
-    .main-content {
-        padding: 2.5rem;
-    }
-    
-    .disease-grid {
-        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-        gap: 2rem;
-    }
-    
-    .stats-grid {
-        gap: 2rem;
-    }
-    
-    .stat-card {
-        padding: 2rem;
-    }
-    
-    .stat-value {
-        font-size: 2.5rem;
-    }
-}
-
-/* Very large screens */
-@media (min-width: 1920px) {
-    .app-container {
-        max-width: 1600px;
-    }
-    
-    .main-content {
-        padding: 3rem;
-    }
-    
-    .disease-grid {
-        grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    }
-    
-    .sidebar {
-        width: 300px;
-        padding: 2.5rem 1.5rem;
     }
 }

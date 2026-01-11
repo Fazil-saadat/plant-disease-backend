@@ -1,0 +1,425 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.scan_history }}</h1>
+
+{% if scans %}
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div style="color: var(--charcoal);">
+        {{ t.total_saved_results }}: <strong>{{ scans|length }}</strong>
+    </div>
+    <button class="upload-button" id="clearAllBtn" style="background-color: #f44336; color: white;" onclick="clearAllResults()">
+        🗑️ {{ t.clear_all }}
+    </button>
+</div>
+
+<div class="history-list">
+    {% for scan in scans %}
+    <div class="history-item" id="result-{{ scan.id }}">
+        <a href="/saved-result/{{ scan.id }}" style="flex: 1; display: flex; align-items: center; text-decoration: none; color: inherit;">
+            <div class="history-thumbnail-container">
+                <img src="{{ scan.image_url if scan.image_url and scan.image_url.startswith('/') else '/static/images/placeholder-plant.jpg' }}" 
+                     alt="{{ scan.disease_name or t.unknown_disease }}" 
+                     class="history-thumbnail"
+                     onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iI0Y4RjZGMiIvPgo8cGF0aCBkPSJNMzAgMjBDMjYuMTM0IDIwIDIzIDIzLjEzNCAyMyAyN0MyMyAzMC44NjYgMjYuMTM0IDM0IDMwIDM0QzMzLjg2NiAzNCAzNyAzMC44NjYgMzcgMjdDMzcgMjMuMTM0IDMzLjg2NiAyMCAzMCAyMFpNMzAgMzZDMjQuNDggMzYgMjAgNDAuNDggMjAgNDZWMjBINDBWNDZDMzkuOTk5OSA0MC40OCAzNS41MiAzNiAzMCAzNloiIGZpbGw9IiNENkQ2RDYiLz4KPC9zdmc+'">
+            </div>
+            <div class="history-details">
+                <div class="history-plant">{{ scan.disease_name or scan.prediction or t.unknown_disease }}</div>
+                <div class="history-disease">{{ scan.plant_type or t.unknown_plant }}</div>
+                <div class="history-date">
+                    {% if scan.timestamp %}
+                        {{ t.scanned_on }} {{ scan.timestamp[:10] }} • {{ t.at }} {{ scan.timestamp[11:16] }}
+                    {% else %}
+                        {{ t.scanned_on }} {{ t.unknown_date }}
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div class="history-confidence">{{ scan.confidence or 0 }}%</div>
+            <button class="delete-btn" data-result-id="{{ scan.id }}" title="{{ t.delete_result_title }}">
+                🗑️
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="clearConfirmModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3>{{ t.confirm_clear }}</h3>
+            <span class="close" onclick="closeClearModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1.5rem;">{{ t.confirm_clear_all }} {{ t.action_cannot_undone }}</p>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="upload-button" onclick="closeClearModal()" style="background-color: var(--grey-medium);">
+                    {{ t.cancel }}
+                </button>
+                <button class="cta-button" onclick="confirmClearAll()" style="background-color: #f44336;">
+                    {{ t.yes_clear_all }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div style="text-align: center; padding: 3rem; background-color: var(--white); border-radius: 12px;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">📋</div>
+    <h3 style="color: var(--charcoal); margin-bottom: 0.5rem;">{{ t.no_saved_results }}</h3>
+    <p style="color: #666; margin-bottom: 2rem;">{{ t.history_will_appear }}</p>
+    <button class="cta-button" onclick="window.location.href='/scan'">
+        {{ t.new_scan }}
+    </button>
+</div>
+{% endif %}
+
+<style>
+.history-list {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--grey-light);
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    background-color: var(--grey-light);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-thumbnail-container {
+    width: 60px;
+    height: 60px;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.history-thumbnail {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-plant {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--charcoal);
+}
+
+.history-disease {
+    color: var(--forest-green);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.history-date {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.history-confidence {
+    background-color: var(--light-green);
+    color: var(--forest-green);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.delete-btn:hover {
+    background-color: #ffebee;
+    transform: scale(1.1);
+}
+
+.history-item.removing {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--grey-light);
+    background-color: var(--light-green);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+    color: var(--forest-green);
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.close {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--charcoal);
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: var(--forest-green);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .history-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+    
+    .history-thumbnail-container {
+        margin-right: 0;
+        margin-bottom: 1rem;
+        width: 80px;
+        height: 80px;
+    }
+    
+    .history-details {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .history-confidence {
+        align-self: flex-end;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+        max-height: 95vh;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+}
+
+/* RTL Support */
+[dir="rtl"] .history-thumbnail-container {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+[dir="rtl"] .history-item.removing {
+    transform: translateX(100%);
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Function to delete a single result
+async function deleteResult(resultId) {
+    if (!confirm('{{ t.confirm_delete }}')) {
+        return;
+    }
+    
+    const historyItem = document.getElementById('result-' + resultId);
+    if (historyItem) {
+        historyItem.classList.add('removing');
+    }
+    
+    try {
+        const response = await fetch('/delete-result/' + resultId, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Remove the element after animation
+            setTimeout(function() {
+                if (historyItem) {
+                    historyItem.remove();
+                }
+                // Update the total count
+                const totalElement = document.querySelector('strong');
+                if (totalElement) {
+                    const currentCount = parseInt(totalElement.textContent);
+                    totalElement.textContent = currentCount - 1;
+                }
+                // Reload page if no results left
+                if (document.querySelectorAll('.history-item').length === 0) {
+                    window.location.reload();
+                }
+            }, 300);
+        } else {
+            alert('{{ t.error_deleting }}: ' + data.message);
+            if (historyItem) {
+                historyItem.classList.remove('removing');
+            }
+        }
+    } catch (error) {
+        alert('{{ t.error_deleting }}: ' + error.message);
+        if (historyItem) {
+            historyItem.classList.remove('removing');
+        }
+    }
+}
+
+// Function to clear all results
+function clearAllResults() {
+    const modal = document.getElementById('clearConfirmModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// Function to close clear modal
+function closeClearModal() {
+    const modal = document.getElementById('clearConfirmModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Function to confirm clearing all results
+async function confirmClearAll() {
+    const clearBtn = document.querySelector('#clearConfirmModal .cta-button');
+    if (!clearBtn) {
+        return;
+    }
+    
+    const originalText = clearBtn.innerHTML;
+    
+    try {
+        clearBtn.innerHTML = '<div class="loading" style="display: inline-block; margin-right: 0.5rem;"></div>{{ t.loading }}';
+        clearBtn.disabled = true;
+        
+        const response = await fetch('/clear-all-results', {
+            method: 'POST'
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            window.location.reload();
+        } else {
+            alert('{{ t.error_clearing }}: ' + data.message);
+            closeClearModal();
+        }
+    } catch (error) {
+        alert('{{ t.error_clearing }}: ' + error.message);
+        closeClearModal();
+    } finally {
+        clearBtn.innerHTML = originalText;
+        clearBtn.disabled = false;
+    }
+}
+
+// Event listeners when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('clearConfirmModal');
+        if (event.target === modal) {
+            closeClearModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeClearModal();
+        }
+    });
+    
+    // Delegate delete button clicks (use data-result-id to avoid inline JS parsing issues)
+    document.addEventListener('click', function(event) {
+        const btn = event.target.closest && event.target.closest('.delete-btn');
+        if (btn) {
+            const id = btn.getAttribute('data-result-id');
+            if (id) {
+                deleteResult(id);
+            }
+        }
+    });
+
+    // Add animation to history items
+    const historyItems = document.querySelectorAll('.history-item');
+    historyItems.forEach(function(item, index) {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        
+        setTimeout(function() {
+            item.style.transition = 'all 0.4s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

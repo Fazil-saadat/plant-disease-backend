@@ -1,0 +1,3381 @@
+Style.css
+
+
+:root {
+    --cream: #F8F6F2;
+    --charcoal: #2D2D2D;
+    --forest-green: #2E7D32;
+    --sprout-green: #4CAF50;
+    --light-green: #E8F5E9;
+    --white: #FFFFFF;
+    --grey-light: #F5F5F5;
+    --grey-medium: #E0E0E0;
+    --shadow: rgba(0, 0, 0, 0.08);
+    --shadow-hover: rgba(0, 0, 0, 0.12);
+    --error: #f44336;
+    --warning: #ff9800;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--cream);
+    color: var(--charcoal);
+    line-height: 1.6;
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--white);
+    box-shadow: 0 2px 10px var(--shadow);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--forest-green);
+    cursor: pointer;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    background-color: var(--forest-green);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.cta-button {
+    background-color: var(--forest-green);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.cta-button:hover {
+    background-color: var(--sprout-green);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--shadow-hover);
+}
+
+.user-profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--grey-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* Layout Styles */
+.app-container {
+    display: flex;
+    min-height: calc(100vh - 80px);
+}
+
+.sidebar {
+    width: 250px;
+    background-color: var(--white);
+    padding: 2rem 1rem;
+    box-shadow: 2px 0 10px var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.main-content {
+    flex: 1;
+    padding: 2rem;
+    overflow-y: auto;
+}
+
+/* Navigation Styles */
+.nav-menu {
+    list-style: none;
+    margin-top: 2rem;
+}
+
+.nav-item {
+    margin-bottom: 0.5rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--charcoal);
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover, .nav-link.active {
+    background-color: var(--light-green);
+    color: var(--forest-green);
+}
+
+.nav-icon {
+    width: 20px;
+    text-align: center;
+}
+
+/* Dashboard Styles */
+.dashboard-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--charcoal);
+}
+
+.upload-area {
+    background-color: var(--white);
+    border: 2px dashed var(--grey-medium);
+    border-radius: 12px;
+    padding: 3rem 2rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-area:hover {
+    border-color: var(--sprout-green);
+    background-color: var(--light-green);
+}
+
+.upload-area.dragover {
+    border-color: var(--forest-green);
+    background-color: var(--light-green);
+    transform: scale(1.02);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    color: var(--forest-green);
+    margin-bottom: 1rem;
+}
+
+.upload-text {
+    color: var(--charcoal);
+    margin-bottom: 1rem;
+}
+
+.upload-button {
+    background-color: var(--forest-green);
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-button:hover {
+    background-color: var(--sprout-green);
+}
+
+.file-input {
+    display: none;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px var(--shadow-hover);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--forest-green);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: var(--charcoal);
+    font-size: 0.9rem;
+}
+
+/* Recent History */
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--charcoal);
+}
+
+.history-list {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--grey-light);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+}
+
+.history-item:hover {
+    background-color: var(--grey-light);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-thumbnail {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    object-fit: cover;
+    margin-right: 1rem;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-plant {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+}
+
+.history-disease {
+    color: var(--forest-green);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.history-date {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.history-confidence {
+    background-color: var(--light-green);
+    color: var(--forest-green);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* Results Page Styles */
+.results-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.result-image-container {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.result-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.confidence-score {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--forest-green);
+}
+
+.result-details {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--grey-medium);
+    margin-bottom: 1rem;
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--charcoal);
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab.active {
+    color: var(--forest-green);
+    border-bottom-color: var(--forest-green);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h3 {
+    margin-bottom: 1rem;
+    color: var(--charcoal);
+}
+
+.tab-content p {
+    margin-bottom: 1rem;
+}
+
+/* Disease Library */
+.library-container {
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 2rem;
+}
+
+.filter-sidebar {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    height: fit-content;
+}
+
+.filter-group {
+    margin-bottom: 1.5rem;
+}
+
+.filter-group h3 {
+    margin-bottom: 0.75rem;
+    font-size: 1rem;
+    color: var(--charcoal);
+}
+
+.filter-option {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.filter-option input {
+    margin-right: 0.5rem;
+}
+
+.disease-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.disease-card {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.disease-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px var(--shadow-hover);
+}
+
+.disease-card h3 {
+    color: var(--forest-green);
+    margin-bottom: 0.5rem;
+}
+
+.disease-scientific {
+    font-style: italic;
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+}
+
+.disease-plants {
+    margin-bottom: 1rem;
+}
+
+.disease-plants span {
+    background-color: var(--light-green);
+    color: var(--forest-green);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    margin-right: 0.5rem;
+    display: inline-block;
+    margin-bottom: 0.25rem;
+}
+
+/* Loading Spinner */
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Alert Styles */
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+.alert-error {
+    background-color: #ffebee;
+    color: var(--error);
+    border: 1px solid #ffcdd2;
+}
+
+.alert-success {
+    background-color: #e8f5e9;
+    color: var(--forest-green);
+    border: 1px solid #c8e6c9;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--white);
+    box-shadow: 0 -2px 10px var(--shadow);
+    padding: 0.75rem;
+    z-index: 100;
+}
+
+.mobile-nav-items {
+    display: flex;
+    justify-content: space-around;
+    list-style: none;
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--charcoal);
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.mobile-nav-item.active {
+    color: var(--forest-green);
+    background-color: var(--light-green);
+}
+
+.mobile-nav-icon {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Hamburger Menu */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 24px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.hamburger span {
+    height: 2px;
+    width: 100%;
+    background-color: var(--charcoal);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+/* Language Selector Styles */
+.language-selector {
+    margin-right: 1rem;
+}
+
+.language-selector select {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--grey-medium);
+    border-radius: 8px;
+    background-color: var(--white);
+    color: var(--charcoal);
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.language-selector select:hover {
+    border-color: var(--forest-green);
+}
+
+.language-selector select:focus {
+    outline: none;
+    border-color: var(--forest-green);
+    box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+}
+
+/* RTL support for Persian and Pashto */
+/* RTL Support for Persian and Pashto */
+[dir="rtl"] .header {
+    direction: rtl;
+}
+
+[dir="rtl"] .sidebar {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] .main-content {
+    direction: rtl;
+    text-align: right;
+}
+
+[dir="rtl"] .disease-card-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-actions {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .library-controls {
+    direction: rtl;
+}
+
+[dir="rtl"] .disease-symptoms-preview {
+    text-align: right;
+}
+
+[dir="rtl"] .symptoms-list,
+[dir="rtl"] .treatment-list,
+[dir="rtl"] .prevention-list {
+    text-align: right;
+    direction: rtl;
+}
+
+/* RTL specific adjustments */
+body[dir="rtl"] {
+    text-align: right;
+}
+
+[dir="rtl"] .nav-link {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .mobile-nav-item {
+    flex-direction: column-reverse;
+}
+
+/* Alert Styles */
+.alert {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    border: 1px solid transparent;
+}
+
+.alert-success {
+    background-color: #e8f5e9;
+    color: var(--forest-green);
+    border-color: #c8e6c9;
+}
+
+.alert-error {
+    background-color: #ffebee;
+    color: #d32f2f;
+    border-color: #ffcdd2;
+}
+
+/* Loading spinner */
+.loading {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Styles */
+@media (max-width: 1023px) {
+    .sidebar {
+        position: fixed;
+        top: 80px;
+        left: -250px;
+        height: calc(100vh - 80px);
+        z-index: 90;
+    }
+
+    .sidebar.active {
+        left: 0;
+    }
+
+    .hamburger {
+        display: flex;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .results-container {
+        grid-template-columns: 1fr;
+    }
+
+    .library-container {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-sidebar {
+        display: none;
+    }
+
+    .mobile-filter-button {
+        display: block;
+        margin-bottom: 1rem;
+    }
+}
+
+@media (max-width: 767px) {
+    .header {
+        padding: 1rem;
+    }
+
+    .main-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .mobile-nav {
+        display: block;
+    }
+
+    .history-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .history-thumbnail {
+        margin-right: 0;
+        margin-bottom: 1rem;
+    }
+
+    .history-details {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .history-confidence {
+        align-self: flex-end;
+    }
+
+    .disease-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+
+
+
+
+
+Script.js
+
+// Navigation functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle sidebar on hamburger click
+    const hamburger = document.getElementById('hamburger');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (hamburger) {
+        hamburger.addEventListener('click', function() {
+            sidebar.classList.toggle('active');
+        });
+    }
+
+    // Close sidebar when clicking outside on mobile
+    document.addEventListener('click', function(event) {
+        if (window.innerWidth <= 1023 && 
+            !sidebar.contains(event.target) && 
+            !hamburger.contains(event.target)) {
+            sidebar.classList.remove('active');
+        }
+    });
+
+    // Update layout on window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 1023) {
+            sidebar.classList.remove('active');
+        }
+    });
+
+    // Tab functionality
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(tab => {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            
+            // Update active tab
+            tabs.forEach(t => t.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Update active tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+                if (content.id === tabName) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+
+    // Initialize first tab as active if exists
+    const firstTab = document.querySelector('.tab');
+    if (firstTab) {
+        firstTab.click();
+    }
+});
+
+// File upload functionality
+function setupFileUpload() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const uploadButton = document.getElementById('uploadButton');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const uploadText = document.getElementById('uploadText');
+
+    if (!uploadArea || !fileInput) return;
+
+    // Click on upload area triggers file input
+    uploadArea.addEventListener('click', function() {
+        fileInput.click();
+    });
+
+    // Drag and drop functionality
+    uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', function() {
+        uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        uploadArea.classList.remove('dragover');
+        
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            handleFileSelection(files[0]);
+        }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            handleFileSelection(this.files[0]);
+        }
+    });
+
+    function handleFileSelection(file) {
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            showAlert('Please select a valid image file (JPEG, PNG, or GIF).', 'error');
+            return;
+        }
+
+        // Validate file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            showAlert('File size must be less than 10MB.', 'error');
+            return;
+        }
+
+        // Show loading state
+        uploadButton.disabled = true;
+        uploadText.textContent = 'Processing...';
+        loadingSpinner.style.display = 'inline-block';
+
+        // Create FormData and send to server
+        const formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // Store results and redirect to results page
+            localStorage.setItem('lastScanResult', JSON.stringify(data));
+            window.location.href = '/results';
+        })
+        .catch(error => {
+            showAlert('Error uploading file: ' + error.message, 'error');
+        })
+        .finally(() => {
+            // Reset loading state
+            uploadButton.disabled = false;
+            uploadText.textContent = 'Drag image here or click to upload';
+            loadingSpinner.style.display = 'none';
+            fileInput.value = '';
+        });
+    }
+}
+
+// Alert functionality
+function showAlert(message, type = 'error') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type}`;
+    alertDiv.textContent = message;
+    
+    // Insert at the top of main content
+    const mainContent = document.querySelector('.main-content');
+    mainContent.insertBefore(alertDiv, mainContent.firstChild);
+    
+    // Remove alert after 5 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    setupFileUpload();
+});
+
+
+
+
+
+
+base.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Plant Guard - Plant Health Monitoring{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Favicon Links -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+</head>
+<body>
+    <!-- Global Header -->
+    <header class="header">
+        <div class="logo" onclick="window.location.href='/dashboard'">
+            <div class="logo-icon">🌿</div>
+            <span>Plant Guard</span>
+        </div>
+        
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <!-- Language Selector -->
+            <div class="language-selector">
+                <select id="globalLanguage" onchange="changeLanguage(this.value)" style="padding: 0.5rem; border-radius: 8px; border: 1px solid var(--grey-medium); background: white; cursor: pointer;">
+                    <option value="en" {% if current_language == 'en' %}selected{% endif %}>English</option>
+                    <option value="fa" {% if current_language == 'fa' %}selected{% endif %}>فارسی</option>
+                    <option value="ps" {% if current_language == 'ps' %}selected{% endif %}>پښتو</option>
+                </select>
+            </div>
+            
+            <button class="cta-button" onclick="window.location.href='/scan'">
+                <span>{{ t.new_scan }}</span>
+            </button>
+        </div>
+        
+        <div class="hamburger" id="hamburger">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        
+        <!-- <div class="user-profile">
+            <span>👤</span>
+        </div> -->
+    </header>
+
+    <!-- App Container -->
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar" id="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/dashboard" class="nav-link {% if request.url.path == '/dashboard' or request.url.path == '/' %}active{% endif %}">
+                        <span class="nav-icon">📊</span>
+                        <span>{{ t.dashboard }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/scan" class="nav-link {% if request.url.path == '/scan' %}active{% endif %}">
+                        <span class="nav-icon">🔍</span>
+                        <span>{{ t.new_scan }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/history" class="nav-link {% if request.url.path == '/history' %}active{% endif %}">
+                        <span class="nav-icon">📋</span>
+                        <span>{{ t.scan_history }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/library" class="nav-link {% if request.url.path == '/library' %}active{% endif %}">
+                        <span class="nav-icon">📚</span>
+                        <span>{{ t.disease_library }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/garden" class="nav-link {% if request.url.path == '/garden' %}active{% endif %}">
+                        <span class="nav-icon">🌱</span>
+                        <span>{{ t.my_garden }}</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav class="mobile-nav">
+        <ul class="mobile-nav-items">
+            <li>
+                <a href="/dashboard" class="mobile-nav-item {% if request.url.path == '/dashboard' or request.url.path == '/' %}active{% endif %}">
+                    <span class="mobile-nav-icon">📊</span>
+                    <span>{{ t.dashboard }}</span>
+                </a>
+            </li>
+            <li>
+                <a href="/scan" class="mobile-nav-item {% if request.url.path == '/scan' %}active{% endif %}">
+                    <span class="mobile-nav-icon">🔍</span>
+                    <span>{{ t.new_scan }}</span>
+                </a>
+            </li>
+            <li>
+                <a href="/library" class="mobile-nav-item {% if request.url.path == '/library' %}active{% endif %}">
+                    <span class="mobile-nav-icon">📚</span>
+                    <span>{{ t.disease_library }}</span>
+                </a>
+            </li>
+            <li>
+                <a href="/garden" class="mobile-nav-item {% if request.url.path == '/garden' %}active{% endif %}">
+                    <span class="mobile-nav-icon">🌱</span>
+                    <span>{{ t.my_garden }}</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <script src="/static/js/script.js"></script>
+    <script>
+        // Language change function
+        async function changeLanguage(language) {
+            try {
+                const formData = new FormData();
+                formData.append('language', language);
+                
+                const response = await fetch('/set-language', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    // Reload the page to apply the new language
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Error changing language:', error);
+            }
+        }
+
+        // Set initial language on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Language is already set from server, no need to initialize
+        });
+    </script>
+    <script>
+// Set RTL for Persian and Pashto languages
+document.addEventListener('DOMContentLoaded', function() {
+    const currentLang = '{{ current_language }}';
+    if (currentLang === 'fa' || currentLang === 'ps') {
+        document.body.setAttribute('dir', 'rtl');
+    } else {
+        document.body.setAttribute('dir', 'ltr');
+    }
+});
+</script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
+
+
+
+
+
+
+dashboard.html
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.dashboard }}</h1>
+
+<!-- Upload Area -->
+<div class="upload-area" id="uploadArea" onclick="window.location.href='/scan'">
+    <div class="upload-icon">📸</div>
+    <h2 class="upload-text" id="uploadText">{{ t.drag_image }}</h2>
+    <button class="upload-button">
+        <span>{{ t.select_image }}</span>
+    </button>
+</div>
+
+<!-- Quick Statistics -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.total_scans }}</div>
+        <div class="stat-label">{{ t.total_scans }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.plants_in_garden }}</div>
+        <div class="stat-label">{{ t.plants_in_garden }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.avg_confidence }}%</div>
+        <div class="stat-label">{{ t.avg_confidence }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">{{ stats.top_disease }}</div>
+        <div class="stat-label">{{ t.top_disease }}</div>
+    </div>
+</div>
+
+<!-- Recent History -->
+<h2 class="section-title">{{ t.recent_history }}</h2>
+{% if recent_scans %}
+<div class="history-list">
+    {% for scan in recent_scans %}
+    <a href="/saved-result/{{ scan.id }}" class="history-item">
+        <div class="history-thumbnail-container">
+            <img src="{{ scan.image_url if scan.image_url else '/static/images/placeholder-plant.jpg' }}" 
+                 alt="{{ scan.disease_name or t.unknown_disease }}" 
+                 class="history-thumbnail"
+                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iI0Y4RjZGMiIvPgo8cGF0aCBkPSJNMzAgMjBDMjYuMTM0IDIwIDIzIDIzLjEzNCAyMyAyN0MyMyAzMC44NjYgMjYuMTM0IDM0IDMwIDM0QzMzLjg2NiAzNCAzNyAzMC44NjYgMzcgMjdDMzcgMjMuMTM0IDMzLjg2NiAyMCAzMCAyMFpNMzAgMzZDMjQuNDggMzYgMjAgNDAuNDggMjAgNDZWMjBINDBWNDZDMzkuOTk5OSA0MC40OCAzNS41MiAzNiAzMCAzNloiIGZpbGw9IiNENkQ2RDYiLz4KPC9zdmc+'">
+        </div>
+        <div class="history-details">
+            <div class="history-plant">{{ scan.disease_name or scan.prediction or t.unknown_disease }}</div>
+            <div class="history-disease">{{ scan.plant_type or t.unknown_plant }}</div>
+            <div class="history-date">
+                {% if scan.timestamp %}
+                    {{ scan.timestamp[:10] }}
+                {% else %}
+                    {{ t.unknown_date }}
+                {% endif %}
+            </div>
+        </div>
+        <div class="history-confidence">{{ scan.confidence or 0 }}%</div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div style="text-align: center; padding: 2rem; background-color: var(--white); border-radius: 12px;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
+    <p style="color: #666; margin-bottom: 1rem;">{{ t.no_saved_results }}</p>
+    <button class="cta-button" onclick="window.location.href='/scan'">
+        {{ t.new_scan }}
+    </button>
+</div>
+{% endif %}
+
+<style>
+.history-list {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--grey-light);
+    transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
+}
+
+.history-item:hover {
+    background-color: var(--grey-light);
+    transform: translateY(-2px);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-thumbnail-container {
+    width: 60px;
+    height: 60px;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.history-thumbnail {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-plant {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--charcoal);
+}
+
+.history-disease {
+    color: var(--forest-green);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.history-date {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.history-confidence {
+    background-color: var(--light-green);
+    color: var(--forest-green);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+</style>
+{% endblock %}
+
+
+
+Garden.html
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.my_garden }}</h1>
+
+<div style="background-color: var(--white); padding: 2rem; border-radius: 12px; text-align: center;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">🌱</div>
+    <h2 style="margin-bottom: 1rem; color: var(--charcoal);">{{ t.my_garden }}</h2>
+    <p style="color: #666; margin-bottom: 2rem;">Track your plants and their health status here.</p>
+    <button class="cta-button" onclick="window.location.href='/scan'">
+        {{ t.new_scan }}
+    </button>
+</div>
+
+<div class="stats-grid" style="margin-top: 2rem;">
+    <div class="stat-card">
+        <div class="stat-value">8</div>
+        <div class="stat-label">{{ t.healthy_plants }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">3</div>
+        <div class="stat-label">{{ t.needs_attention }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">4</div>
+        <div class="stat-label">{{ t.under_treatment }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">15</div>
+        <div class="stat-label">{{ t.total_plants }}</div>
+    </div>
+</div>
+{% endblock %}
+
+
+history.html
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.scan_history }}</h1>
+
+{% if scans %}
+<div style="margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div style="color: var(--charcoal);">
+        {{ t.total_saved_results }}: <strong>{{ scans|length }}</strong>
+    </div>
+    <button class="upload-button" id="clearAllBtn" style="background-color: #f44336; color: white;" onclick="clearAllResults()">
+        🗑️ {{ t.clear_all }}
+    </button>
+</div>
+
+<div class="history-list">
+    {% for scan in scans %}
+    <div class="history-item" id="result-{{ scan.id }}">
+        <a href="/saved-result/{{ scan.id }}" style="flex: 1; display: flex; align-items: center; text-decoration: none; color: inherit;">
+            <div class="history-thumbnail-container">
+                <img src="{{ scan.image_url if scan.image_url and scan.image_url.startswith('/') else '/static/images/placeholder-plant.jpg' }}" 
+                     alt="{{ scan.disease_name or t.unknown_disease }}" 
+                     class="history-thumbnail"
+                     onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iI0Y4RjZGMiIvPgo8cGF0aCBkPSJNMzAgMjBDMjYuMTM0IDIwIDIzIDIzLjEzNCAyMyAyN0MyMyAzMC44NjYgMjYuMTM0IDM0IDMwIDM0QzMzLjg2NiAzNCAzNyAzMC44NjYgMzcgMjdDMzcgMjMuMTM0IDMzLjg2NiAyMCAzMCAyMFpNMzAgMzZDMjQuNDggMzYgMjAgNDAuNDggMjAgNDZWMjBINDBWNDZDMzkuOTk5OSA0MC40OCAzNS41MiAzNiAzMCAzNloiIGZpbGw9IiNENkQ2RDYiLz4KPC9zdmc+'">
+            </div>
+            <div class="history-details">
+                <div class="history-plant">{{ scan.disease_name or scan.prediction or t.unknown_disease }}</div>
+                <div class="history-disease">{{ scan.plant_type or t.unknown_plant }}</div>
+                <div class="history-date">
+                    {% if scan.timestamp %}
+                        {{ t.scanned_on }} {{ scan.timestamp[:10] }} • {{ t.at }} {{ scan.timestamp[11:16] }}
+                    {% else %}
+                        {{ t.scanned_on }} {{ t.unknown_date }}
+                    {% endif %}
+                </div>
+            </div>
+        </a>
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <div class="history-confidence">{{ scan.confidence or 0 }}%</div>
+            <button class="delete-btn" data-result-id="{{ scan.id }}" title="{{ t.delete_result_title }}">
+                🗑️
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div id="clearConfirmModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3>{{ t.confirm_clear }}</h3>
+            <span class="close" onclick="closeClearModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1.5rem;">{{ t.confirm_clear_all }} {{ t.action_cannot_undone }}</p>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="upload-button" onclick="closeClearModal()" style="background-color: var(--grey-medium);">
+                    {{ t.cancel }}
+                </button>
+                <button class="cta-button" onclick="confirmClearAll()" style="background-color: #f44336;">
+                    {{ t.yes_clear_all }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div style="text-align: center; padding: 3rem; background-color: var(--white); border-radius: 12px;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">📋</div>
+    <h3 style="color: var(--charcoal); margin-bottom: 0.5rem;">{{ t.no_saved_results }}</h3>
+    <p style="color: #666; margin-bottom: 2rem;">{{ t.history_will_appear }}</p>
+    <button class="cta-button" onclick="window.location.href='/scan'">
+        {{ t.new_scan }}
+    </button>
+</div>
+{% endif %}
+
+<style>
+.history-list {
+    background-color: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.history-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--grey-light);
+    transition: all 0.3s ease;
+}
+
+.history-item:hover {
+    background-color: var(--grey-light);
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-thumbnail-container {
+    width: 60px;
+    height: 60px;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.history-thumbnail {
+    width: 100%;
+    height: 100%;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.history-details {
+    flex: 1;
+}
+
+.history-plant {
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--charcoal);
+}
+
+.history-disease {
+    color: var(--forest-green);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.history-date {
+    color: #888;
+    font-size: 0.8rem;
+}
+
+.history-confidence {
+    background-color: var(--light-green);
+    color: var(--forest-green);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    font-size: 1.2rem;
+}
+
+.delete-btn:hover {
+    background-color: #ffebee;
+    transform: scale(1.1);
+}
+
+.history-item.removing {
+    opacity: 0;
+    transform: translateX(-100%);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--grey-light);
+    background-color: var(--light-green);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+    color: var(--forest-green);
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.close {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--charcoal);
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: var(--forest-green);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .history-item {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+    
+    .history-thumbnail-container {
+        margin-right: 0;
+        margin-bottom: 1rem;
+        width: 80px;
+        height: 80px;
+    }
+    
+    .history-details {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+    
+    .history-confidence {
+        align-self: flex-end;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+        max-height: 95vh;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+}
+
+/* RTL Support */
+[dir="rtl"] .history-thumbnail-container {
+    margin-right: 0;
+    margin-left: 1rem;
+}
+
+[dir="rtl"] .history-item.removing {
+    transform: translateX(100%);
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Function to delete a single result
+async function deleteResult(resultId) {
+    if (!confirm('{{ t.confirm_delete }}')) {
+        return;
+    }
+    
+    const historyItem = document.getElementById('result-' + resultId);
+    if (historyItem) {
+        historyItem.classList.add('removing');
+    }
+    
+    try {
+        const response = await fetch('/delete-result/' + resultId, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Remove the element after animation
+            setTimeout(function() {
+                if (historyItem) {
+                    historyItem.remove();
+                }
+                // Update the total count
+                const totalElement = document.querySelector('strong');
+                if (totalElement) {
+                    const currentCount = parseInt(totalElement.textContent);
+                    totalElement.textContent = currentCount - 1;
+                }
+                // Reload page if no results left
+                if (document.querySelectorAll('.history-item').length === 0) {
+                    window.location.reload();
+                }
+            }, 300);
+        } else {
+            alert('{{ t.error_deleting }}: ' + data.message);
+            if (historyItem) {
+                historyItem.classList.remove('removing');
+            }
+        }
+    } catch (error) {
+        alert('{{ t.error_deleting }}: ' + error.message);
+        if (historyItem) {
+            historyItem.classList.remove('removing');
+        }
+    }
+}
+
+// Function to clear all results
+function clearAllResults() {
+    const modal = document.getElementById('clearConfirmModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// Function to close clear modal
+function closeClearModal() {
+    const modal = document.getElementById('clearConfirmModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Function to confirm clearing all results
+async function confirmClearAll() {
+    const clearBtn = document.querySelector('#clearConfirmModal .cta-button');
+    if (!clearBtn) {
+        return;
+    }
+    
+    const originalText = clearBtn.innerHTML;
+    
+    try {
+        clearBtn.innerHTML = '<div class="loading" style="display: inline-block; margin-right: 0.5rem;"></div>{{ t.loading }}';
+        clearBtn.disabled = true;
+        
+        const response = await fetch('/clear-all-results', {
+            method: 'POST'
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            window.location.reload();
+        } else {
+            alert('{{ t.error_clearing }}: ' + data.message);
+            closeClearModal();
+        }
+    } catch (error) {
+        alert('{{ t.error_clearing }}: ' + error.message);
+        closeClearModal();
+    } finally {
+        clearBtn.innerHTML = originalText;
+        clearBtn.disabled = false;
+    }
+}
+
+// Event listeners when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('clearConfirmModal');
+        if (event.target === modal) {
+            closeClearModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeClearModal();
+        }
+    });
+    
+    // Delegate delete button clicks (use data-result-id to avoid inline JS parsing issues)
+    document.addEventListener('click', function(event) {
+        const btn = event.target.closest && event.target.closest('.delete-btn');
+        if (btn) {
+            const id = btn.getAttribute('data-result-id');
+            if (id) {
+                deleteResult(id);
+            }
+        }
+    });
+
+    // Add animation to history items
+    const historyItems = document.querySelectorAll('.history-item');
+    historyItems.forEach(function(item, index) {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(20px)';
+        
+        setTimeout(function() {
+            item.style.transition = 'all 0.4s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+library.html
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.disease_library }}</h1>
+
+<!-- Search and Filter Section -->
+<div class="library-controls" style="margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+    <!-- Search Box -->
+    <div class="search-box" style="flex: 1; min-width: 250px;">
+        <input type="text" id="searchInput" placeholder="{{ t.search_diseases }}" style="width: 100%; padding: 0.75rem; border: 1px solid var(--grey-medium); border-radius: 8px; font-family: 'Inter', sans-serif;">
+    </div>
+    
+    <!-- Plant Type Filter -->
+    <div class="filter-box">
+        <select id="plantTypeFilter" style="padding: 0.75rem; border: 1px solid var(--grey-medium); border-radius: 8px; font-family: 'Inter', sans-serif; cursor: pointer;">
+            <option value="all">{{ t.all_plants }}</option>
+            {% for plant_type in plant_types %}
+            <option value="{{ plant_type }}">{{ plant_type }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <!-- Disease Type Filter -->
+    <div class="filter-box">
+        <select id="diseaseTypeFilter" style="padding: 0.75rem; border: 1px solid var(--grey-medium); border-radius: 8px; font-family: 'Inter', sans-serif; cursor: pointer;">
+            <option value="all">{{ t.all_conditions }}</option>
+            <option value="disease">{{ t.diseases_only }}</option>
+            <option value="healthy">{{ t.healthy_plants_only }}</option>
+        </select>
+    </div>
+    
+    <!-- Clear Filters -->
+    <button id="clearFilters" class="upload-button" style="background-color: var(--grey-medium); color: var(--charcoal);">
+        {{ t.clear_filters }}
+    </button>
+</div>
+
+<!-- Statistics -->
+<div class="library-stats" style="background-color: var(--white); padding: 1rem 1.5rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 2px 8px var(--shadow);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; gap: 2rem;">
+            <div>
+                <span style="font-weight: 600; color: var(--charcoal);">{{ t.total_conditions }}:</span>
+                <span style="color: var(--forest-green); margin-left: 0.5rem; font-weight: 600;" id="totalConditions">{{ diseases|length }}</span>
+            </div>
+            <div>
+                <span style="font-weight: 600; color: var(--charcoal);">{{ t.plant_types }}:</span>
+                <span style="color: var(--forest-green); margin-left: 0.5rem; font-weight: 600;" id="totalPlantTypes">{{ plant_types|length }}</span>
+            </div>
+        </div>
+        <div id="filterStats" style="color: var(--charcoal); font-size: 0.9rem;">
+            {{ t.showing_all_conditions }}
+        </div>
+    </div>
+</div>
+
+<!-- Disease Grid -->
+<div class="disease-grid" id="diseaseGrid">
+    {% for disease_key, disease in diseases.items() %}
+    <div class="disease-card" 
+         data-plant="{{ disease_key.split('___')[0] if '___' in disease_key else 'Other' }}" 
+         data-type="{{ 'healthy' if 'Healthy' in disease_key else 'disease' }}" 
+         data-disease-key="{{ disease_key }}">
+        <div class="disease-card-header">
+            <h3>{{ disease.disease_name }}</h3>
+            <span class="disease-badge {{ 'healthy-badge' if 'Healthy' in disease_key else 'disease-badge' }}">
+                {{ t.healthy if 'Healthy' in disease_key else t.disease }}
+            </span>
+        </div>
+        
+        <div class="disease-plants">
+            <span class="plant-tag">
+                {% if '___' in disease_key %}
+                    {{ disease_key.split('___')[0] }}
+                {% else %}
+                    {{ disease_key }}
+                {% endif %}
+            </span>
+        </div>
+        
+        <p class="disease-description">{{ disease.description[:120] }}{% if disease.description|length > 120 %}...{% endif %}</p>
+        
+        <div class="disease-symptoms-preview">
+            <strong>{{ t.symptoms }}:</strong>
+            <span>
+                {% if disease.symptoms and '•' in disease.symptoms %}
+                    {{ disease.symptoms.split('•')[1][:80] if disease.symptoms.split('•')[1] else disease.symptoms[:80] }}...
+                {% else %}
+                    {{ disease.symptoms[:80] if disease.symptoms else 'No symptoms information' }}...
+                {% endif %}
+            </span>
+        </div>
+        
+        <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+            <button class="view-details-btn" onclick="showDiseaseDetails('{{ disease_key }}')">
+                <span>{{ t.view_details }}</span>
+            </button>
+            <button class="quick-scan-btn" onclick="quickScan('{{ disease_key }}')" title="{{ t.scan_this_disease }}">
+                <span>🔍</span>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- No Results Message -->
+<div id="noResults" style="display: none; text-align: center; padding: 3rem; background-color: var(--white); border-radius: 12px;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🔍</div>
+    <h3 style="color: var(--charcoal); margin-bottom: 0.5rem;">{{ t.no_diseases_found }}</h3>
+    <p style="color: #666;">{{ t.try_adjusting_search }}</p>
+</div>
+
+<!-- Disease Details Modal -->
+<div id="diseaseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalDiseaseName"></h2>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <div class="modal-section">
+                <h3>📖 {{ t.overview }}</h3>
+                <p id="modalDescription"></p>
+            </div>
+            
+            <div class="modal-section">
+                <h3>🩺 {{ t.symptoms }}</h3>
+                <div id="modalSymptoms" class="symptoms-list"></div>
+            </div>
+            
+            <div class="modal-section">
+                <h3>💊 {{ t.treatment }}</h3>
+                <div id="modalTreatment" class="treatment-list"></div>
+            </div>
+            
+            <div class="modal-section">
+                <h3>🛡️ {{ t.prevention }}</h3>
+                <div id="modalPrevention" class="prevention-list"></div>
+            </div>
+            
+            <div class="modal-actions">
+                <button class="cta-button" onclick="closeModal()">
+                    {{ t.close }}
+                </button>
+                <button class="upload-button" onclick="quickScanFromModal()" id="modalScanBtn">
+                    {{ t.scan_this_disease }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Scan Modal -->
+<div id="quickScanModal" class="modal">
+    <div class="modal-content" style="max-width: 500px;">
+        <div class="modal-header">
+            <h2>{{ t.new_scan }}</h2>
+            <span class="close" onclick="closeQuickScanModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1.5rem; color: var(--charcoal);">
+                {{ t.redirecting_scan }}: <strong id="scanDiseaseName"></strong>
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="upload-button" onclick="closeQuickScanModal()" style="background-color: var(--grey-medium);">
+                    {{ t.cancel }}
+                </button>
+                <button class="cta-button" onclick="proceedToScan()">
+                    {{ t.proceed_scan }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Library Specific Styles */
+.library-controls {
+    background-color: var(--white);
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px var(--shadow);
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--forest-green);
+    box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+}
+
+.disease-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.disease-card {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+    position: relative;
+}
+
+.disease-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px var(--shadow-hover);
+    border-color: var(--forest-green);
+}
+
+.disease-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+    gap: 1rem;
+}
+
+.disease-card-header h3 {
+    color: var(--forest-green);
+    margin: 0;
+    flex: 1;
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.disease-badge {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.healthy-badge {
+    background-color: var(--light-green);
+    color: var(--forest-green);
+}
+
+.disease-badge:not(.healthy-badge) {
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.disease-plants {
+    margin-bottom: 1rem;
+}
+
+.plant-tag {
+    background-color: var(--grey-light);
+    color: var(--charcoal);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+.disease-description {
+    color: #666;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.disease-symptoms-preview {
+    background-color: var(--grey-light);
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    line-height: 1.4;
+}
+
+.disease-symptoms-preview strong {
+    color: var(--charcoal);
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.view-details-btn {
+    background-color: var(--forest-green);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex: 1;
+}
+
+.view-details-btn:hover {
+    background-color: var(--sprout-green);
+    transform: translateY(-1px);
+}
+
+.quick-scan-btn {
+    background-color: var(--grey-light);
+    color: var(--charcoal);
+    border: none;
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quick-scan-btn:hover {
+    background-color: var(--grey-medium);
+    transform: scale(1.05);
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--grey-light);
+    background-color: var(--light-green);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h2 {
+    color: var(--forest-green);
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.close {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--charcoal);
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: var(--forest-green);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+.modal-section {
+    margin-bottom: 2rem;
+}
+
+.modal-section h3 {
+    color: var(--charcoal);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.modal-section p {
+    color: #666;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.symptoms-list, .treatment-list, .prevention-list {
+    background-color: var(--grey-light);
+    padding: 1rem;
+    border-radius: 8px;
+    white-space: pre-line;
+    line-height: 1.6;
+    color: #666;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--grey-light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .library-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .disease-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .disease-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+        max-height: 95vh;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+    
+    .modal-actions {
+        flex-direction: column;
+    }
+}
+
+/* Animation for modal */
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modal-content {
+    animation: modalFadeIn 0.3s ease;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Disease data will be loaded from the server
+let diseaseData = {};
+
+// Current modal disease
+let currentModalDiseaseKey = '';
+
+// Load disease data from the page
+function loadDiseaseData() {
+    // Get all disease cards and extract data
+    const diseaseCards = document.querySelectorAll('.disease-card');
+    diseaseData = {};
+    
+    diseaseCards.forEach(card => {
+        const diseaseKey = card.getAttribute('data-disease-key');
+        const diseaseName = card.querySelector('h3').textContent;
+        const description = card.querySelector('.disease-description').textContent;
+        const symptoms = card.querySelector('.disease-symptoms-preview span').textContent;
+        
+        // Extract data from the card
+        diseaseData[diseaseKey] = {
+            disease_name: diseaseName,
+            description: description,
+            symptoms: symptoms,
+            treatment: 'Treatment information available',
+            prevention: 'Prevention information available'
+        };
+    });
+    
+    console.log('Loaded disease data:', diseaseData);
+}
+
+// Filter and Search functionality
+function initializeLibrary() {
+    const searchInput = document.getElementById('searchInput');
+    const plantFilter = document.getElementById('plantTypeFilter');
+    const diseaseTypeFilter = document.getElementById('diseaseTypeFilter');
+    const clearFiltersBtn = document.getElementById('clearFilters');
+    const diseaseCards = document.querySelectorAll('.disease-card');
+    const noResults = document.getElementById('noResults');
+    const filterStats = document.getElementById('filterStats');
+    const totalConditions = document.getElementById('totalConditions');
+    const totalPlantTypes = document.getElementById('totalPlantTypes');
+
+    function filterDiseases() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const plantType = plantFilter.value;
+        const diseaseType = diseaseTypeFilter.value;
+        
+        let visibleCount = 0;
+        
+        diseaseCards.forEach(card => {
+            const plant = card.getAttribute('data-plant');
+            const type = card.getAttribute('data-type');
+            const diseaseName = card.querySelector('h3').textContent.toLowerCase();
+            const description = card.querySelector('.disease-description').textContent.toLowerCase();
+            
+            const matchesSearch = diseaseName.includes(searchTerm) || 
+                                description.includes(searchTerm) || 
+                                searchTerm === '';
+            const matchesPlant = plantType === 'all' || plant === plantType;
+            const matchesDiseaseType = diseaseType === 'all' || type === diseaseType;
+            
+            if (matchesSearch && matchesPlant && matchesDiseaseType) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Show/hide no results message
+        if (visibleCount === 0) {
+            noResults.style.display = 'block';
+            document.getElementById('diseaseGrid').style.display = 'none';
+        } else {
+            noResults.style.display = 'none';
+            document.getElementById('diseaseGrid').style.display = 'grid';
+        }
+        
+        // Update filter stats
+        updateFilterStats(visibleCount, searchTerm, plantType, diseaseType);
+    }
+    
+    function updateFilterStats(count, searchTerm, plantType, diseaseType) {
+        let statsText = `Showing ${count} of ${totalConditions.textContent} conditions`;
+        
+        const filters = [];
+        if (searchTerm) filters.push(`search: "${searchTerm}"`);
+        if (plantType !== 'all') filters.push(`plant: ${plantType}`);
+        if (diseaseType !== 'all') filters.push(`type: ${diseaseType}`);
+        
+        if (filters.length > 0) {
+            statsText += ` (filtered by ${filters.join(', ')})`;
+        } else {
+            statsText = `Showing all ${count} conditions`;
+        }
+        
+        filterStats.textContent = statsText;
+    }
+    
+    function clearFilters() {
+        searchInput.value = '';
+        plantFilter.value = 'all';
+        diseaseTypeFilter.value = 'all';
+        filterDiseases();
+    }
+    
+    // Event listeners
+    searchInput.addEventListener('input', filterDiseases);
+    plantFilter.addEventListener('change', filterDiseases);
+    diseaseTypeFilter.addEventListener('change', filterDiseases);
+    clearFiltersBtn.addEventListener('click', clearFilters);
+    
+    // Initial filter
+    filterDiseases();
+}
+
+// Modal functionality - FIXED VERSION
+function showDiseaseDetails(diseaseKey) {
+    console.log('Showing details for:', diseaseKey);
+    
+    // Find the disease card using the data-disease-key attribute
+    const targetCard = document.querySelector(`.disease-card[data-disease-key="${diseaseKey}"]`);
+    
+    if (!targetCard) {
+        console.error('Disease card not found for key:', diseaseKey);
+        alert('Disease details not found. Please try again.');
+        return;
+    }
+    
+    currentModalDiseaseKey = diseaseKey;
+    
+    // Get basic info from the card
+    const diseaseName = targetCard.querySelector('h3').textContent;
+    const description = targetCard.querySelector('.disease-description').textContent;
+    const symptoms = targetCard.querySelector('.disease-symptoms-preview span').textContent;
+    const plantType = targetCard.getAttribute('data-plant');
+    const isHealthy = targetCard.getAttribute('data-type') === 'healthy';
+    
+    // Populate modal content
+    document.getElementById('modalDiseaseName').textContent = diseaseName;
+    document.getElementById('modalDescription').textContent = description;
+    
+    // Enhanced symptoms content
+    document.getElementById('modalSymptoms').innerHTML = 
+        `<p><strong>Primary Symptoms:</strong> ${symptoms}</p>
+         <p><strong>Plant Type:</strong> ${plantType}</p>
+         <p><strong>Condition:</strong> ${isHealthy ? 'Healthy Plant' : 'Disease Affected'}</p>
+         <p>Complete symptom analysis and progression details would be loaded from our comprehensive plant health database.</p>`;
+    
+    // Enhanced treatment content
+    document.getElementById('modalTreatment').innerHTML = 
+        `<p><strong>Recommended Treatments:</strong></p>
+         <ul>
+             <li>Organic fungicides or pesticides specific to ${plantType}</li>
+             <li>Proper pruning and sanitation techniques</li>
+             <li>Soil amendment and fertilization recommendations</li>
+             <li>Environmental adjustments (light, humidity, temperature)</li>
+             <li>Biological control methods where applicable</li>
+         </ul>`;
+    
+    // Enhanced prevention content
+    document.getElementById('modalPrevention').innerHTML = 
+        `<p><strong>Prevention Strategies:</strong></p>
+         <ul>
+             <li>Regular monitoring and early detection systems</li>
+             <li>Proper watering schedules and techniques</li>
+             <li>Soil health management and testing</li>
+             <li>Crop rotation and companion planting</li>
+             <li>Quarantine procedures for new plants</li>
+             <li>Optimal growing conditions maintenance</li>
+         </ul>`;
+    
+    // Update scan button
+    document.getElementById('modalScanBtn').setAttribute('data-disease', diseaseKey);
+    
+    // Show modal
+    document.getElementById('diseaseModal').style.display = 'flex';
+}
+
+function closeModal() {
+    document.getElementById('diseaseModal').style.display = 'none';
+    currentModalDiseaseKey = '';
+}
+
+function quickScan(diseaseKey) {
+    console.log('Quick scan for:', diseaseKey);
+    
+    // Find the disease card
+    const targetCard = document.querySelector(`.disease-card[data-disease-key="${diseaseKey}"]`);
+    
+    if (!targetCard) {
+        console.error('Disease card not found for key:', diseaseKey);
+        return;
+    }
+    
+    const diseaseName = targetCard.querySelector('h3').textContent;
+    document.getElementById('scanDiseaseName').textContent = diseaseName;
+    document.getElementById('quickScanModal').style.display = 'flex';
+    currentModalDiseaseKey = diseaseKey;
+}
+
+function closeQuickScanModal() {
+    document.getElementById('quickScanModal').style.display = 'none';
+    currentModalDiseaseKey = '';
+}
+
+function quickScanFromModal() {
+    if (currentModalDiseaseKey) {
+        closeModal();
+        quickScan(currentModalDiseaseKey);
+    }
+}
+
+function proceedToScan() {
+    if (currentModalDiseaseKey) {
+        // Store the target disease for reference
+        localStorage.setItem('targetDisease', currentModalDiseaseKey);
+        console.log('Proceeding to scan for:', currentModalDiseaseKey);
+    }
+    // Redirect to scan page
+    window.location.href = '/scan';
+}
+
+// Close modal when clicking outside
+window.addEventListener('click', function(event) {
+    const diseaseModal = document.getElementById('diseaseModal');
+    const quickScanModal = document.getElementById('quickScanModal');
+    
+    if (event.target === diseaseModal) {
+        closeModal();
+    }
+    if (event.target === quickScanModal) {
+        closeQuickScanModal();
+    }
+});
+
+// Close modal with Escape key
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        closeModal();
+        closeQuickScanModal();
+    }
+});
+
+// Initialize library when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Initializing disease library...');
+    initializeLibrary();
+    loadDiseaseData();
+    console.log('Disease library initialized successfully');
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+results.html
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.dashboard }}</h1>
+
+<div class="results-container">
+    <div class="result-image-container">
+        <div class="image-wrapper">
+            <img id="resultImage" 
+                 src="{{ result.image_url }}" 
+                 alt="Scanned plant" 
+                 class="result-image"
+                 onerror="handleImageError(this)">
+        </div>
+        <div class="confidence-score">
+            {{ t.confidence }}: <span id="confidenceValue">{{ result.confidence }}</span>%
+        </div>
+    </div>
+    
+    <div class="result-details">
+        <h2 style="margin-bottom: 1rem; color: var(--forest-green);" id="diseaseName">{{ result.disease }}</h2>
+        <p style="margin-bottom: 1.5rem; color: #666;" id="plantType">{{ t.detected_in }} {{ result.plant_type }}</p>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="overview">{{ t.overview }}</button>
+            <button class="tab" data-tab="treatment">{{ t.treatment }}</button>
+            <button class="tab" data-tab="prevention">{{ t.prevention }}</button>
+        </div>
+        
+        <div id="overview" class="tab-content active">
+            <h3>{{ t.disease_overview }}</h3>
+            <p id="overviewText">{{ result.symptoms }}</p>
+        </div>
+        
+        <div id="treatment" class="tab-content">
+            <h3>{{ t.recommended_treatment }}</h3>
+            <p id="treatmentText">{{ result.treatment }}</p>
+        </div>
+        
+        <div id="prevention" class="tab-content">
+            <h3>{{ t.prevention_tips }}</h3>
+            <p id="preventionText">{{ result.prevention }}</p>
+        </div>
+        
+        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+            <button class="cta-button" onclick="window.location.href='/scan'">
+                {{ t.scan_another }}
+            </button>
+            <button class="upload-button" id="saveResultBtn" onclick="saveResult()">
+                {{ t.save_results }}
+            </button>
+        </div>
+        
+        <div id="saveStatus" style="margin-top: 1rem;"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Global variable to store the current result
+let currentResult = {};
+
+// Function to handle image loading errors
+function handleImageError(img) {
+    console.log('Image failed to load:', img.src);
+    // Use SVG placeholder
+    img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiByeD0iOCIgZmlsbD0iI0Y4RjZGMiIvPgo8cGF0aCBkPSJNMTUwIDEwMEMxMjUuNjcgMTAwIDEwNiAxMTkuNjcgMTA2IDE0NEMxMDYgMTY4LjMzIDEyNS42NyAxODggMTUwIDE4OEMxNzQuMzMgMTg4IDE5NCAxNjguMzMgMTk0IDE0NEMxOTQgMTE5LjY3IDE3NC4zMyAxMDAgMTUwIDEwMFpNMTUwIDE4MEMxMjIuNCAxODAgMTAwIDIwMi40IDEwMCAyMzBWMTAwSDIwMFYyMzBDMTk5Ljk5OSAyMDIuNCAxNzcuNiAxODAgMTUwIDE4MFoiIGZpbGw9IiNENkQ2RDYiLz4KPC9zdmc+';
+    img.onerror = null; // Prevent infinite loop
+}
+
+// Function to load result from localStorage
+function loadResultFromStorage() {
+    try {
+        const savedResult = localStorage.getItem('lastScanResult');
+        console.log('Saved result from localStorage:', savedResult);
+        
+        if (savedResult) {
+            currentResult = JSON.parse(savedResult);
+            console.log('Parsed currentResult:', currentResult);
+            
+            // Update the page with actual results if available
+            if (currentResult.confidence) {
+                document.getElementById('confidenceValue').textContent = currentResult.confidence;
+            }
+            if (currentResult.disease_name) {
+                document.getElementById('diseaseName').textContent = currentResult.disease_name;
+            }
+            if (currentResult.prediction) {
+                const plantType = currentResult.prediction.split('___')[0];
+                document.getElementById('plantType').textContent = '{{ t.detected_in }} ' + plantType;
+            }
+            if (currentResult.description) {
+                document.getElementById('overviewText').textContent = currentResult.description;
+            }
+            if (currentResult.treatment) {
+                document.getElementById('treatmentText').textContent = currentResult.treatment;
+            }
+            if (currentResult.prevention) {
+                document.getElementById('preventionText').textContent = currentResult.prevention;
+            }
+            if (currentResult.uploaded_image) {
+                // Update the image source with the uploaded image
+                const resultImage = document.getElementById('resultImage');
+                resultImage.src = currentResult.uploaded_image;
+                console.log('Setting image source to:', currentResult.uploaded_image);
+            }
+        } else {
+            console.log('No saved result found in localStorage');
+        }
+    } catch (error) {
+        console.error('Error loading result from localStorage:', error);
+    }
+}
+
+// Save result function
+async function saveResult() {
+    const saveBtn = document.getElementById('saveResultBtn');
+    const saveStatus = document.getElementById('saveStatus');
+    
+    console.log('Current result before saving:', currentResult);
+    
+    if (!currentResult || Object.keys(currentResult).length === 0) {
+        showSaveStatus('{{ t.no_data_save }}', 'error');
+        return;
+    }
+    
+    // Prepare data for saving
+    const saveData = {
+        disease_name: currentResult.disease_name || currentResult.prediction || 'Unknown Disease',
+        prediction: currentResult.prediction || 'Unknown',
+        confidence: currentResult.confidence || 0,
+        description: currentResult.description || '',
+        symptoms: currentResult.symptoms || '',
+        treatment: currentResult.treatment || '',
+        prevention: currentResult.prevention || '',
+        uploaded_image: currentResult.uploaded_image || '{{ result.image_url }}',
+        language: currentResult.language || 'en'
+    };
+    
+    console.log('Data being saved:', saveData);
+    
+    // Disable button and show loading
+    saveBtn.disabled = true;
+    saveBtn.innerHTML = '<div class="loading" style="display: inline-block; margin-right: 0.5rem;"></div>{{ t.saving }}';
+    
+    try {
+        const response = await fetch('/save-result', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(saveData)
+        });
+        
+        const data = await response.json();
+        console.log('Save response:', data);
+        
+        if (data.status === 'success') {
+            showSaveStatus('{{ t.result_saved }}', 'success');
+            saveBtn.style.display = 'none';
+            
+            // Clear the localStorage after successful save
+            localStorage.removeItem('lastScanResult');
+        } else {
+            showSaveStatus('{{ t.save_error }}: ' + data.message, 'error');
+        }
+    } catch (error) {
+        console.error('Save error:', error);
+        showSaveStatus('{{ t.save_error }}: ' + error.message, 'error');
+    } finally {
+        saveBtn.disabled = false;
+        saveBtn.innerHTML = '{{ t.save_results }}';
+    }
+}
+
+function showSaveStatus(message, type) {
+    const saveStatus = document.getElementById('saveStatus');
+    saveStatus.innerHTML = '<div class="alert alert-' + type + '">' + message + '</div>';
+    saveStatus.style.display = 'block';
+    
+    setTimeout(function() {
+        saveStatus.style.display = 'none';
+    }, 5000);
+}
+
+// Tab functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            
+            // Update active tab
+            tabs.forEach(function(t) {
+                t.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // Update active tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(function(content) {
+                content.classList.remove('active');
+                if (content.id === tabName) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+    
+    // Load result from storage when page loads
+    loadResultFromStorage();
+});
+</script>
+{% endblock %}
+
+
+
+saved_result.html
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.dashboard }}</h1>
+
+<div class="results-container">
+    <div class="result-image-container">
+        <div class="image-wrapper">
+            <img src="{{ result.image_url if result.image_url and result.image_url.startswith('/') else '/static/images/placeholder-plant.jpg' }}" 
+                 alt="{{ result.disease_name or t.unknown_disease }}" 
+                 class="result-image"
+                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiByeD0iOCIgZmlsbD0iI0Y4RjZGMiIvPgo8cGF0aCBkPSJNMTUwIDEwMEMxMjUuNjcgMTAwIDEwNiAxMTkuNjcgMTA2IDE0NEMxMDYgMTY4LjMzIDEyNS42NyAxODggMTUwIDE4OEMxNzQuMzMgMTg4IDE5NCAxNjguMzMgMTk0IDE0NEMxOTQgMTE5LjY3IDE3NC4zMyAxMDAgMTUwIDEwMFpNMTUwIDE4MEMxMjIuNCAxODAgMTAwIDIwMi40IDEwMCAyMzBWMTAwSDIwMFYyMzBDMTk5Ljk5OSAyMDIuNCAxNzcuNiAxODAgMTUwIDE4MFoiIGZpbGw9IiNENkQ2RDYiLz4KPC9zdmc+'">
+        </div>
+        <div class="confidence-score">
+            {{ t.confidence }}: {{ result.confidence or 0 }}%
+        </div>
+        
+        <div style="margin-top: 1rem; text-align: center;">
+            <div style="font-size: 0.9rem; color: #666; margin-bottom: 0.5rem;">
+                {{ t.scanned_on }}
+            </div>
+            <div style="font-size: 0.8rem; color: #888;">
+                {% if result.timestamp %}
+                    {{ result.timestamp[:10] }} {{ t.at }} {{ result.timestamp[11:16] }}
+                {% else %}
+                    {{ t.unknown_date }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="result-details">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem; gap: 1rem;">
+            <div style="flex: 1;">
+                <h2 style="margin-bottom: 0.5rem; color: var(--forest-green);">{{ result.disease_name or result.prediction or t.unknown_disease }}</h2>
+                <p style="color: #666; margin: 0 0 0.5rem 0;">{{ t.detected_in }} {{ result.plant_type or t.unknown_plant }}</p>
+                <p style="color: #888; font-size: 0.9rem; margin: 0;">
+                    {{ t.scan_id }}: #{{ result.id or 'N/A' }}
+                </p>
+            </div>
+            <button class="delete-btn" data-result-id="{{ result.id }}" title="{{ t.delete_this_result }}">
+                🗑️
+            </button>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" data-tab="overview">{{ t.overview }}</button>
+            <button class="tab" data-tab="symptoms">{{ t.symptoms }}</button>
+            <button class="tab" data-tab="treatment">{{ t.treatment }}</button>
+            <button class="tab" data-tab="prevention">{{ t.prevention }}</button>
+        </div>
+        
+        <div id="overview" class="tab-content active">
+            <h3>{{ t.disease_overview }}</h3>
+            <div class="content-box">
+                {{ (result.description or t.no_information_available) | replace('\n', '<br>') | safe }}
+            </div>
+        </div>
+        
+        <div id="symptoms" class="tab-content">
+            <h3>{{ t.symptoms_overview }}</h3>
+            <div class="content-box">
+                {{ (result.symptoms or t.no_information_available) | replace('\n', '<br>') | replace('•', '•') | safe }}
+            </div>
+        </div>
+        
+        <div id="treatment" class="tab-content">
+            <h3>{{ t.recommended_treatment }}</h3>
+            <div class="content-box">
+                {{ (result.treatment or t.no_information_available) | replace('\n', '<br>') | replace('•', '•') | safe }}
+            </div>
+        </div>
+        
+        <div id="prevention" class="tab-content">
+            <h3>{{ t.prevention_tips }}</h3>
+            <div class="content-box">
+                {{ (result.prevention or t.no_information_available) | replace('\n', '<br>') | replace('•', '•') | safe }}
+            </div>
+        </div>
+        
+        <div style="margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="cta-button" onclick="window.location.href='/history'">
+                ← {{ t.back_to_history }}
+            </button>
+            <button class="cta-button" onclick="window.location.href='/scan'">
+                {{ t.scan_another }}
+            </button>
+            <button class="upload-button" onclick="window.location.href='/library'" style="background-color: var(--grey-medium); color: var(--charcoal);">
+                📚 {{ t.disease_library }}
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="deleteConfirmModal" class="modal" style="display: none;">
+    <div class="modal-content" style="max-width: 400px;">
+        <div class="modal-header">
+            <h3>{{ t.confirm_delete_title }}</h3>
+            <span class="close" onclick="closeDeleteModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <p style="margin-bottom: 1.5rem;">{{ t.confirm_delete_result }}</p>
+            <p style="margin-bottom: 1.5rem; color: #666; font-size: 0.9rem;">{{ t.action_cannot_undone }}</p>
+            <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                <button class="upload-button" onclick="closeDeleteModal()" style="background-color: var(--grey-medium);">
+                    {{ t.cancel }}
+                </button>
+                <button class="cta-button" id="confirmDeleteBtn" style="background-color: #f44336;">
+                    {{ t.yes_delete }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.results-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.result-image-container {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+    text-align: center;
+}
+
+.image-wrapper {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto 1rem auto;
+}
+
+.result-image {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.confidence-score {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--forest-green);
+    margin-bottom: 1rem;
+}
+
+.result-details {
+    background-color: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 12px var(--shadow);
+}
+
+.delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.75rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.delete-btn:hover {
+    background-color: #ffebee;
+    transform: scale(1.1);
+}
+
+.tabs {
+    display: flex;
+    border-bottom: 1px solid var(--grey-medium);
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.tab {
+    padding: 0.75rem 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    color: var(--charcoal);
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.tab:hover {
+    color: var(--forest-green);
+    background-color: var(--light-green);
+}
+
+.tab.active {
+    color: var(--forest-green);
+    border-bottom-color: var(--forest-green);
+}
+
+.tab-content {
+    display: none;
+    animation: fadeIn 0.3s ease;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.content-box {
+    background-color: var(--grey-light);
+    padding: 1.5rem;
+    border-radius: 8px;
+    line-height: 1.6;
+    color: #666;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.content-box::-webkit-scrollbar {
+    width: 6px;
+}
+
+.content-box::-webkit-scrollbar-track {
+    background: var(--grey-medium);
+    border-radius: 3px;
+}
+
+.content-box::-webkit-scrollbar-thumb {
+    background: var(--forest-green);
+    border-radius: 3px;
+}
+
+.content-box::-webkit-scrollbar-thumb:hover {
+    background: var(--sprout-green);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 12px;
+    max-width: 800px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    animation: modalFadeIn 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--grey-light);
+    background-color: var(--light-green);
+    border-radius: 12px 12px 0 0;
+}
+
+.modal-header h3 {
+    color: var(--forest-green);
+    margin: 0;
+    font-size: 1.25rem;
+}
+
+.close {
+    font-size: 2rem;
+    cursor: pointer;
+    color: var(--charcoal);
+    transition: color 0.3s ease;
+    line-height: 1;
+}
+
+.close:hover {
+    color: var(--forest-green);
+}
+
+.modal-body {
+    padding: 2rem;
+}
+
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .results-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .image-wrapper {
+        max-width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .results-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .result-details {
+        padding: 1rem;
+    }
+    
+    .tabs {
+        flex-direction: column;
+    }
+    
+    .tab {
+        padding: 1rem;
+        text-align: center;
+        border-bottom: 1px solid var(--grey-medium);
+        border-left: 2px solid transparent;
+    }
+    
+    .tab.active {
+        border-bottom: 1px solid var(--grey-medium);
+        border-left: 2px solid var(--forest-green);
+    }
+    
+    .content-box {
+        padding: 1rem;
+        max-height: 200px;
+    }
+    
+    .modal-content {
+        margin: 1rem;
+        max-height: 95vh;
+    }
+    
+    .modal-body {
+        padding: 1.5rem;
+    }
+}
+
+/* RTL Support */
+[dir="rtl"] .tabs {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .tab.active {
+    border-left: none;
+    border-right: 2px solid var(--forest-green);
+}
+
+[dir="rtl"] .result-image-container {
+    text-align: right;
+}
+
+[dir="rtl"] .content-box {
+    text-align: right;
+    direction: rtl;
+}
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Global variables
+let currentResultId = "{{ result.id or '' }}";
+
+// Function to delete result
+function deleteThisResult(resultId) {
+    currentResultId = resultId;
+    const modal = document.getElementById('deleteConfirmModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// Function to close delete modal
+function closeDeleteModal() {
+    const modal = document.getElementById('deleteConfirmModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Function to confirm delete
+async function confirmDelete() {
+    const deleteBtn = document.getElementById('confirmDeleteBtn');
+    if (!deleteBtn) return;
+    
+    const originalText = deleteBtn.innerHTML;
+    
+    try {
+        deleteBtn.innerHTML = '<div class="loading" style="display: inline-block; margin-right: 0.5rem;"></div>{{ t.loading_please_wait }}';
+        deleteBtn.disabled = true;
+        
+        const response = await fetch('/delete-result/' + currentResultId, {
+            method: 'DELETE'
+        });
+        
+        const data = await response.json();
+        
+        if (data.status === 'success') {
+            // Show success message and redirect
+            showNotification('{{ t.result_deleted_success }}', 'success');
+            setTimeout(function() {
+                window.location.href = '/history';
+            }, 1000);
+        } else {
+            alert('{{ t.error_deleting_result }}: ' + data.message);
+            closeDeleteModal();
+        }
+    } catch (error) {
+        alert('{{ t.error_deleting_result }}: ' + error.message);
+        closeDeleteModal();
+    } finally {
+        deleteBtn.innerHTML = originalText;
+        deleteBtn.disabled = false;
+    }
+}
+
+// Function to show notification
+function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = 'alert alert-' + type;
+    notification.style.cssText = 'position: fixed; top: 100px; right: 20px; z-index: 1001; animation: slideIn 0.3s ease;';
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(function() {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+
+// Set up confirm delete button
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', confirmDelete);
+    }
+    
+    // Use data-result-id to handle delete button clicks (avoids inline JS parsing issues)
+    document.addEventListener('click', function(event) {
+        const btn = event.target.closest && event.target.closest('.delete-btn');
+        if (btn) {
+            const id = btn.getAttribute('data-result-id');
+            if (id) {
+                deleteThisResult(id);
+            }
+        }
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('deleteConfirmModal');
+        if (event.target === modal) {
+            closeDeleteModal();
+        }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeDeleteModal();
+        }
+    });
+    
+    // Tab functionality
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(function(tab) {
+        tab.addEventListener('click', function() {
+            const tabName = this.getAttribute('data-tab');
+            
+            // Update active tab
+            tabs.forEach(function(t) {
+                t.classList.remove('active');
+            });
+            this.classList.add('active');
+            
+            // Update active tab content
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(function(content) {
+                content.classList.remove('active');
+                if (content.id === tabName) {
+                    content.classList.add('active');
+                }
+            });
+        });
+    });
+    
+    // Add animation when page loads
+    const resultImage = document.querySelector('.result-image-container');
+    const resultDetails = document.querySelector('.result-details');
+    
+    if (resultImage) {
+        resultImage.style.opacity = '0';
+        resultImage.style.transform = 'translateX(-20px)';
+    }
+    if (resultDetails) {
+        resultDetails.style.opacity = '0';
+        resultDetails.style.transform = 'translateX(20px)';
+    }
+    
+    setTimeout(function() {
+        if (resultImage) {
+            resultImage.style.transition = 'all 0.5s ease';
+            resultImage.style.opacity = '1';
+            resultImage.style.transform = 'translateX(0)';
+        }
+        if (resultDetails) {
+            resultDetails.style.transition = 'all 0.5s ease';
+            resultDetails.style.opacity = '1';
+            resultDetails.style.transform = 'translateX(0)';
+        }
+    }, 100);
+    
+    // Add CSS for notification animation
+    const style = document.createElement('style');
+    style.textContent = '@keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }';
+    document.head.appendChild(style);
+});
+</script>
+{% endblock %}
+
+
+
+
+
+
+scan.html
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.new_scan }}</h1>
+
+<div class="upload-area" id="uploadArea" style="min-height: 400px;">
+    <div class="upload-icon">📸</div>
+    <h2 class="upload-text" id="uploadText">{{ t.drag_image }}</h2>
+    <p style="margin-bottom: 1.5rem; color: #666;">{{ t.supported_formats }}</p>
+    
+    <form id="uploadForm" enctype="multipart/form-data">
+        <input type="file" id="fileInput" class="file-input" accept="image/*" name="file">
+        <button type="button" class="upload-button" id="uploadButton">
+            <span>{{ t.select_image }}</span>
+            <div class="loading" id="loadingSpinner" style="display: none;"></div>
+        </button>
+    </form>
+    
+    <!-- Language selection is now in the header -->
+</div>
+
+<div style="margin-top: 2rem; background-color: var(--white); padding: 1.5rem; border-radius: 12px;">
+    <h3 style="margin-bottom: 1rem; color: var(--charcoal);">{{ t.tips_best_results }}:</h3>
+    <ul style="color: #666; list-style-position: inside;">
+        <li>{{ t.tip_1 }}</li>
+        <li>{{ t.tip_2 }}</li>
+        <li>{{ t.tip_3 }}</li>
+        <li>{{ t.tip_4 }}</li>
+        <li>{{ t.tip_5 }}</li>
+    </ul>
+</div>
+
+<div id="resultAlert" style="display: none;"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const uploadArea = document.getElementById('uploadArea');
+    const fileInput = document.getElementById('fileInput');
+    const uploadButton = document.getElementById('uploadButton');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const uploadText = document.getElementById('uploadText');
+    const resultAlert = document.getElementById('resultAlert');
+
+    // Click on upload area triggers file input
+    uploadArea.addEventListener('click', function(e) {
+        if (e.target !== fileInput && e.target !== uploadButton) {
+            fileInput.click();
+        }
+    });
+
+    // File input change
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            handleFileSelection(this.files[0]);
+        }
+    });
+
+    async function handleFileSelection(file) {
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!allowedTypes.includes(file.type)) {
+            showAlert('Please select a valid image file (JPEG, PNG, or GIF).', 'error');
+            return;
+        }
+
+        // Validate file size (max 10MB)
+        if (file.size > 10 * 1024 * 1024) {
+            showAlert('File size must be less than 10MB.', 'error');
+            return;
+        }
+
+        // Show loading state
+        uploadButton.disabled = true;
+        uploadText.textContent = 'Processing...';
+        loadingSpinner.style.display = 'inline-block';
+
+        // Create FormData and send to server
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        // Get current language from the global selector
+        const language = document.getElementById('globalLanguage').value;
+        formData.append('language', language);
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            
+            // Store results and redirect to results page
+            // In the handleFileSelection function, after getting the prediction
+// Store results in localStorage and redirect to results page
+localStorage.setItem('lastScanResult', JSON.stringify(data));
+console.log("Result stored in localStorage:", data);
+
+// Ensure the uploaded_image path is correct
+if (data.uploaded_image && !data.uploaded_image.startsWith('/')) {
+    data.uploaded_image = '/uploads/' + data.uploaded_image;
+    localStorage.setItem('lastScanResult', JSON.stringify(data));
+}
+
+window.location.href = '/results';
+            
+        } catch (error) {
+            showAlert('Error uploading file: ' + error.message, 'error');
+        } finally {
+            // Reset loading state
+            uploadButton.disabled = false;
+            uploadText.textContent = '{{ t.drag_image }}';
+            loadingSpinner.style.display = 'none';
+            fileInput.value = '';
+        }
+    }
+
+    function showAlert(message, type = 'error') {
+        resultAlert.innerHTML = `
+            <div class="alert alert-${type}">
+                ${message}
+            </div>
+        `;
+        resultAlert.style.display = 'block';
+        
+        setTimeout(() => {
+            resultAlert.style.display = 'none';
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="dashboard-title">{{ t.my_garden }}</h1>
+
+<div style="background-color: var(--white); padding: 2rem; border-radius: 12px; text-align: center;">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">🌱</div>
+    <h2 style="margin-bottom: 1rem; color: var(--charcoal);">{{ t.my_garden }}</h2>
+    <p style="color: #666; margin-bottom: 2rem;">Track your plants and their health status here.</p>
+    <button class="cta-button" onclick="window.location.href='/scan'">
+        {{ t.new_scan }}
+    </button>
+</div>
+
+<div class="stats-grid" style="margin-top: 2rem;">
+    <div class="stat-card">
+        <div class="stat-value">8</div>
+        <div class="stat-label">{{ t.healthy_plants }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">3</div>
+        <div class="stat-label">{{ t.needs_attention }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">4</div>
+        <div class="stat-label">{{ t.under_treatment }}</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-value">15</div>
+        <div class="stat-label">{{ t.total_plants }}</div>
+    </div>
+</div>
+{% endblock %}

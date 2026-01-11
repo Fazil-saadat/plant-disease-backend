@@ -1,0 +1,28 @@
+OVERALL MODEL EVALUATION
+==================================================
+
+Test Accuracy: 0.9235
+Test Loss: 0.2109
+
+Overall Metrics (Weighted):
+Precision: 0.9360
+Recall: 0.9235
+F1-Score: 0.9231
+
+Classification Report:
+                                            precision    recall  f1-score   support
+
+                        Apple___Apple_scab       0.97      0.85      0.91      1000
+                         Apple___Black_rot       1.00      0.67      0.80      1000
+                  Apple___Cedar_apple_rust       0.95      0.99      0.97      1000
+                           Apple___healthy       0.77      1.00      0.87      1645
+                   Cherry___Powdery_mildew       1.00      0.93      0.96      1052
+                          Cherry___healthy       0.97      0.89      0.93      1000
+                         Grape___Black_rot       0.92      0.99      0.96      1180
+              Grape___Esca_(Black_Measles)       1.00      0.93      0.96      1383
+Grape___Leaf_blight_(Isariopsis_Leaf_Spot)       1.00      0.92      0.96      1076
+                           Grape___healthy       0.85      1.00      0.92      1000
+
+                                  accuracy                           0.92     11336
+                                 macro avg       0.94      0.92      0.92     11336
+                              weighted avg       0.94      0.92      0.92     11336

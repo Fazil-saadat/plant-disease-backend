@@ -1,17 +1,20 @@
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, Request, Cookie, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import tensorflow as tf
 import numpy as np
 import json
 import os
 from PIL import Image
-
+from datetime import datetime
+from typing import List, Dict, Any
 IMG_SIZE = 160
 MODEL_PATH = "model/model.keras"
 CLASSES_JSON = "metadata/classes.json"
 UPLOAD_DIR = "uploads"
+RESULTS_FILE = "saved_results.json"
 
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
@@ -22,7 +25,7 @@ model = tf.keras.models.load_model(MODEL_PATH)
 with open(CLASSES_JSON, "r") as f:
     classes_dict = json.load(f)
 
-app = FastAPI(title="Plant Disease Classifier")
+app = FastAPI(title="Plant Guard - Plant Disease Classifier")
 
 # Allow mobile app or frontend to access the backend
 app.add_middleware(
@@ -33,12 +36,452 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount static directories
-app.mount("/css", StaticFiles(directory="static/css"), name="css")
-app.mount("/js", StaticFiles(directory="static/js"), name="js")
-app.mount("/images", StaticFiles(directory="static/images"), name="images")
+# Mount static directories FIRST
+app.mount("/static", StaticFiles(directory="static"), name="static")
 app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
+# Setup templates AFTER static files
+templates = Jinja2Templates(directory="templates")
+
+# Add static URL function to templates
+templates.env.globals['url_for'] = lambda name, **params: f"/static/{params.get('filename', '')}"
+
+# Language translations for UI
+# Add these complete translations to your UI_TRANSLATIONS in main.py
+UI_TRANSLATIONS = {
+    "en": {
+        # Navigation & Pages
+        "dashboard": "Dashboard",
+        "new_scan": "New Scan",
+        "scan_history": "Scan History",
+        "disease_library": "Disease Library",
+        "my_garden": "My Garden",
+        "settings": "Settings",
+        
+        # Dashboard Statistics
+        "total_scans": "Total Scans",
+        "plants_in_garden": "Plants in Garden",
+        "avg_confidence": "Avg. Confidence Score",
+        "top_disease": "Top Disease",
+        "recent_history": "Recent History",
+        "recent_scans": "Recent Scans",
+        "view_all_history": "View All History",
+        
+        # Scan & Upload
+        "drag_image": "Drag image here or click to upload",
+        "select_image": "Select Image",
+        "select_language": "Select Language",
+        "supported_formats": "Supported formats: JPEG, PNG, GIF (Max 10MB)",
+        "scan_another": "Scan Another Plant",
+        "scan_again": "Scan Again",
+        
+        # Results & Saving
+        "save_results": "Save Results",
+        "confidence": "Confidence",
+        "detected_in": "Detected in",
+        "saving": "Saving...",
+        "result_saved": "Result saved successfully!",
+        "save_error": "Error saving result",
+        "no_data_save": "No result data to save",
+        "save_successful": "Save successful",
+        "save_failed_try_again": "Save failed, please try again",
+        
+        # Disease Information
+        "overview": "Overview",
+        "treatment": "Treatment",
+        "prevention": "Prevention",
+        "symptoms": "Symptoms",
+        "disease_overview": "Disease Overview",
+        "recommended_treatment": "Recommended Treatment",
+        "prevention_tips": "Prevention Tips",
+        "symptoms_overview": "Symptoms Overview",
+        "disease_information": "Disease Information",
+        "prevention_methods": "Prevention Methods",
+        "treatment_options": "Treatment Options",
+        
+        # Health Status
+        "healthy": "Healthy",
+        "disease": "Disease",
+        "healthy_plants": "Healthy Plants",
+        "needs_attention": "Needs Attention",
+        "under_treatment": "Under Treatment",
+        "total_plants": "Total Plants",
+        
+        # Tips
+        "tips_best_results": "Tips for Best Results",
+        "tip_1": "Take photos in good lighting conditions",
+        "tip_2": "Focus on the affected leaves or areas",
+        "tip_3": "Include both healthy and unhealthy parts for comparison",
+        "tip_4": "Take multiple angles if possible",
+        "tip_5": "Ensure the image is clear and not blurry",
+        
+        # Library & Search
+        "search_diseases": "Search diseases...",
+        "search_placeholder": "Search diseases or plants...",
+        "all_plants": "All Plants",
+        "all_conditions": "All Conditions",
+        "diseases_only": "Diseases Only",
+        "healthy_plants_only": "Healthy Plants Only",
+        "clear_filters": "Clear Filters",
+        "total_conditions": "Total Conditions",
+        "plant_types": "Plant Types",
+        "showing_all_conditions": "Showing all conditions",
+        "no_diseases_found": "No diseases found",
+        "try_adjusting_search": "Try adjusting your search or filters",
+        "scan_this_disease": "Scan for this disease",
+        "view_details": "View Details",
+        "view_in_library": "View in Library",
+        
+        # History & Management
+        "delete_result": "Delete",
+        "delete_result_title": "Delete this result",
+        "delete_this_result": "Delete this result",
+        "clear_all": "Clear All Results",
+        "confirm_delete": "Are you sure you want to delete this result?",
+        "confirm_delete_result": "Are you sure you want to delete this result?",
+        "confirm_delete_title": "Confirm Delete",
+        "confirm_clear_all": "Are you sure you want to delete all saved results?",
+        "confirm_clear": "Confirm Clear All",
+        "action_cannot_undone": "This action cannot be undone.",
+        "yes_delete": "Yes, Delete",
+        "yes_clear_all": "Yes, Clear All",
+        "back_history": "Back to History",
+        "back_to_history": "Back to History",
+        "back_to_dashboard": "Back to Dashboard",
+        "scanned_on": "Scanned on",
+        "at": "at",
+        "total_saved_results": "Total saved results",
+        "no_saved_results": "No Saved Results",
+        "history_will_appear": "Your scan history will appear here once you save some results.",
+        "result_deleted": "Result deleted successfully",
+        "result_deleted_success": "Result deleted successfully",
+        "all_results_cleared": "All results cleared successfully",
+        "error_deleting": "Error deleting result",
+        "error_deleting_result": "Error deleting result",
+        "error_clearing": "Error clearing results",
+        "error_clearing_results": "Error clearing results",
+        
+        # General UI
+        "close": "Close",
+        "cancel": "Cancel",
+        "loading": "Loading...",
+        "loading_please_wait": "Loading, please wait...",
+        "scan_for_disease": "Scan for this Disease",
+        "redirecting_scan": "Redirecting to scan page for",
+        "proceed_scan": "Proceed to Scan",
+        "scan_id": "ID",
+        "unknown_disease": "Unknown Disease",
+        "unknown_plant": "Unknown Plant",
+        "unknown_date": "Unknown date",
+        "no_information_available": "No information available",
+        "no_results_found": "No results found",
+        "start_scanning_to_see_results": "Start scanning to see results here",
+        "scan_details": "Scan Details",
+        "quick_actions": "Quick Actions",
+        
+        # Filter & Sort
+        "filter_by_plant": "Filter by Plant",
+        "filter_by_disease": "Filter by Disease",
+        "sort_by_date": "Sort by Date",
+        "sort_by_confidence": "Sort by Confidence",
+        "newest_first": "Newest First",
+        "oldest_first": "Oldest First",
+        "high_confidence_first": "High Confidence First",
+        "low_confidence_first": "Low Confidence First",
+        
+        # Delete & Error Messages
+        "delete_failed": "Delete failed",
+        "delete_failed_try_again": "Delete failed, please try again"
+    },
+    "fa": {
+        # Navigation & Pages
+        "dashboard": "داشبورد",
+        "new_scan": "اسکن جدید",
+        "scan_history": "تاریخچه اسکن",
+        "disease_library": "کتابخانه بیماری‌ها",
+        "my_garden": "باغ من",
+        "settings": "تنظیمات",
+        
+        # Dashboard Statistics
+        "total_scans": "کل اسکن‌ها",
+        "plants_in_garden": "گیاهان در باغ",
+        "avg_confidence": "میانگین امتیاز اطمینان",
+        "top_disease": "بیماری شایع",
+        "recent_history": "تاریخچه اخیر",
+        "recent_scans": "اسکن‌های اخیر",
+        "view_all_history": "مشاهده تمام تاریخچه",
+        
+        # Scan & Upload
+        "drag_image": "عکس را اینجا بکشید یا کلیک کنید",
+        "select_image": "انتخاب عکس",
+        "select_language": "انتخاب زبان",
+        "supported_formats": "فرمت‌های پشتیبانی شده: JPEG, PNG, GIF (حداکثر ۱۰ مگابایت)",
+        "scan_another": "اسکن گیاه دیگر",
+        "scan_again": "اسکن مجدد",
+        
+        # Results & Saving
+        "save_results": "ذخیره نتایج",
+        "confidence": "اطمینان",
+        "detected_in": "تشخیص داده شده در",
+        "saving": "در حال ذخیره...",
+        "result_saved": "نتیجه با موفقیت ذخیره شد!",
+        "save_error": "خطا در ذخیره نتیجه",
+        "no_data_save": "داده‌ای برای ذخیره وجود ندارد",
+        "save_successful": "ذخیره سازی موفق",
+        "save_failed_try_again": "ذخیره سازی ناموفق، لطفا دوباره تلاش کنید",
+        
+        # Disease Information
+        "overview": "بررسی کلی",
+        "treatment": "درمان",
+        "prevention": "پیشگیری",
+        "symptoms": "علائم",
+        "disease_overview": "بررسی کلی بیماری",
+        "recommended_treatment": "درمان توصیه شده",
+        "prevention_tips": "نکات پیشگیری",
+        "symptoms_overview": "بررسی علائم",
+        "disease_information": "اطلاعات بیماری",
+        "prevention_methods": "روش‌های پیشگیری",
+        "treatment_options": "گزینه‌های درمان",
+        
+        # Health Status
+        "healthy": "سالم",
+        "disease": "بیماری",
+        "healthy_plants": "گیاهان سالم",
+        "needs_attention": "نیاز به توجه",
+        "under_treatment": "در حال درمان",
+        "total_plants": "کل گیاهان",
+        
+        # Tips
+        "tips_best_results": "نکات برای بهترین نتایج",
+        "tip_1": "عکس‌ها را در شرایط نوری مناسب بگیرید",
+        "tip_2": "بر روی برگ‌ها یا مناطق آسیب دیده تمرکز کنید",
+        "tip_3": "قسمت‌های سالم و ناسالم را برای مقایسه شامل شوید",
+        "tip_4": "در صورت امکان از زوایای مختلف عکس بگیرید",
+        "tip_5": "اطمینان حاصل کنید که تصویر واضح و بدون تاری باشد",
+        
+        # Library & Search
+        "search_diseases": "جستجوی بیماری‌ها...",
+        "search_placeholder": "جستجوی بیماری‌ها یا گیاهان...",
+        "all_plants": "تمام گیاهان",
+        "all_conditions": "تمام شرایط",
+        "diseases_only": "فقط بیماری‌ها",
+        "healthy_plants_only": "فقط گیاهان سالم",
+        "clear_filters": "پاک کردن فیلترها",
+        "total_conditions": "کل شرایط",
+        "plant_types": "انواع گیاهان",
+        "showing_all_conditions": "نمایش تمام شرایط",
+        "no_diseases_found": "هیچ بیماری یافت نشد",
+        "try_adjusting_search": "سعی کنید جستجو یا فیلترهای خود را تنظیم کنید",
+        "scan_this_disease": "اسکن برای این بیماری",
+        "view_details": "مشاهده جزئیات",
+        "view_in_library": "مشاهده در کتابخانه",
+        
+        # History & Management
+        "delete_result": "حذف",
+        "delete_result_title": "این نتیجه را حذف کنید",
+        "delete_this_result": "این نتیجه را حذف کنید",
+        "clear_all": "پاک کردن تمام نتایج",
+        "confirm_delete": "آیا مطمئن هستید که می‌خواهید این نتیجه را حذف کنید؟",
+        "confirm_delete_result": "آیا مطمئن هستید که می‌خواهید این نتیجه را حذف کنید؟",
+        "confirm_delete_title": "تأیید حذف",
+        "confirm_clear_all": "آیا مطمئن هستید که می‌خواهید تمام نتایج ذخیره شده را حذف کنید؟",
+        "confirm_clear": "تأیید پاک کردن همه",
+        "action_cannot_undone": "این عمل قابل بازگشت نیست.",
+        "yes_delete": "بله، حذف کن",
+        "yes_clear_all": "بله، همه را پاک کن",
+        "back_history": "بازگشت به تاریخچه",
+        "back_to_history": "بازگشت به تاریخچه",
+        "back_to_dashboard": "بازگشت به داشبورد",
+        "scanned_on": "اسکن شده در",
+        "at": "ساعت",
+        "total_saved_results": "تعداد کل نتایج ذخیره شده",
+        "no_saved_results": "هیچ نتیجه ذخیره شده‌ای وجود ندارد",
+        "history_will_appear": "تاریخچه اسکن شما پس از ذخیره چند نتیجه در اینجا ظاهر می‌شود.",
+        "result_deleted": "نتیجه با موفقیت حذف شد",
+        "result_deleted_success": "نتیجه با موفقیت حذف شد",
+        "all_results_cleared": "تمامی نتایج با موفقیت پاک شدند",
+        "error_deleting": "خطا در حذف نتیجه",
+        "error_deleting_result": "خطا در حذف نتیجه",
+        "error_clearing": "خطا در پاک کردن نتایج",
+        "error_clearing_results": "خطا در پاک کردن نتایج",
+        
+        # General UI
+        "close": "بستن",
+        "cancel": "لغو",
+        "loading": "در حال بارگذاری...",
+        "loading_please_wait": "در حال بارگذاری، لطفا صبر کنید...",
+        "scan_for_disease": "اسکن برای این بیماری",
+        "redirecting_scan": "در حال انتقال به صفحه اسکن برای",
+        "proceed_scan": "ادامه به اسکن",
+        "scan_id": "شناسه",
+        "unknown_disease": "بیماری ناشناخته",
+        "unknown_plant": "گیاه ناشناخته",
+        "unknown_date": "تاریخ نامعلوم",
+        "no_information_available": "هیچ اطلاعاتی در دسترس نیست",
+        "no_results_found": "هیچ نتیجه‌ای یافت نشد",
+        "start_scanning_to_see_results": "برای دیدن نتایج اینجا، اسکن را شروع کنید",
+        "scan_details": "جزئیات اسکن",
+        "quick_actions": "اقدامات سریع",
+        
+        # Filter & Sort
+        "filter_by_plant": "فیلتر بر اساس گیاه",
+        "filter_by_disease": "فیلتر بر اساس بیماری",
+        "sort_by_date": "مرتب سازی بر اساس تاریخ",
+        "sort_by_confidence": "مرتب سازی بر اساس اطمینان",
+        "newest_first": "جدیدترین اول",
+        "oldest_first": "قدیمی‌ترین اول",
+        "high_confidence_first": "اطمینان بالا اول",
+        "low_confidence_first": "اطمینان پایین اول",
+        
+        # Delete & Error Messages
+        "delete_failed": "حذف ناموفق بود",
+        "delete_failed_try_again": "حذف ناموفق بود، لطفا دوباره تلاش کنید"
+    },
+    "ps": {
+        # Navigation & Pages
+        "dashboard": "ډشبورډ",
+        "new_scan": "نۍ سکان",
+        "scan_history": "د سکان تاریخ",
+        "disease_library": "د ناروغیو کتابتون",
+        "my_garden": "زما بڼۍ",
+        "settings": "امستنې",
+        
+        # Dashboard Statistics
+        "total_scans": "ټول سکانونه",
+        "plants_in_garden": "په بڼۍ کې نباتات",
+        "avg_confidence": "د اطمینان منځنی نمره",
+        "top_disease": "مشهوره ناروغي",
+        "recent_history": "تازه تاریخ",
+        "recent_scans": "تازه سکانونه",
+        "view_all_history": "ټول تاریخ وګورئ",
+        
+        # Scan & Upload
+        "drag_image": "انځور دلته راکاږئ یا کلیک وکړئ",
+        "select_image": "انځور غوره کړئ",
+        "select_language": "ژبه غوره کړئ",
+        "supported_formats": "مترلودل شوي فورمټونه: JPEG, PNG, GIF (اعظمي ۱۰ میګابایټ)",
+        "scan_another": "بل نبات سکان کړئ",
+        "scan_again": "بیا سکان کړئ",
+        
+        # Results & Saving
+        "save_results": "پایلې خوندي کړئ",
+        "confidence": "اطمینان",
+        "detected_in": "په کې کشف شو",
+        "saving": "په خوندي کولو کې...",
+        "result_saved": "پایله په بریالیتوب سره خوندي شوه!",
+        "save_error": "په پایله خوندي کولو کې ستونزه",
+        "no_data_save": "د خوندي کولو لپاره هیڅ معلومات نشته",
+        "save_successful": "خوندي کول بریالي شول",
+        "save_failed_try_again": "خوندي کول ناکام شول، بیا هڅه وکړئ",
+        
+        # Disease Information
+        "overview": "کتنه",
+        "treatment": "درملنه",
+        "prevention": "مخنیوی",
+        "symptoms": "نښې نښانې",
+        "disease_overview": "د ناروغۍ کتنه",
+        "recommended_treatment": "مشوره شوې درملنه",
+        "prevention_tips": "د مخنیوي لارښوونې",
+        "symptoms_overview": "د نښو کتنه",
+        "disease_information": "د ناروغۍ معلومات",
+        "prevention_methods": "د مخنیوي لارې",
+        "treatment_options": "د درملنې انتخابونه",
+        
+        # Health Status
+        "healthy": "تندرست",
+        "disease": "ناروغي",
+        "healthy_plants": "تندرست نباتات",
+        "needs_attention": "پاملرنې ته اړتیا لري",
+        "under_treatment": "په درملنه کې",
+        "total_plants": "ټول نباتات",
+        
+        # Tips
+        "tips_best_results": "د غوره پایلو لپاره لارښوونې",
+        "tip_1": "عکسونه په ښه رڼا شرایطو کې واخلئ",
+        "tip_2": "په ناروغه پاڼو یا سیمو تمرکز وکړئ",
+        "tip_3": "د پرتلې لپاره تندرستې او ناروغې برخې شاملې کړئ",
+        "tip_4": "که ممکنه وي له مختلفو زاویو عکس واخلئ",
+        "tip_5": "ډاډمن اسیږئ چې انځور واضح او بې ګډوډي وي",
+        
+        # Library & Search
+        "search_diseases": "د ناروغیو لټون...",
+        "search_placeholder": "د ناروغیو یا نباتاتو لټون...",
+        "all_plants": "ټول نباتات",
+        "all_conditions": "ټول حالتونه",
+        "diseases_only": "یوازې ناروغۍ",
+        "healthy_plants_only": "یوازې تندرست نباتات",
+        "clear_filters": "فیلترونه پاک کړئ",
+        "total_conditions": "ټول حالتونه",
+        "plant_types": "د نباتاتو ډولونه",
+        "showing_all_conditions": "ټول حالتونه ښکاره کوي",
+        "no_diseases_found": "هیڅ ناروغي ونه موندل شوه",
+        "try_adjusting_search": "خپل لټون یا فیلترونه سم کړئ",
+        "scan_this_disease": "د دې ناروغۍ لپاره سکان کړئ",
+        "view_details": "تفصیلات وګورئ",
+        "view_in_library": "په کتابتون کې وګورئ",
+        
+        # History & Management
+        "delete_result": "ړنګول",
+        "delete_result_title": "دا پایله ړنګه کړئ",
+        "delete_this_result": "دا پایله ړنګه کړئ",
+        "clear_all": "ټولې پایلې پاکې کړئ",
+        "confirm_delete": "آیا تاسو ډاډه یاست چې غواړئ دا پایله ړنګه کړئ؟",
+        "confirm_delete_result": "آیا تاسو ډاډه یاست چې غواړئ دا پایله ړنګه کړئ؟",
+        "confirm_delete_title": "د ړنګولو تصدیق",
+        "confirm_clear_all": "آیا تاسو ډاډه یاست چې غواړئ ټولې خوندي شوې پایلې ړنګې کړئ؟",
+        "confirm_clear": "د ټولو پاکولو تصدیق",
+        "action_cannot_undone": "دا عمل بیرته اخیستل کیدی نه شي.",
+        "yes_delete": "هو، ړنګه کړئ",
+        "yes_clear_all": "هو، ټولې پاکې کړئ",
+        "back_history": "بیرته تاریخ ته",
+        "back_to_history": "بیرته تاریخ ته",
+        "back_to_dashboard": "بیرته ډشبورډ ته",
+        "scanned_on": "سکان شوی په",
+        "at": "کې",
+        "total_saved_results": "ټولې خوندي شوې پایلې",
+        "no_saved_results": "هیڅ خوندي شوې پایله نشته",
+        "history_will_appear": "ستاسو د سکان تاریخ به دلته ښکاره شي کله چې تاسو یو څو پایلې خوندي کړئ.",
+        "result_deleted": "پایله په بریالیتوب سره ړنګه شوه",
+        "result_deleted_success": "پایله په بریالیتوب سره ړنګه شوه",
+        "all_results_cleared": "ټولې پایلې په بریالیتوب سره پاکې شوې",
+        "error_deleting": "په پایله ړنګولو کې ستونزه",
+        "error_deleting_result": "په پایله ړنګولو کې ستونزه",
+        "error_clearing": "په پایلې پاکولو کې ستونزه",
+        "error_clearing_results": "په پایلې پاکولو کې ستونزه",
+        
+        # General UI
+        "close": "تړل",
+        "cancel": "لغوه کول",
+        "loading": "په بار کولو کې...",
+        "loading_please_wait": "په بار کولو کې، لطفا انتظار وکړئ...",
+        "scan_for_disease": "د دې ناروغۍ لپاره سکان کړئ",
+        "redirecting_scan": "د سکان پاڼې ته لیږدول کيږي لپاره",
+        "proceed_scan": "سکان ته ادامه ورکړئ",
+        "scan_id": "آی ډي",
+        "unknown_disease": "ناجوړه ناروغي",
+        "unknown_plant": "ناجوړ نبات",
+        "unknown_date": "ناجوړه نیټه",
+        "no_information_available": "هیڅ معلومات نشته",
+        "no_results_found": "هیڅ پایله ونه موندل شوه",
+        "start_scanning_to_see_results": "د پایلو د لیدلو لپاره دلته، سکان پیل کړئ",
+        "scan_details": "د سکان تفصیلات",
+        "quick_actions": "چټک عملونه",
+        
+        # Filter & Sort
+        "filter_by_plant": "د نبات په اساس فلټر کړئ",
+        "filter_by_disease": "د ناروغۍ په اساس فلټر کړئ",
+        "sort_by_date": "د نیټې په اساس ترتیب کړئ",
+        "sort_by_confidence": "د اطمینان په اساس ترتیب کړئ",
+        "newest_first": "نوي لومړی",
+        "oldest_first": "زوړ لومړی",
+        "high_confidence_first": "لوړ اطمینان لومړی",
+        "low_confidence_first": "ټیټ اطمینان لومړی",
+        
+        # Delete & Error Messages
+        "delete_failed": "ړنګول ناکام شول",
+        "delete_failed_try_again": "ړنګول ناکام شول، بیا هڅه وکړئ"
+    }
+}
 # Multi-language disease database
 # disease_data.py
 DISEASE_DATABASE = {
@@ -48,21 +491,24 @@ DISEASE_DATABASE = {
             "description": "A fungal disease caused by Venturia inaequalis that affects apple trees, causing dark, scaly lesions on leaves, fruits, and twigs.",
             "symptoms": "• Olive-green to black spots on leaves\n• Velvety, dark lesions on fruits\n• Yellowing and premature leaf drop\n• Cracked and deformed fruits\n• Twig lesions and cankers",
             "treatment": "• Apply fungicides like captan, myclobutanil, or sulfur\n• Remove and destroy infected leaves and fruits\n• Prune trees for better air circulation\n• Use resistant apple varieties like Liberty or Freedom\n• Apply dormant sprays in early spring",
-            "prevention": "• Plant resistant apple varieties\n• Ensure proper tree spacing (15-20 feet apart)\n• Clean up fallen leaves in autumn\n• Avoid overhead watering\n• Apply preventative fungicides before infection"
+            "prevention": "• Plant resistant apple varieties\n• Ensure proper tree spacing (15-20 feet apart)\n• Clean up fallen leaves in autumn\n• Avoid overhead watering\n• Apply preventative fungicides before infection",
+            "image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "زنگار سیب",
             "description": "یک بیماری قارچی ناشی از Venturia inaequalis که درختان سیب را تحت تاثیر قرار می‌دهد و باعث ایجاد زخم‌های تیره و پوسته پوسته بر روی برگ‌ها، میوه‌ها و شاخه‌ها می‌شود.",
             "symptoms": "• لکه‌های زیتونی تا سیاه روی برگ‌ها\n• زخم‌های مخملی و تیره روی میوه‌ها\n• زردی و ریزش زودرس برگ‌ها\n• میوه‌های ترک خورده و بدشکل\n• زخم و شانکر روی شاخه‌ها",
             "treatment": "• استفاده از قارچ‌کش‌هایی مانند کاپتان، میکلوبوتانیل یا گوگرد\n• حذف و نابودی برگ‌ها و میوه‌های آلوده\n• هرس درختان برای گردش هوای بهتر\n• استفاده از انواع مقاوم سیب مانند لیبرتی یا فریدم\n• استفاده از اسپری‌های خواب در اوایل بهار",
-            "prevention": "• کاشت انواع مقاوم سیب\n• اطمینان از فاصله مناسب بین درختان (۱۵-۲۰ فوت)\n• تمیز کردن برگ‌های ریخته در پاییز\n• جلوگیری از آبیاری از بالا\n• استفاده از قارچ‌کش‌های پیشگیرانه قبل از عفونت"
+            "prevention": "• کاشت انواع مقاوم سیب\n• اطمینان از فاصله مناسب بین درختان (۱۵-۲۰ فوت)\n• تمیز کردن برگ‌های ریخته در پاییز\n• جلوگیری از آبیاری از بالا\n• استفاده از قارچ‌کش‌های پیشگیرانه قبل از عفونت",
+            "image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د سیب زنگار",
             "description": "د Venturia inaequalis په واسطه یوه فنجي ناروغي ده چې د سیب ونی اغیزه کوي او د پاڼو، میوو او څاخو په سر تیاره او پوړ پوړ زخمونه رامنځته کوي.",
             "symptoms": "• د زیتون څخه تورو ته د پاڼو په سر داغونه\n• د میوو په سر مخملي، تیاره زخمونه\n• د پاڼو ژیړوالی او مخکینۍ لوېدل\n• ماتې شوې او بې شکلې میوې\n• د څاخو په سر زخمونه او شانکرونه",
             "treatment": "• د کاپتان، میکلوبوتانیل یا ګوګړ په څیر فنجي وژونکي کارول\n• ناروغه پاڼې او میوې لرې کول او ویجاړول\n• د هوا د غوره تبادلې لپاره ونی پرې کول\n• د سیب د مقاومو ډولونو کارول لکه لیبرتی یا فریدم\n• د پسرلي په لومړیو کې د خوب اسپري کارول",
-            "prevention": "• د سیب مقاوم ډولونه کرل\n• د ونو ترمنځ د مناسب فاصلې ډاډمنول (۱۵-۲۰ فټه)\n• په مني کې د تلو پاڼو پاکول\n• د پاسه اوبو کولو څخه مخنیوی\n• د ناروغۍ مخنیوي لپاره فنجي وژونکي کارول"
+            "prevention": "• د سیب مقاوم ډولونه کرل\n• د ونو ترمنځ د مناسب فاصلې ډاډمنول (۱۵-۲۰ فټه)\n• په مني کې د تلو پاڼو پاکول\n• د پاسه اوبو کولو څخه مخنیوی\n• د ناروغۍ مخنیوي لپاره فنجي وژونکي کارول",
+            "image_name": "apple_scab"
         }
     },
 
@@ -73,6 +519,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Frogeye leaf spots with purple margins\n• Black, rotting fruits with concentric rings\n• Red-brown cankers on branches\n• Premature fruit drop\n• Mummified fruits hanging on tree",
             "treatment": "• Prune and destroy infected branches\n• Apply fungicide sprays during growing season\n• Remove mummified fruits from tree\n• Improve air circulation through pruning\n• Use copper-based fungicides",
             "prevention": "• Practice good orchard sanitation\n• Remove infected plant material promptly\n• Avoid wounding fruits during handling\n• Use proper pruning techniques\n• Maintain tree vigor with proper nutrition"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "پوسیدگی سیاه سیب",
@@ -80,6 +527,7 @@ DISEASE_DATABASE = {
             "symptoms": "• لکه‌های چشم قورباغه‌ای روی برگ با حاشیه بنفش\n• میوه‌های سیاه و پوسیده با حلقه‌های متحدالمرکز\n• شانکرهای قهوه‌ای مایل به قرمز روی شاخه‌ها\n• ریزش زودرس میوه\n• میوه‌های مومیایی شده آویزان روی درخت",
             "treatment": "• هرس و نابودی شاخه‌های آلوده\n• استفاده از اسپری‌های قارچ‌کش در طول فصل رشد\n• حذف میوه‌های مومیایی شده از درخت\n• بهبود گردش هوا از طریق هرس\n• استفاده از قارچ‌کش‌های مبتنی بر مس",
             "prevention": "• رعایت بهداشت خوب باغ\n• حذف سریع مواد گیاهی آلوده\n• جلوگیری از زخمی شدن میوه‌ها در حین جابجایی\n• استفاده از تکنیک‌های هرس مناسب\n• حفظ قدرت درخت با تغذیه مناسب"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د سیب تور پوسیدگی",
@@ -87,6 +535,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو په سر د چنجې ښکارۍ داغونه د ارغواني څنډو سره\n• تورې، پوسیدلې میوې د متمرکزو حلقو سره\n• د څانګو په سر سور-نسواري شانکرونه\n• د میوو مخکینۍ لوېدل\n• په ونه کې د مومیایی شویو میوو ځوړندېدل",
             "treatment": "• ناروغې څانګې پرې کول او ویجاړول\n• د ودی په موسم کې د فنجي وژونکو اسپري کارول\n• د ونی څخه مومیایی شوې میوې لرې کول\n• د پرې کولو له لارې د هوا تبادله ښه کول\n• د مس پر بنسټ فنجي وژونکي کارول",
             "prevention": "• د باغ ښه بهداشت تمرین کول\n• په چټکۍ سره ناروغه نباتي مواد لرې کول\n• د میوو د لاسرسي په وخت کې د میوو زخمي کولو څخه مخنیوی\n• د مناسب پرې کولو تخنیکونو کارول\n• د مناسب تغذیې سره د ونی قوت ساتل"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -97,6 +546,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Yellow-orange spots on upper leaf surfaces\n• Tube-like structures on lower leaf surfaces\n• Cedar galls on juniper trees\n• Premature leaf drop\n• Reduced fruit quality and yield",
             "treatment": "• Remove nearby juniper hosts within 2 miles\n• Apply protective fungicides in early spring\n• Use resistant apple varieties\n• Prune infected branches\n• Apply fungicides at pink bud stage",
             "prevention": "• Plant resistant apple varieties\n• Eliminate juniper hosts in vicinity\n• Apply preventative fungicides before symptoms appear\n• Monitor trees regularly for early detection\n• Improve air circulation around trees"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "زنگار سدر و سیب",
@@ -104,6 +554,7 @@ DISEASE_DATABASE = {
             "symptoms": "• لکه‌های زرد-نارنجی روی سطوح بالایی برگ\n• ساختارهای لوله‌ای روی سطوح زیرین برگ\n• گال‌های سدر روی درختان سدر\n• ریزش زودرس برگ\n• کاهش کیفیت و عملکرد میوه",
             "treatment": "• حذف میزبان‌های سدر مجاور در فاصله ۲ مایلی\n• استفاده از قارچ‌کش‌های محافظ در اوایل بهار\n• استفاده از انواع مقاوم سیب\n• هرس شاخه‌های آلوده\n• استفاده از قارچ‌کش در مرحله غنچه صورتی",
             "prevention": "• کاشت انواع مقاوم سیب\n• حذف میزبان‌های سدر در مجاورت\n• استفاده از قارچ‌کش‌های پیشگیرانه قبل از ظهور علائم\n• نظارت منظم بر درختان برای تشخیص زودرس\n• بهبود گردش هوا در اطراف درختان"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د سدر او سیب زنگار",
@@ -111,6 +562,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو د پورتنۍ سطحو په سر ژیړ-نارنجي داغونه\n• د پاڼو د لاندینۍ سطحو په سر د ټیوب په څیر ساختمانونه\n• د سدر په ونسو کې د سدر ګالونه\n• د پاڼو مخکینۍ لوېدل\n• د میوو د کیفیت او حاصل کمښت",
             "treatment": "• د ۲ مایلونو په فاصله کې نږدې سدر میزبانان لرې کول\n• د پسرلي په لومړیو کې د ساتونکو فنجي وژونکو کارول\n• د سیب مقاوم ډولونه کارول\n• ناروغې څانګې پرې کول\n• د ګلابي غوټۍ په مرحله کې فنجي وژونکي کارول",
             "prevention": "• د سیب مقاوم ډولونه کرل\n• په شاوخوا کې د سدر میزبانان له منځه وړل\n• د نښو د څرګندیدو څخه مخکې د مخنیوي فنجي وژونکي کارول\n• د لومړنۍ تشخیص لپاره په منظم ډول ونی څارل\n• د ونی شاوخوا کې د هوا تبادله ښه کول"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -121,6 +573,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Vibrant green leaves with no discoloration\n• Normal fruit development and size\n• Strong, flexible branches\n• No visible spots, lesions, or abnormalities\n• Consistent growth pattern",
             "treatment": "• No chemical treatment required\n• Continue regular watering schedule\n• Maintain proper fertilization\n• Monitor for early signs of pests\n• Practice seasonal pruning",
             "prevention": "• Continue current maintenance practices\n• Regular inspection for pests and diseases\n• Proper spacing between trees\n• Balanced nutrition and soil management\n• Seasonal care and protection"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "سیب سالم",
@@ -128,6 +581,7 @@ DISEASE_DATABASE = {
             "symptoms": "• برگ‌های سبز پرجنب و جوش بدون تغییر رنگ\n• رشد و اندازه طبیعی میوه\n• شاخه‌های قوی و انعطاف‌پذیر\n• بدون لکه، زخم یا ناهنجاری قابل مشاهده\n• الگوی رشد یکنواخت",
             "treatment": "• نیاز به درمان شیمیایی ندارد\n• ادامه برنامه آبیاری منظم\n• حفظ کوددهی مناسب\n• نظارت بر علائم اولیه آفات\n• انجام هرس فصلی",
             "prevention": "• ادامه روش‌های نگهداری فعلی\n• بازرسی منظم برای آفات و بیماری‌ها\n• فاصله مناسب بین درختان\n• تغذیه متعادل و مدیریت خاک\n• مراقبت و محافظت فصلی"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "تندرسته سیب",
@@ -135,6 +589,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د رنګ بدلون پرته ژوندۍ شینې پاڼې\n• د میوو عادي وده او کچه\n• قوي، انعطاف منونکې څانګې\n• هېڅ لیدونکی داغ، زخم یا غیرعادي حالتونه نه\n• د ودې یو ډول نمونه",
             "treatment": "• د کیمیاوي درملنې اړتیا نشته\n• د اوبو کولو منظم برنامه دوام ورکړئ\n• مناسب سره ورکول ساتل\n• د زیان رسوونکو د لومړنیو نښو لپاره څارنه\n• د موسمي پرې کولو تمرین کول",
             "prevention": "• اوسنۍ ساتنې طریقې دوام ورکړئ\n• د زیان رسوونکو او ناروغیو لپاره منظم معاینه\n• د ونو ترمنځ مناسب فاصله\n• متوازنه تغذیه او خاورې مدیریت\n• د موسمي پالنې او ساتنې"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -145,6 +600,7 @@ DISEASE_DATABASE = {
             "symptoms": "• White powdery coating on leaves and shoots\n• Curled and distorted leaves\n• Stunted shoot growth\n• Reduced fruit quality and size\n• Premature leaf drop in severe cases",
             "treatment": "• Apply sulfur or potassium bicarbonate sprays\n• Use horticultural oils like neem oil\n• Remove severely infected leaves\n• Improve air circulation through pruning\n• Apply fungicides at first sign of infection",
             "prevention": "• Plant in sunny, well-ventilated locations\n• Ensure good air circulation around trees\n• Avoid overhead watering\n• Use resistant cherry varieties\n• Maintain proper tree spacing"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "کپک پودری گیلاس",
@@ -152,6 +608,7 @@ DISEASE_DATABASE = {
             "symptoms": "• پوشش پودری سفید روی برگ‌ها و شاخه‌ها\n• برگ‌های پیچ خورده و تغییر شکل یافته\n• رشد متوقف شده شاخه‌ها\n• کاهش کیفیت و اندازه میوه\n• ریزش زودرس برگ در موارد شدید",
             "treatment": "• استفاده از اسپری‌های گوگرد یا بی‌کربنات پتاسیم\n• استفاده از روغن‌های باغبانی مانند روغن نیم\n• حذف برگ‌های شدیداً آلوده\n• بهبود گردش هوا از طریق هرس\n• استفاده از قارچ‌کش در اولین نشانه عفونت",
             "prevention": "• کاشت در مکان‌های آفتابی و دارای تهویه مناسب\n• اطمینان از گردش هوای خوب در اطراف درختان\n• جلوگیری از آبیاری از بالا\n• استفاده از انواع مقاوم گیلاس\n• حفظ فاصله مناسب بین درختان"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د چیری پوډری میلډیو",
@@ -159,6 +616,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو او څانګو په سر سپین پوډري پوښ\n• تاو شوې او بې شکلې شوې پاڼې\n• د څانګو وده کمه شوې\n• د میوو د کیفیت او کچې کمښت\n• په شدیدو مواردو کې د پاڼو مخکینۍ لوېدل",
             "treatment": "• د ګوګړ یا پوتاشیم بایکاربونیټ اسپري کارول\n• د باغباني تیلو کارول لکه نیم تیل\n• شدید ناروغه پاڼې لرې کول\n• د پرې کولو له لارې د هوا تبادله ښه کول\n• د ناروغۍ په لومړۍ نښه کې فنجي وژونکي کارول",
             "prevention": "• په لمر لرونکو، ښه هوا لرونکو ځایونو کې کرل\n• د ونی شاوخوا کې د هوا د ښې تبادلې ډاډمنول\n• د پاسه اوبو کولو څخه مخنیوی\n• د چیری مقاوم ډولونه کارول\n• د ونو ترمنځ مناسب فاصله ساتل"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -169,6 +627,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Lush green foliage with no discoloration\n• Normal flowering and fruit set\n• Strong, well-structured branches\n• No powdery coating or spots\n• Vigorous growth throughout season",
             "treatment": "• No treatment necessary\n• Continue regular maintenance\n• Monitor for pest activity\n• Maintain proper watering\n• Apply balanced fertilization",
             "prevention": "• Continue current care practices\n• Regular inspection for issues\n• Proper pruning techniques\n• Soil health management\n• Seasonal monitoring and care"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "گیلاس سالم",
@@ -176,6 +635,7 @@ DISEASE_DATABASE = {
             "symptoms": "• شاخ و برگ سبز انبوه بدون تغییر رنگ\n• گلدهی و تشکیل میوه طبیعی\n• شاخه‌های قوی و دارای ساختار خوب\n• بدون پوشش پودری یا لکه\n• رشد قوی در طول فصل",
             "treatment": "• نیاز به درمان ندارد\n• ادامه نگهداری منظم\n• نظارت بر فعالیت آفات\n• حفظ آبیاری مناسب\n• استفاده از کوددهی متعادل",
             "prevention": "• ادامه روش‌های مراقبت فعلی\n• بازرسی منظم برای مشکلات\n• تکنیک‌های هرس مناسب\n• مدیریت سلامت خاک\n• نظارت و مراقبت فصلی"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "تندرسته چیری",
@@ -183,6 +643,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د رنګ بدلون پرته ډبرې شینې پاڼې\n• عادي ګل کول او میوه کول\n• قوي، ښه ساختمان لرونکې څانګې\n• هېڅ پوډري پوښ یا داغونه نه\n• د موسم په اوږدو کې قوي وده",
             "treatment": "• د درملنې اړتیا نشته\n• منظم ساتنه دوام ورکړئ\n• د زیان رسوونکو د فعالیت لپاره څارنه\n• مناسب اوبه کول ساتل\n• متوازن سره ورکول پلي کول",
             "prevention": "• اوسنۍ پالنې طریقې دوام ورکړئ\n• د ستونزو لپاره منظم معاینه\n• د مناسب پرې کولو تخنیکونه\n• د خاورې روغتیا مدیریت\n• د موسمي څارنې او پالنې"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -193,6 +654,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Brown leaf spots with black margins\n• Black, mummified fruits\n• Red-brown lesions on shoots\n• Premature fruit drop\n• Complete crop loss in severe cases",
             "treatment": "• Apply fungicides like mancozeb or captan\n• Remove and destroy infected plant material\n• Prune for better air circulation\n• Use protective sprays during flowering\n• Apply fungicides at 7-10 day intervals",
             "prevention": "• Plant resistant grape varieties\n• Ensure good vineyard sanitation\n• Proper canopy management\n• Avoid overhead irrigation\n• Regular monitoring and early treatment"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "پوسیدگی سیاه انگور",
@@ -200,6 +662,7 @@ DISEASE_DATABASE = {
             "symptoms": "• لکه‌های قهوه‌ای برگ با حاشیه سیاه\n• میوه‌های سیاه و مومیایی شده\n• زخم‌های قهوه‌ای مایل به قرمز روی شاخه‌ها\n• ریزش زودرس میوه\n• از دست دادن کامل محصول در موارد شدید",
             "treatment": "• استفاده از قارچ‌کش‌هایی مانند مانکوزب یا کاپتان\n• حذف و نابودی مواد گیاهی آلوده\n• هرس برای گردش هوای بهتر\n• استفاده از اسپری‌های محافظ در طول گلدهی\n• استفاده از قارچ‌کش با فواصل ۷-۱۰ روزه",
             "prevention": "• کاشت انواع مقاوم انگور\n• اطمینان از بهداشت خوب تاکستان\n• مدیریت مناسب سایبان\n• جلوگیری از آبیاری از بالا\n• نظارت منظم و درمان زودرس"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د انګور تور پوسیدگی",
@@ -207,6 +670,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو نسواري داغونه د تورو څنډو سره\n• تورې، مومیایی شوې میوې\n• د څانګو په سر سور-نسواري زخمونه\n• د میوو مخکینۍ لوېدل\n• په شدیدو مواردو کې د محصول بشپړ ضایع کیدل",
             "treatment": "• د مانکوزب یا کاپتان په څیر فنجي وژونکي کارول\n• ناروغه نباتي مواد لرې کول او ویجاړول\n• د هوا د غوره تبادلې لپاره پرې کول\n• د ګل کولو په وخت کې د ساتونکو اسپري کارول\n• په ۷-۱۰ ورځني وقفو کې فنجي وژونکي کارول",
             "prevention": "• د انګور مقاوم ډولونه کرل\n• د تاکستان د ښه بهداشت ډاډمنول\n• مناسب سایبان مدیریت\n• د پاسه اوبو کولو څخه مخنیوی\n• منظم څارنه او لومړنۍ درملنه"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -217,6 +681,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Tiger-stripe patterns on leaves\n• Wood decay and cankers\n• Reduced vine vigor\n• Fruit spots and rotting\n• Sudden vine collapse (apoplexy)",
             "treatment": "• Prune infected wood below symptoms\n• Protect pruning wounds with fungicides\n• Remove severely infected vines\n• Improve vineyard drainage\n• Use balanced fertilization",
             "prevention": "• Use certified disease-free planting material\n• Proper pruning wound protection\n• Avoid mechanical injuries to vines\n• Maintain vine balance and health\n• Regular vineyard monitoring"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "اسکای انگور (سرخک سیاه)",
@@ -224,6 +689,7 @@ DISEASE_DATABASE = {
             "symptoms": "• الگوهای راه راه ببر روی برگ‌ها\n• پوسیدگی چوب و شانکر\n• کاهش قدرت تاک\n• لکه‌های میوه و پوسیدگی\n• ریزش ناگهانی تاک (آپوپلکسی)",
             "treatment": "• هرس چوب آلوده زیر علائم\n• محافظت از زخم‌های هرس با قارچ‌کش\n• حذف تاک‌های شدیداً آلوده\n• بهبود زهکشی تاکستان\n• استفاده از کوددهی متعادل",
             "prevention": "• استفاده از مواد کاشت عاری از بیماری گواهی شده\n• محافظت مناسب از زخم هرس\n• جلوگیری از آسیب‌های مکانیکی به تاک‌ها\n• حفظ تعادل و سلامت تاک\n• نظارت منظم تاکستان"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د انګور اسکا (تورې پښتورۍ)",
@@ -231,6 +697,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو په سر د پښانګې د راه راه نمونه\n• د لرګیو پوسیدگی او شانکرونه\n• د تاک قوت کمښت\n• د میوو داغونه او پوسیدگی\n• د تاک ناڅاپي سقوط (اپوپلکسي)",
             "treatment": "• د نښو لاندې ناروغه لرګی پرې کول\n• د پرې کولو زخمونه د فنجي وژونکو سره ساتل\n• شدید ناروغه تاکونه لرې کول\n• د تاکستان تخلیه ښه کول\n• متوازن سره ورکول کارول",
             "prevention": "• د تصدیق شویو ناروغۍ څخه خوشې د کرلو موادو کارول\n• د پرې کولو زخمونو مناسب ساتنه\n• د تاکونو مکانیکي زیانونه مخنیوی\n• د تاک توازن او روغتیا ساتل\n• د تاکستان منظم څارنه"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -241,6 +708,7 @@ DISEASE_DATABASE = {
             "symptoms": "• Angular brown spots on leaves\n• Yellow halos around spots\n• Premature leaf drop\n• Reduced fruit quality\n• Weakened vine growth",
             "treatment": "• Apply copper-based fungicides\n• Remove infected leaves\n• Improve air circulation\n• Use protective sprays\n• Maintain vine health",
             "prevention": "• Proper vineyard sanitation\n• Good air circulation\n• Avoid overhead watering\n• Regular monitoring\n• Balanced nutrition"
+            ,"image_name": "apple_scab"
         },
         "fa": {
             "disease_name": "بلایت برگ انگور",
@@ -248,6 +716,7 @@ DISEASE_DATABASE = {
             "symptoms": "• لکه‌های قهوه‌ای زاویه‌دار روی برگ‌ها\n• هاله‌های زرد اطراف لکه‌ها\n• ریزش زودرس برگ\n• کاهش کیفیت میوه\n• تضعیف رشد تاک",
             "treatment": "• استفاده از قارچ‌کش‌های مبتنی بر مس\n• حذف برگ‌های آلوده\n• بهبود گردش هوا\n• استفاده از اسپری‌های محافظ\n• حفظ سلامت تاک",
             "prevention": "• بهداشت مناسب تاکستان\n• گردش هوای خوب\n• جلوگیری از آبیاری از بالا\n• نظارت منظم\n• تغذیه متعادل"
+            ,"image_name": "apple_scab"
         },
         "ps": {
             "disease_name": "د انګور د پاڼې بلایت",
@@ -255,6 +724,7 @@ DISEASE_DATABASE = {
             "symptoms": "• د پاڼو په سر زاویه لرونکې نسواري داغونه\n• د داغونو شاوخوا ژیړ هاله\n• د پاڼو مخکینۍ لوېدل\n• د میوو د کیفیت کمښت\n• د تاک ودې کمزوري کیدل",
             "treatment": "• د مس پر بنسټ فنجي وژونکي کارول\n• ناروغه پاڼې لرې کول\n• د هوا تبادله ښه کول\n• د ساتونکو اسپري کارول\n• د تاک روغتیا ساتل",
             "prevention": "• د تاکستان مناسب بهداشت\n• د هوا ښه تبادله\n• د پاسه اوبو کولو څخه مخنیوی\n• منظم څارنه\n• متوازنه تغذیه"
+            ,"image_name": "apple_scab"
         }
     },
 
@@ -265,6 +735,7 @@ DISEASE_DATABASE = {
         "symptoms": "• Green, vibrant leaves\n• Normal fruit cluster development\n• No visible spots or lesions\n• Strong vine growth\n• Healthy tendrils",
         "treatment": "• No treatment needed\n• Continue regular care\n• Monitor for early signs of disease\n• Maintain proper nutrition\n• Ensure adequate sunlight",
         "prevention": "• Continue good cultural practices\n• Regular watering and fertilization\n• Monitor for pests and diseases\n• Proper pruning and trellising\n• Good air circulation"
+        ,"image_name": "apple_scab"
     },
     "fa": {
         "disease_name": "انگور سالم",
@@ -272,6 +743,7 @@ DISEASE_DATABASE = {
         "symptoms": "• برگ‌های سبز و پرجنب و جوش\n• رشد طبیعی خوشه‌های میوه\n• بدون لکه یا زخم قابل مشاهده\n• رشد قوی درخت\n• پیچک‌های سالم",
         "treatment": "• نیاز به درمان ندارد\n• مراقبت منظم را ادامه دهید\n• نظارت بر علائم اولیه بیماری\n• حفظ تغذیه مناسب\n• اطمینان از نور کافی خورشید",
         "prevention": "• ادامه روش‌های فرهنگی خوب\n• آبیاری و کوددهی منظم\n• نظارت بر آفات و بیماری‌ها\n• هرس و داربست‌بندی مناسب\n• گردش هوای خوب"
+        ,"image_name": "apple_scab"
     },
     "ps": {
         "disease_name": "تندرسته انگور",
@@ -279,9 +751,157 @@ DISEASE_DATABASE = {
         "symptoms": "• شینې، ژوندۍ پاڼې\n• د میوو د ګڼو عادي وده\n• هېڅ لیدونکی داغ یا زخم نه\n• د ونې قوي وده\n• تندرسته پیچکونه",
         "treatment": "• د درملنې اړتیا نشته\n• منظم پالنه دوام ورکړئ\n• د ناروغۍ د لومړنیو نښو لپاره څارنه\n• مناسب تغذیه ساتل\n• د لمر د کافي رڼا ډاډمنول",
         "prevention": "• د ښو کلتوري طریقو دوام\n• منظم اوبه کول او سره ورکول\n• د زیان رسوونکو او ناروغیو لپاره څارنه\n• مناسب پرې کول او داربست کول\n• د هوا ښه جریان"
+        ,"image_name": "apple_scab"
     }
 }
 }
+
+def load_saved_results() -> List[Dict[str, Any]]:
+    """Load saved results from JSON file"""
+    try:
+        if os.path.exists(RESULTS_FILE):
+            with open(RESULTS_FILE, 'r', encoding='utf-8') as f:
+                results = json.load(f)
+                # Ensure each result has all required fields
+                for result in results:
+                    if 'timestamp' not in result:
+                        result['timestamp'] = datetime.now().isoformat()
+                    if 'plant_type' not in result:
+                        result['plant_type'] = result.get('prediction', 'Unknown').split('___')[0] if '___' in result.get('prediction', '') else 'Unknown'
+                return results
+    except Exception as e:
+        print(f"Error loading saved results: {e}")
+    return []
+def save_results_to_file(results: List[Dict[str, Any]]) -> None:
+    """Save results to JSON file"""
+    try:
+        with open(RESULTS_FILE, 'w', encoding='utf-8') as f:
+            json.dump(results, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"Error saving results: {e}")
+
+# Update your add_saved_result function to ensure proper image paths
+def add_saved_result(result_data: Dict[str, Any]) -> None:
+    """Add a new result to saved results"""
+    results = load_saved_results()
+    
+    # Extract plant type from prediction
+    prediction = result_data.get("prediction", "Unknown")
+    if '___' in prediction:
+        plant_type = prediction.split('___')[0]
+    else:
+        plant_type = "Unknown"
+    
+    # Handle image URL - ensure it's a proper path
+    uploaded_image = result_data.get("uploaded_image", "")
+    if uploaded_image and not uploaded_image.startswith('/'):
+        uploaded_image = '/uploads/' + uploaded_image
+    
+    # Create a new result with ID and timestamp
+    new_result = {
+        "id": len(results) + 1,
+        "timestamp": datetime.now().isoformat(),
+        "disease_name": result_data.get("disease_name", "Unknown"),
+        "prediction": prediction,
+        "confidence": result_data.get("confidence", 0),
+        "plant_type": plant_type,
+        "image_url": uploaded_image or "/static/images/placeholder-plant.jpg",
+        "description": result_data.get("description", ""),
+        "symptoms": result_data.get("symptoms", ""),
+        "treatment": result_data.get("treatment", ""),
+        "prevention": result_data.get("prevention", ""),
+        "language": result_data.get("language", "en")
+    }
+    
+    results.append(new_result)
+    save_results_to_file(results)
+    print(f"Saved result with image URL: {new_result['image_url']}")  # Debug
+
+def delete_saved_result(result_id: int) -> bool:
+    """Delete a specific result by ID"""
+    results = load_saved_results()
+    original_count = len(results)
+    results = [r for r in results if r["id"] != result_id]
+    
+    if len(results) < original_count:
+        save_results_to_file(results)
+        return True
+    return False
+
+def clear_all_results() -> None:
+    """Clear all saved results"""
+    save_results_to_file([])
+
+def get_user_stats_from_results() -> Dict[str, Any]:
+    """Calculate statistics from saved results"""
+    results = load_saved_results()
+    
+    if not results:
+        return {
+            'total_scans': 0,
+            'plants_in_garden': 0,
+            'avg_confidence': 0,
+            'top_disease': 'No scans yet'
+        }
+    
+    total_scans = len(results)
+    
+    # Count unique plants (simplified - you might want to track this differently)
+    plants_in_garden = len(set(r.get('plant_type', 'Unknown') for r in results))
+    
+    # Calculate average confidence
+    avg_confidence = sum(r.get('confidence', 0) for r in results) / total_scans
+    
+    # Find most common disease
+    disease_counts = {}
+    for result in results:
+        disease = result.get('disease_name', 'Unknown')
+        disease_counts[disease] = disease_counts.get(disease, 0) + 1
+    
+    top_disease = max(disease_counts.items(), key=lambda x: x[1])[0] if disease_counts else 'No diseases'
+    
+    return {
+        'total_scans': total_scans,
+        'plants_in_garden': plants_in_garden,
+        'avg_confidence': round(avg_confidence, 1),
+        'top_disease': top_disease
+    }
+
+def get_user_stats():
+    return {
+        'total_scans': 42,
+        'plants_in_garden': 15,
+        'avg_confidence': 89,
+        'top_disease': 'Powdery Mildew'
+    }
+
+def get_recent_scans():
+    return [
+        {
+            'id': 1,
+            'plant_name': 'Tomato Plant',
+            'disease': 'Early Blight',
+            'confidence': 92,
+            'date': '2 hours ago',
+            'image': '/static/images/placeholder-plant.jpg'
+        },
+        {
+            'id': 2,
+            'plant_name': 'Rose Bush',
+            'disease': 'Powdery Mildew',
+            'confidence': 87,
+            'date': 'Yesterday',
+            'image': '/static/images/placeholder-plant.jpg'
+        },
+        {
+            'id': 3,
+            'plant_name': 'Basil',
+            'disease': 'Healthy',
+            'confidence': 95,
+            'date': '2 days ago',
+            'image': '/static/images/placeholder-plant.jpg'
+        }
+    ]
 
 def get_localized_disease_info(class_name: str, language: str = "en"):
     """
@@ -312,18 +932,208 @@ def preprocess_image(file_path):
     img_array = np.expand_dims(img_array, axis=0)
     return img_array
 
+# Language setting endpoint
+@app.post("/set-language")
+async def set_language(language: str = Form(...), response: Response = None):
+    """Set the language preference"""
+    response = JSONResponse(content={"status": "success", "language": language})
+    response.set_cookie(key="language", value=language, max_age=365*24*60*60)  # 1 year
+    return response
+
+@app.get("/current-language")
+async def get_current_language(request: Request):
+    """Get current language from cookie"""
+    language = request.cookies.get("language", "en")
+    return {"language": language}
+
 # Routes
 @app.get("/", response_class=HTMLResponse)
-async def home():
-    with open(os.path.join(os.path.dirname(__file__), "templates/home.html"), "r", encoding="utf-8") as f:
-        return f.read()
+async def home(request: Request):
+    return await dashboard(request)
+
+@app.get("/dashboard")
+async def dashboard(request: Request):
+    language = request.cookies.get("language", "en")
+    stats = get_user_stats_from_results()
+    recent_scans = load_saved_results()[-5:]  # Get last 5 scans
+    recent_scans.reverse()  # Show newest first
+    
+    return templates.TemplateResponse("dashboard.html", {
+        "request": request,
+        "stats": stats,
+        "recent_scans": recent_scans,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+@app.get("/scan")
+async def scan_page(request: Request):
+    language = request.cookies.get("language", "en")
+    return templates.TemplateResponse("scan.html", {
+        "request": request,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+
+@app.get("/results")
+async def results_page(request: Request):
+    language = request.cookies.get("language", "en")
+    # This would typically receive results from session or database
+    # For now, using mock data
+    result_data = {
+        'disease': 'Early Blight',
+        'confidence': 92,
+        'plant_type': 'Tomato',
+        'image_url': '/static/images/placeholder-plant.jpg',
+        'treatment': 'Remove affected leaves and apply copper-based fungicide. Ensure proper spacing between plants for air circulation.',
+        'prevention': 'Water at the base of plants early in the day. Rotate crops yearly and remove plant debris at season end.',
+        'symptoms': 'Dark, concentric spots on leaves, yellowing around spots, spots may have target-like appearance'
+    }
+    return templates.TemplateResponse("results.html", {
+        "request": request,
+        "result": result_data,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+
+@app.get("/history")
+async def history_page(request: Request):
+    language = request.cookies.get("language", "en")
+    scans = load_saved_results()
+    # Reverse to show newest first and ensure each scan has timestamp
+    scans.reverse()
+    
+    # Debug: Print scans to see the actual structure
+    print("Scans data:", scans)
+    
+    return templates.TemplateResponse("history.html", {
+        "request": request,
+        "scans": scans,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+
+@app.post("/save-result")
+async def save_result(request: Request):
+    """Save a scan result"""
+    try:
+        data = await request.json()
+        print("Received data for saving:", data)  # Debug print
+        
+        # Ensure required fields are present
+        if not data.get("disease_name"):
+            data["disease_name"] = data.get("prediction", "Unknown")
+        
+        add_saved_result(data)
+        return JSONResponse(content={"status": "success", "message": "Result saved successfully"})
+    except Exception as e:
+        print(f"Error saving result: {e}")  # Debug print
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+
+@app.delete("/delete-result/{result_id}")
+async def delete_result(result_id: int):
+    """Delete a specific result"""
+    try:
+        if delete_saved_result(result_id):
+            return JSONResponse(content={"status": "success", "message": "Result deleted successfully"})
+        else:
+            return JSONResponse(content={"status": "error", "message": "Result not found"}, status_code=404)
+    except Exception as e:
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+@app.post("/clear-all-results")
+async def clear_results():
+    """Clear all saved results"""
+    try:
+        clear_all_results()
+        return JSONResponse(content={"status": "success", "message": "All results cleared successfully"})
+    except Exception as e:
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+@app.get("/saved-result/{result_id}")
+async def get_saved_result(result_id: int, request: Request):
+    """Get a specific saved result"""
+    try:
+        results = load_saved_results()
+        result = next((r for r in results if r["id"] == result_id), None)
+        
+        print(f"Looking for result {result_id}, found: {result}")  # Debug print
+        
+        if result:
+            language = request.cookies.get("language", "en")
+            return templates.TemplateResponse("saved_result.html", {
+                "request": request,
+                "result": result,
+                "t": UI_TRANSLATIONS[language],
+                "current_language": language
+            })
+        else:
+            return JSONResponse(content={"status": "error", "message": "Result not found"}, status_code=404)
+    except Exception as e:
+        print(f"Error getting saved result: {e}")  # Debug print
+        return JSONResponse(content={"status": "error", "message": str(e)}, status_code=500)
+
+
+# Add this to your existing main.py in the library_page function
+@app.get("/library")
+async def library_page(request: Request):
+    language = request.cookies.get("language", "en")
+    # Get all diseases for the library with complete information
+    diseases = {}
+    for disease_key in DISEASE_DATABASE:
+        disease_info = get_localized_disease_info(disease_key, language)
+        # Add the original key for reference
+        disease_info['original_key'] = disease_key
+        diseases[disease_key] = disease_info
+    
+    # Get unique plant types for filtering
+    plant_types = set()
+    for disease_key in DISEASE_DATABASE:
+        # Extract plant type from disease key (e.g., "Apple___Apple_scab" -> "Apple")
+        if '___' in disease_key:
+            plant_type = disease_key.split('___')[0]
+            plant_types.add(plant_type)
+    
+    return templates.TemplateResponse("library.html", {
+        "request": request,
+        "diseases": diseases,
+        "plant_types": sorted(list(plant_types)),
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
+
+@app.get("/garden")
+async def garden_page(request: Request):
+    language = request.cookies.get("language", "en")
+    return templates.TemplateResponse("garden.html", {
+        "request": request,
+        "t": UI_TRANSLATIONS[language],
+        "current_language": language
+    })
 
 @app.post("/predict")
 async def predict(
+    request: Request,
     file: UploadFile = File(...),
-    language: str = Form("en")  # Language parameter with default 'en'
+    language: str = Form("en")
 ):
     try:
+        # DEBUG first
+        form_data = await request.form()
+        print("🔍 FORM DATA:", dict(form_data))
+        print("🔍 Headers:", dict(request.headers))
+        
+        # If language is still English, try to get from headers
+        if language == "en":
+            # Check for custom header
+            custom_lang = request.headers.get("x-app-language")
+            if custom_lang in ["ps", "fa"]:
+                language = custom_lang
+                print(f"🔁 Overriding language from header: {language}")
+        
+        print(f"🎯 Final language being used: {language}")
+        
+        # Rest of your prediction code...
         file_path = os.path.join(UPLOAD_DIR, file.filename)
         with open(file_path, "wb") as f:
             f.write(await file.read())
@@ -336,10 +1146,9 @@ async def predict(
         class_info = classes_dict.get(str(pred_idx), {})
         pred_class = class_info.get("class_name", "Unknown")
         
-        # Get localized disease information
         localized_info = get_localized_disease_info(pred_class, language)
         
-        print(f"🚀 Prediction: {pred_class}, Language: {language}, Confidence: {confidence:.2f}%")
+        print(f"🚀 FINAL - Prediction: {pred_class}, Language: {language}, Confidence: {confidence:.2f}%")
 
         return JSONResponse(
             content={
@@ -351,12 +1160,13 @@ async def predict(
                 "prevention": localized_info["prevention"],
                 "confidence": round(confidence, 2),
                 "uploaded_image": f"/uploads/{file.filename}",
-                "language": language
+                "language": language,
+                "debug_note": "Make sure your app sends 'language' parameter in form data"
             }
         )
     except Exception as e:
+        print(f"❌ Prediction error: {str(e)}")
         return JSONResponse(content={"error": str(e)}, status_code=500)
-
 # New endpoint to get supported languages
 @app.get("/languages")
 async def get_supported_languages():
@@ -369,6 +1179,51 @@ async def get_supported_languages():
         ]
     }
 
+
+@app.get("/library-diseases")
+async def get_library_diseases(language: str = "en"):
+    """Get all diseases for the library in the specified language"""
+    try:
+        library_diseases = []
+        
+        for disease_key, disease_info in DISEASE_DATABASE.items():
+            # Get localized info for the requested language
+            localized_info = disease_info.get(language, disease_info['en'])
+            
+            # Extract plant type from disease key (e.g., "Apple___Apple_scab" -> "Apple")
+            plant_type = "Unknown"
+            if '___' in disease_key:
+                plant_type = disease_key.split('___')[0]
+
+            image_name = localized_info.get("image_name", "plant_default")
+            
+            library_diseases.append({
+                "id": disease_key,
+                "name": localized_info["disease_name"],
+                "description": localized_info["description"],
+                "symptoms": localized_info["symptoms"],
+                "treatment": localized_info["treatment"], 
+                "prevention": localized_info["prevention"],
+                "plant_type": plant_type,
+                "image_name": image_name,
+                "image_url": f"/static/images/{disease_key}.jpg",  # You can add images later
+                "is_healthy": "healthy" in disease_key.lower()
+            })
+        
+        return {
+            "status": "success",
+            "count": len(library_diseases),
+            "language": language,
+            "diseases": library_diseases
+        }
+        
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"status": "error", "message": str(e)}
+        )
+
+
 # New endpoint to get all diseases for a specific language
 @app.get("/diseases/{language}")
 async def get_all_diseases(language: str = "en"):
@@ -377,4 +1232,7 @@ async def get_all_diseases(language: str = "en"):
     for disease_key in DISEASE_DATABASE:
         result[disease_key] = get_localized_disease_info(disease_key, language)
     return result
-# Run the app
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
