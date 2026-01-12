@@ -8,7 +8,6 @@
     <h2 class="upload-text" id="uploadText">{{ t.drag_image }}</h2>
     <p style="margin-bottom: 1.5rem; color: #666;">{{ t.supported_formats }}</p>
     
-<<<<<<< HEAD
     <form id="uploadForm" enctype="multipart/form-data" style="display: none;">
         <input type="file" id="fileInput" class="file-input" accept="image/*" name="file">
     </form>
@@ -17,17 +16,6 @@
         <span>{{ t.select_image }}</span>
         <div class="loading" id="loadingSpinner" style="display: none;"></div>
     </button>
-=======
-    <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" id="fileInput" class="file-input" accept="image/*" name="file">
-        <button type="button" class="upload-button" id="uploadButton">
-            <span>{{ t.select_image }}</span>
-            <div class="loading" id="loadingSpinner" style="display: none;"></div>
-        </button>
-    </form>
-    
-    <!-- Language selection is now in the header -->
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
 </div>
 
 <div style="margin-top: 2rem; background-color: var(--white); padding: 1.5rem; border-radius: 12px;">
@@ -54,7 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadText = document.getElementById('uploadText');
     const resultAlert = document.getElementById('resultAlert');
 
-<<<<<<< HEAD
     // Flag to prevent multiple uploads
     let isUploading = false;
 
@@ -64,27 +51,17 @@ document.addEventListener('DOMContentLoaded', function() {
         e.stopPropagation();
         
         if (!isUploading) {
-=======
-    // Click on upload area triggers file input
-    uploadArea.addEventListener('click', function(e) {
-        if (e.target !== fileInput && e.target !== uploadButton) {
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
             fileInput.click();
         }
     });
 
     // File input change
     fileInput.addEventListener('change', function() {
-<<<<<<< HEAD
         if (this.files.length > 0 && !isUploading) {
-=======
-        if (this.files.length > 0) {
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
             handleFileSelection(this.files[0]);
         }
     });
 
-<<<<<<< HEAD
     // Drag and drop functionality
     uploadArea.addEventListener('dragover', function(e) {
         e.preventDefault();
@@ -115,27 +92,18 @@ document.addEventListener('DOMContentLoaded', function() {
         // Set uploading flag
         isUploading = true;
 
-=======
-    async function handleFileSelection(file) {
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
         // Validate file type
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!allowedTypes.includes(file.type)) {
             showAlert('Please select a valid image file (JPEG, PNG, or GIF).', 'error');
-<<<<<<< HEAD
             isUploading = false;
-=======
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
             return;
         }
 
         // Validate file size (max 10MB)
         if (file.size > 10 * 1024 * 1024) {
             showAlert('File size must be less than 10MB.', 'error');
-<<<<<<< HEAD
             isUploading = false;
-=======
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
             return;
         }
 
@@ -164,7 +132,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error(data.error);
             }
             
-<<<<<<< HEAD
             // Store results in localStorage and redirect to results page
             localStorage.setItem('lastScanResult', JSON.stringify(data));
 
@@ -175,21 +142,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             window.location.href = '/results';
-=======
-            // Store results and redirect to results page
-            // In the handleFileSelection function, after getting the prediction
-// Store results in localStorage and redirect to results page
-localStorage.setItem('lastScanResult', JSON.stringify(data));
-console.log("Result stored in localStorage:", data);
-
-// Ensure the uploaded_image path is correct
-if (data.uploaded_image && !data.uploaded_image.startsWith('/')) {
-    data.uploaded_image = '/uploads/' + data.uploaded_image;
-    localStorage.setItem('lastScanResult', JSON.stringify(data));
-}
-
-window.location.href = '/results';
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
             
         } catch (error) {
             showAlert('Error uploading file: ' + error.message, 'error');
@@ -199,10 +151,7 @@ window.location.href = '/results';
             uploadText.textContent = '{{ t.drag_image }}';
             loadingSpinner.style.display = 'none';
             fileInput.value = '';
-<<<<<<< HEAD
             isUploading = false;
-=======
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
         }
     }
 

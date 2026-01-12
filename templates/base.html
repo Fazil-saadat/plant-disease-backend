@@ -2,100 +2,96 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-<<<<<<< HEAD
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-=======
+
+    <!-- Responsive viewport -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
+
     <title>{% block title %}Plant Guard - Plant Health Monitoring{% endblock %}</title>
+
+    <!-- Styles -->
     <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Favicon Links -->
+
+    <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='images/favicon-16x16.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
     <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
-<<<<<<< HEAD
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-=======
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
 </head>
+
 <body>
-    <!-- Global Header -->
+    <!-- Header -->
     <header class="header">
         <div class="logo" onclick="window.location.href='/dashboard'">
             <div class="logo-icon">🌿</div>
-<<<<<<< HEAD
             <span class="logo-text">Plant Guard</span>
-=======
-            <span>Plant Guard</span>
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
         </div>
-        
+
         <div style="display: flex; align-items: center; gap: 1rem;">
             <!-- Language Selector -->
             <div class="language-selector">
-                <select id="globalLanguage" onchange="changeLanguage(this.value)" style="padding: 0.5rem; border-radius: 8px; border: 1px solid var(--grey-medium); background: white; cursor: pointer;">
+                <select id="globalLanguage"
+                        onchange="changeLanguage(this.value)"
+                        style="padding: 0.5rem; border-radius: 8px; border: 1px solid var(--grey-medium); background: white; cursor: pointer;">
                     <option value="en" {% if current_language == 'en' %}selected{% endif %}>English</option>
                     <option value="fa" {% if current_language == 'fa' %}selected{% endif %}>فارسی</option>
                     <option value="ps" {% if current_language == 'ps' %}selected{% endif %}>پښتو</option>
                 </select>
             </div>
-            
+
             <button class="cta-button" onclick="window.location.href='/scan'">
                 <span>{{ t.new_scan }}</span>
             </button>
         </div>
-        
+
         <div class="hamburger" id="hamburger">
             <span></span>
             <span></span>
             <span></span>
         </div>
-<<<<<<< HEAD
-=======
-        
-        <!-- <div class="user-profile">
-            <span>👤</span>
-        </div> -->
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
     </header>
 
-    <!-- App Container -->
+    <!-- App Layout -->
     <div class="app-container">
-        <!-- Sidebar Navigation -->
+        <!-- Sidebar -->
         <nav class="sidebar" id="sidebar">
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="/dashboard" class="nav-link {% if request.url.path == '/dashboard' or request.url.path == '/' %}active{% endif %}">
+                    <a href="/dashboard"
+                       class="nav-link {% if request.url.path == '/dashboard' or request.url.path == '/' %}active{% endif %}">
                         <span class="nav-icon">📊</span>
                         <span>{{ t.dashboard }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/scan" class="nav-link {% if request.url.path == '/scan' %}active{% endif %}">
+                    <a href="/scan"
+                       class="nav-link {% if request.url.path == '/scan' %}active{% endif %}">
                         <span class="nav-icon">🔍</span>
                         <span>{{ t.new_scan }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/history" class="nav-link {% if request.url.path == '/history' %}active{% endif %}">
+                    <a href="/history"
+                       class="nav-link {% if request.url.path == '/history' %}active{% endif %}">
                         <span class="nav-icon">📋</span>
                         <span>{{ t.scan_history }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/library" class="nav-link {% if request.url.path == '/library' %}active{% endif %}">
+                    <a href="/library"
+                       class="nav-link {% if request.url.path == '/library' %}active{% endif %}">
                         <span class="nav-icon">📚</span>
                         <span>{{ t.disease_library }}</span>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="/garden" class="nav-link {% if request.url.path == '/garden' %}active{% endif %}">
+                    <a href="/garden"
+                       class="nav-link {% if request.url.path == '/garden' %}active{% endif %}">
                         <span class="nav-icon">🌱</span>
                         <span>{{ t.my_garden }}</span>
                     </a>
@@ -113,25 +109,29 @@
     <nav class="mobile-nav">
         <ul class="mobile-nav-items">
             <li>
-                <a href="/dashboard" class="mobile-nav-item {% if request.url.path == '/dashboard' or request.url.path == '/' %}active{% endif %}">
+                <a href="/dashboard"
+                   class="mobile-nav-item {% if request.url.path == '/dashboard' or request.url.path == '/' %}active{% endif %}">
                     <span class="mobile-nav-icon">📊</span>
                     <span>{{ t.dashboard }}</span>
                 </a>
             </li>
             <li>
-                <a href="/scan" class="mobile-nav-item {% if request.url.path == '/scan' %}active{% endif %}">
+                <a href="/scan"
+                   class="mobile-nav-item {% if request.url.path == '/scan' %}active{% endif %}">
                     <span class="mobile-nav-icon">🔍</span>
                     <span>{{ t.new_scan }}</span>
                 </a>
             </li>
             <li>
-                <a href="/library" class="mobile-nav-item {% if request.url.path == '/library' %}active{% endif %}">
+                <a href="/library"
+                   class="mobile-nav-item {% if request.url.path == '/library' %}active{% endif %}">
                     <span class="mobile-nav-icon">📚</span>
                     <span>{{ t.disease_library }}</span>
                 </a>
             </li>
             <li>
-                <a href="/garden" class="mobile-nav-item {% if request.url.path == '/garden' %}active{% endif %}">
+                <a href="/garden"
+                   class="mobile-nav-item {% if request.url.path == '/garden' %}active{% endif %}">
                     <span class="mobile-nav-icon">🌱</span>
                     <span>{{ t.my_garden }}</span>
                 </a>
@@ -139,21 +139,22 @@
         </ul>
     </nav>
 
+    <!-- Scripts -->
     <script src="/static/js/script.js"></script>
+
     <script>
-        // Language change function
+        // Change language
         async function changeLanguage(language) {
             try {
                 const formData = new FormData();
                 formData.append('language', language);
-                
+
                 const response = await fetch('/set-language', {
                     method: 'POST',
                     body: formData
                 });
-                
+
                 if (response.ok) {
-                    // Reload the page to apply the new language
                     window.location.reload();
                 }
             } catch (error) {
@@ -161,74 +162,16 @@
             }
         }
 
-<<<<<<< HEAD
-        // Set RTL for Persian and Pashto languages
-        document.addEventListener('DOMContentLoaded', function() {
+        // RTL support
+        document.addEventListener('DOMContentLoaded', function () {
             const currentLang = '{{ current_language }}';
-            if (currentLang === 'fa' || currentLang === 'ps') {
-                document.body.setAttribute('dir', 'rtl');
-            } else {
-                document.body.setAttribute('dir', 'ltr');
-            }
-            
-            // Hide logo text on very small screens
-            function checkScreenSize() {
-                const logoText = document.querySelector('.logo-text');
-                if (logoText) {
-                    if (window.innerWidth < 400) {
-                        logoText.style.display = 'none';
-                    } else {
-                        logoText.style.display = 'inline';
-                    }
-                }
-            }
-            
-            checkScreenSize();
-            window.addEventListener('resize', checkScreenSize);
+            document.body.setAttribute(
+                'dir',
+                (currentLang === 'fa' || currentLang === 'ps') ? 'rtl' : 'ltr'
+            );
         });
     </script>
 
     {% block scripts %}{% endblock %}
-    
-    <!-- Screen size indicator for debugging (remove in production) -->
-    <div style="position: fixed; bottom: 10px; right: 10px; background: #333; color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; z-index: 9999; display: none;" id="screenSize">
-        Screen: <span id="screenWidth">0</span> x <span id="screenHeight">0</span>
-    </div>
-    
-    <script>
-        // Screen size indicator for debugging
-        window.addEventListener('resize', function() {
-            document.getElementById('screenWidth').textContent = window.innerWidth;
-            document.getElementById('screenHeight').textContent = window.innerHeight;
-            document.getElementById('screenSize').style.display = 'block';
-            
-            setTimeout(() => {
-                document.getElementById('screenSize').style.display = 'none';
-            }, 2000);
-        });
-        
-        // Trigger on load
-        window.dispatchEvent(new Event('resize'));
-    </script>
-=======
-        // Set initial language on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Language is already set from server, no need to initialize
-        });
-    </script>
-    <script>
-// Set RTL for Persian and Pashto languages
-document.addEventListener('DOMContentLoaded', function() {
-    const currentLang = '{{ current_language }}';
-    if (currentLang === 'fa' || currentLang === 'ps') {
-        document.body.setAttribute('dir', 'rtl');
-    } else {
-        document.body.setAttribute('dir', 'ltr');
-    }
-});
-</script>
-
-    {% block scripts %}{% endblock %}
->>>>>>> a6d220adfce12178b5d042f55a2c821fda675852
 </body>
 </html>
