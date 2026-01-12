@@ -6,209 +6,169 @@
 <div class="results-container">
     <div class="result-image-container">
         <div class="image-wrapper">
-            <img id="resultImage" 
-                 src="{{ result.image_url }}" 
-                 alt="Scanned plant" 
+            <img id="resultImage"
+                 alt="Scanned plant"
                  class="result-image"
                  onerror="handleImageError(this)">
         </div>
+
         <div class="confidence-score">
-            {{ t.confidence }}: <span id="confidenceValue">{{ result.confidence }}</span>%
+            {{ t.confidence }}:
+            <span id="confidenceValue">0</span>%
         </div>
     </div>
-    
+
     <div class="result-details">
-        <h2 style="margin-bottom: 1rem; color: var(--forest-green);" id="diseaseName">{{ result.disease }}</h2>
-        <p style="margin-bottom: 1.5rem; color: #666;" id="plantType">{{ t.detected_in }} {{ result.plant_type }}</p>
-        
+        <h2 id="diseaseName" style="margin-bottom:1rem;color:var(--forest-green);">
+            —
+        </h2>
+
+        <p id="plantType" style="margin-bottom:1.5rem;color:#666;">
+            —
+        </p>
+
         <div class="tabs">
             <button class="tab active" data-tab="overview">{{ t.overview }}</button>
             <button class="tab" data-tab="treatment">{{ t.treatment }}</button>
             <button class="tab" data-tab="prevention">{{ t.prevention }}</button>
         </div>
-        
+
         <div id="overview" class="tab-content active">
             <h3>{{ t.disease_overview }}</h3>
-            <p id="overviewText">{{ result.symptoms }}</p>
+            <p id="overviewText">—</p>
         </div>
-        
+
         <div id="treatment" class="tab-content">
             <h3>{{ t.recommended_treatment }}</h3>
-            <p id="treatmentText">{{ result.treatment }}</p>
+            <p id="treatmentText">—</p>
         </div>
-        
+
         <div id="prevention" class="tab-content">
             <h3>{{ t.prevention_tips }}</h3>
-            <p id="preventionText">{{ result.prevention }}</p>
+            <p id="preventionText">—</p>
         </div>
-        
-        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
+
+        <div style="margin-top:2rem;display:flex;gap:1rem;">
             <button class="cta-button" onclick="window.location.href='/scan'">
                 {{ t.scan_another }}
             </button>
+
             <button class="upload-button" id="saveResultBtn" onclick="saveResult()">
                 {{ t.save_results }}
             </button>
         </div>
-        
-        <div id="saveStatus" style="margin-top: 1rem;"></div>
+
+        <div id="saveStatus" style="margin-top:1rem;"></div>
     </div>
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-// Global variable to store the current result
-let currentResult = {};
+let currentResult = null;
 
-// Function to handle image loading errors
+/* Image fallback */
 function handleImageError(img) {
-    console.log('Image failed to load:', img.src);
-    // Use SVG placeholder
-    img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDMwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIiByeD0iOCIgZmlsbD0iI0Y4RjZGMiIvPgo8cGF0aCBkPSJNMTUwIDEwMEMxMjUuNjcgMTAwIDEwNiAxMTkuNjcgMTA2IDE0NEMxMDYgMTY4LjMzIDEyNS42NyAxODggMTUwIDE4OEMxNzQuMzMgMTg4IDE5NCAxNjguMzMgMTk0IDE0NEMxOTQgMTE5LjY3IDE3NC4zMyAxMDAgMTUwIDEwMFpNMTUwIDE4MEMxMjIuNCAxODAgMTAwIDIwMi40IDEwMCAyMzBWMTAwSDIwMFYyMzBDMTk5Ljk5OSAyMDIuNCAxNzcuNiAxODAgMTUwIDE4MFoiIGZpbGw9IiNENkQ2RDYiLz4KPC9zdmc+';
-    img.onerror = null; // Prevent infinite loop
+    img.src =
+        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCI+PC9zdmc+';
+    img.onerror = null;
 }
 
-// Function to load result from localStorage
+/* Load result from localStorage */
 function loadResultFromStorage() {
-    try {
-        const savedResult = localStorage.getItem('lastScanResult');
-        console.log('Saved result from localStorage:', savedResult);
-        
-        if (savedResult) {
-            currentResult = JSON.parse(savedResult);
-            console.log('Parsed currentResult:', currentResult);
-            
-            // Update the page with actual results if available
-            if (currentResult.confidence) {
-                document.getElementById('confidenceValue').textContent = currentResult.confidence;
-            }
-            if (currentResult.disease_name) {
-                document.getElementById('diseaseName').textContent = currentResult.disease_name;
-            }
-            if (currentResult.prediction) {
-                const plantType = currentResult.prediction.split('___')[0];
-                document.getElementById('plantType').textContent = '{{ t.detected_in }} ' + plantType;
-            }
-            if (currentResult.description) {
-                document.getElementById('overviewText').textContent = currentResult.description;
-            }
-            if (currentResult.treatment) {
-                document.getElementById('treatmentText').textContent = currentResult.treatment;
-            }
-            if (currentResult.prevention) {
-                document.getElementById('preventionText').textContent = currentResult.prevention;
-            }
-            if (currentResult.uploaded_image) {
-                // Update the image source with the uploaded image
-                const resultImage = document.getElementById('resultImage');
-                resultImage.src = currentResult.uploaded_image;
-                console.log('Setting image source to:', currentResult.uploaded_image);
-            }
-        } else {
-            console.log('No saved result found in localStorage');
-        }
-    } catch (error) {
-        console.error('Error loading result from localStorage:', error);
-    }
-}
+    const stored = localStorage.getItem('lastScanResult');
 
-// Save result function
-async function saveResult() {
-    const saveBtn = document.getElementById('saveResultBtn');
-    const saveStatus = document.getElementById('saveStatus');
-    
-    console.log('Current result before saving:', currentResult);
-    
-    if (!currentResult || Object.keys(currentResult).length === 0) {
-        showSaveStatus('{{ t.no_data_save }}', 'error');
+    if (!stored) {
+        window.location.href = '/dashboard';
         return;
     }
-    
-    // Prepare data for saving
-    const saveData = {
-        disease_name: currentResult.disease_name || currentResult.prediction || 'Unknown Disease',
-        prediction: currentResult.prediction || 'Unknown',
-        confidence: currentResult.confidence || 0,
-        description: currentResult.description || '',
-        symptoms: currentResult.symptoms || '',
-        treatment: currentResult.treatment || '',
-        prevention: currentResult.prevention || '',
-        uploaded_image: currentResult.uploaded_image || '{{ result.image_url }}',
-        language: currentResult.language || 'en'
-    };
-    
-    console.log('Data being saved:', saveData);
-    
-    // Disable button and show loading
-    saveBtn.disabled = true;
-    saveBtn.innerHTML = '<div class="loading" style="display: inline-block; margin-right: 0.5rem;"></div>{{ t.saving }}';
-    
-    try {
-        const response = await fetch('/save-result', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(saveData)
-        });
-        
-        const data = await response.json();
-        console.log('Save response:', data);
-        
-        if (data.status === 'success') {
-            showSaveStatus('{{ t.result_saved }}', 'success');
-            saveBtn.style.display = 'none';
-            
-            // Clear the localStorage after successful save
-            localStorage.removeItem('lastScanResult');
-        } else {
-            showSaveStatus('{{ t.save_error }}: ' + data.message, 'error');
-        }
-    } catch (error) {
-        console.error('Save error:', error);
-        showSaveStatus('{{ t.save_error }}: ' + error.message, 'error');
-    } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerHTML = '{{ t.save_results }}';
+
+    currentResult = JSON.parse(stored);
+
+    document.getElementById('confidenceValue').textContent =
+        currentResult.confidence ?? 0;
+
+    document.getElementById('diseaseName').textContent =
+        currentResult.disease || currentResult.disease_name || 'Unknown Disease';
+
+    let plantType = 'Unknown';
+
+if (currentResult.plant_type) {
+    plantType = currentResult.plant_type;
+} 
+else if (
+    currentResult.prediction &&
+    currentResult.prediction.includes('___')
+) {
+    plantType = currentResult.prediction.split('___')[0];
+}
+
+document.getElementById('plantType').textContent =
+    '{{ t.detected_in }} ' + plantType;
+
+
+    document.getElementById('overviewText').textContent =
+        currentResult.symptoms || currentResult.description || '—';
+
+    document.getElementById('treatmentText').textContent =
+        currentResult.treatment || '—';
+
+    document.getElementById('preventionText').textContent =
+        currentResult.prevention || '—';
+
+    if (currentResult.uploaded_image) {
+        document.getElementById('resultImage').src =
+            currentResult.uploaded_image;
     }
 }
 
-function showSaveStatus(message, type) {
-    const saveStatus = document.getElementById('saveStatus');
-    saveStatus.innerHTML = '<div class="alert alert-' + type + '">' + message + '</div>';
-    saveStatus.style.display = 'block';
-    
-    setTimeout(function() {
-        saveStatus.style.display = 'none';
-    }, 5000);
+/* Save result */
+async function saveResult() {
+    if (!currentResult) return;
+
+    const btn = document.getElementById('saveResultBtn');
+    const status = document.getElementById('saveStatus');
+
+    btn.disabled = true;
+    btn.innerHTML = '{{ t.saving }}...';
+
+    try {
+        const res = await fetch('/save-result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(currentResult)
+        });
+
+        const data = await res.json();
+
+        if (data.status === 'success') {
+            status.innerHTML =
+                '<div class="alert alert-success">{{ t.result_saved }}</div>';
+            localStorage.removeItem('lastScanResult');
+            btn.style.display = 'none';
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (e) {
+        status.innerHTML =
+            '<div class="alert alert-error">' + e.message + '</div>';
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '{{ t.save_results }}';
+    }
 }
 
-// Tab functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const tabs = document.querySelectorAll('.tab');
-    tabs.forEach(function(tab) {
-        tab.addEventListener('click', function() {
-            const tabName = this.getAttribute('data-tab');
-            
-            // Update active tab
-            tabs.forEach(function(t) {
-                t.classList.remove('active');
-            });
-            this.classList.add('active');
-            
-            // Update active tab content
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(function(content) {
-                content.classList.remove('active');
-                if (content.id === tabName) {
-                    content.classList.add('active');
-                }
-            });
+/* Tabs + load */
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            document.getElementById(tab.dataset.tab).classList.add('active');
         });
     });
-    
-    // Load result from storage when page loads
+
     loadResultFromStorage();
 });
 </script>

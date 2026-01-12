@@ -7,20 +7,20 @@
     <div class="upload-icon">📸</div>
     <h2 class="upload-text" id="uploadText">{{ t.drag_image }}</h2>
     <p style="margin-bottom: 1.5rem; color: #666;">{{ t.supported_formats }}</p>
-    
-    <form id="uploadForm" enctype="multipart/form-data" style="display: none;">
-        <input type="file" id="fileInput" class="file-input" accept="image/*" name="file">
-    </form>
-    
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+
+    <!-- Single select button -->
     <button type="button" class="upload-button" id="uploadButton">
         <span>{{ t.select_image }}</span>
-        <div class="loading" id="loadingSpinner" style="display: none;"></div>
+        <div class="loading" id="loadingSpinner" style="display:none;"></div>
     </button>
 </div>
 
 <div style="margin-top: 2rem; background-color: var(--white); padding: 1.5rem; border-radius: 12px;">
-    <h3 style="margin-bottom: 1rem; color: var(--charcoal);">{{ t.tips_best_results }}:</h3>
-    <ul style="color: #666; list-style-position: inside;">
+    <h3 style="margin-bottom: 1rem;">{{ t.tips_best_results }}:</h3>
+    <ul style="color:#666;">
         <li>{{ t.tip_1 }}</li>
         <li>{{ t.tip_2 }}</li>
         <li>{{ t.tip_3 }}</li>
@@ -29,12 +29,13 @@
     </ul>
 </div>
 
-<div id="resultAlert" style="display: none;"></div>
+<div id="resultAlert" style="display:none;"></div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
     const uploadButton = document.getElementById('uploadButton');
@@ -42,111 +43,84 @@ document.addEventListener('DOMContentLoaded', function() {
     const uploadText = document.getElementById('uploadText');
     const resultAlert = document.getElementById('resultAlert');
 
-    // Flag to prevent multiple uploads
     let isUploading = false;
 
-    // Only button triggers file input
-    uploadButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
+    /* Button opens file picker */
+    uploadButton.addEventListener('click', function () {
         if (!isUploading) {
             fileInput.click();
         }
     });
 
-    // File input change
-    fileInput.addEventListener('change', function() {
+    /* File selected */
+    fileInput.addEventListener('change', function () {
         if (this.files.length > 0 && !isUploading) {
-            handleFileSelection(this.files[0]);
+            handleFile(this.files[0]);
         }
     });
 
-    // Drag and drop functionality
-    uploadArea.addEventListener('dragover', function(e) {
+    /* Drag & drop support */
+    uploadArea.addEventListener('dragover', function (e) {
         e.preventDefault();
-        e.stopPropagation();
         uploadArea.classList.add('dragover');
     });
 
-    uploadArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
+    uploadArea.addEventListener('dragleave', function () {
         uploadArea.classList.remove('dragover');
     });
 
-    uploadArea.addEventListener('drop', function(e) {
+    uploadArea.addEventListener('drop', function (e) {
         e.preventDefault();
-        e.stopPropagation();
         uploadArea.classList.remove('dragover');
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && !isUploading) {
-            handleFileSelection(files[0]);
+
+        if (e.dataTransfer.files.length > 0 && !isUploading) {
+            handleFile(e.dataTransfer.files[0]);
         }
     });
 
-    async function handleFileSelection(file) {
-        if (isUploading) return;
-        
-        // Set uploading flag
+    async function handleFile(file) {
         isUploading = true;
 
-        // Validate file type
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!allowedTypes.includes(file.type)) {
-            showAlert('Please select a valid image file (JPEG, PNG, or GIF).', 'error');
+            showAlert('Please select a valid image (JPG, PNG, GIF)', 'error');
             isUploading = false;
             return;
         }
 
-        // Validate file size (max 10MB)
         if (file.size > 10 * 1024 * 1024) {
-            showAlert('File size must be less than 10MB.', 'error');
+            showAlert('Image size must be less than 10MB', 'error');
             isUploading = false;
             return;
         }
 
-        // Show loading state
         uploadButton.disabled = true;
         uploadText.textContent = 'Processing...';
         loadingSpinner.style.display = 'inline-block';
 
-        // Create FormData and send to server
         const formData = new FormData();
         formData.append('file', file);
-        
-        // Get current language from the global selector
-        const language = document.getElementById('globalLanguage').value;
-        formData.append('language', language);
+        formData.append('language', document.getElementById('globalLanguage').value);
 
         try {
             const response = await fetch('/predict', {
                 method: 'POST',
                 body: formData
             });
-            
-            const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            
-            // Store results in localStorage and redirect to results page
-            localStorage.setItem('lastScanResult', JSON.stringify(data));
 
-            // Ensure the uploaded_image path is correct
+            const data = await response.json();
+            if (data.error) throw new Error(data.error);
+
             if (data.uploaded_image && !data.uploaded_image.startsWith('/')) {
                 data.uploaded_image = '/uploads/' + data.uploaded_image;
-                localStorage.setItem('lastScanResult', JSON.stringify(data));
             }
 
+            localStorage.setItem('lastScanResult', JSON.stringify(data));
             window.location.href = '/results';
-            
-        } catch (error) {
-            showAlert('Error uploading file: ' + error.message, 'error');
+
+        } catch (err) {
+            showAlert(err.message, 'error');
         } finally {
-            // Reset loading state
             uploadButton.disabled = false;
             uploadText.textContent = '{{ t.drag_image }}';
             loadingSpinner.style.display = 'none';
@@ -155,17 +129,12 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function showAlert(message, type = 'error') {
-        resultAlert.innerHTML = `
-            <div class="alert alert-${type}">
-                ${message}
-            </div>
-        `;
+    function showAlert(message, type) {
+        resultAlert.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
         resultAlert.style.display = 'block';
-        
         setTimeout(() => {
             resultAlert.style.display = 'none';
-        }, 5000);
+        }, 4000);
     }
 });
 </script>

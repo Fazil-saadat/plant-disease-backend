@@ -977,20 +977,9 @@ async def scan_page(request: Request):
 @app.get("/results")
 async def results_page(request: Request):
     language = request.cookies.get("language", "en")
-    # This would typically receive results from session or database
-    # For now, using mock data
-    result_data = {
-        'disease': 'Early Blight',
-        'confidence': 92,
-        'plant_type': 'Tomato',
-        'image_url': '/static/images/placeholder-plant.jpg',
-        'treatment': 'Remove affected leaves and apply copper-based fungicide. Ensure proper spacing between plants for air circulation.',
-        'prevention': 'Water at the base of plants early in the day. Rotate crops yearly and remove plant debris at season end.',
-        'symptoms': 'Dark, concentric spots on leaves, yellowing around spots, spots may have target-like appearance'
-    }
+
     return templates.TemplateResponse("results.html", {
         "request": request,
-        "result": result_data,
         "t": UI_TRANSLATIONS[language],
         "current_language": language
     })
