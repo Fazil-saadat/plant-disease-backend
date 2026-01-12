@@ -1,24 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
+
 <h1 class="dashboard-title">{{ t.dashboard }}</h1>
 
-<!-- Upload Area - REMOVED onClick redirect -->
+<!-- ================= Upload Area ================= -->
 <div class="upload-area" id="uploadArea">
     <div class="upload-icon">📸</div>
-    <h2 class="upload-text" id="uploadText">{{ t.drag_image }}</h2>
-    
-    <form id="uploadForm" enctype="multipart/form-data" style="display: none;">
-        <input type="file" id="fileInput" class="file-input" accept="image/*" name="file">
+
+    <h2 class="upload-text" id="uploadText">
+        {{ t.drag_image }}
+    </h2>
+
+    <form enctype="multipart/form-data" style="display:none;">
+        <input
+            type="file"
+            id="fileInput"
+            accept="image/*"
+            name="file"
+        >
     </form>
-    
+
     <button type="button" class="upload-button" id="uploadButton">
         <span>{{ t.select_image }}</span>
-        <div class="loading" id="loadingSpinner" style="display: none;"></div>
+        <div class="loading" id="loadingSpinner" style="display:none;"></div>
     </button>
 </div>
 
-<!-- Quick Statistics -->
+<!-- ================= Statistics ================= -->
 <div class="stats-grid">
     <div class="stat-card">
         <div class="stat-value">{{ stats.total_scans }}</div>
@@ -38,237 +47,46 @@
     </div>
 </div>
 
-<!-- Recent History -->
+<!-- ================= Recent History ================= -->
 <h2 class="section-title">{{ t.recent_history }}</h2>
+
 {% if recent_scans %}
 <div class="history-list">
     {% for scan in recent_scans %}
     <a href="/saved-result/{{ scan.id }}" class="history-item">
         <div class="history-thumbnail-container">
-            <img src="{{ scan.image_url if scan.image_url else '/static/images/placeholder-plant.jpg' }}" 
-                 alt="{{ scan.disease_name or t.unknown_disease }}" 
-                 class="history-thumbnail"
-                 onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiByeD0iOCIgZmlsbD0iI0Y4RjZGMiIvPgo8cGF0aCBkPSJNMzAgMjBDMjYuMTM0IDIwIDIzIDIzLjEzNCAyMyAyN0MyMyAzMC44NjYgMjYuMTM0IDM0IDMwIDM0QzMzLjg2NiAzNCAzNyAzMC44NjYgMzcgMjdDMzcgMjMuMTM0IDMzLjg2NiAyMCAzMCAyMFpNMzAgMzZDMjQuNDggMzYgMjAgNDAuNDggMjAgNDZWMjBINDBWNDZDMzkuOTk5OSA0MC40OCAzNS41MiAzNiAzMCAzNloiIGZpbGw9IiNENkQ2RDYiLz4KPC9zdmc+'">
+            <img
+                src="{{ scan.image_url or '/static/images/placeholder-plant.jpg' }}"
+                class="history-thumbnail"
+            >
         </div>
+
         <div class="history-details">
-            <div class="history-plant">{{ scan.disease_name or scan.prediction or t.unknown_disease }}</div>
-            <div class="history-disease">{{ scan.plant_type or t.unknown_plant }}</div>
+            <div class="history-plant">
+                {{ scan.disease_name or t.unknown_disease }}
+            </div>
+            <div class="history-disease">
+                {{ scan.plant_type or t.unknown_plant }}
+            </div>
             <div class="history-date">
-                {% if scan.timestamp %}
-                    {{ scan.timestamp[:10] }}
-                {% else %}
-                    {{ t.unknown_date }}
-                {% endif %}
+                {{ scan.timestamp[:10] if scan.timestamp else t.unknown_date }}
             </div>
         </div>
-        <div class="history-confidence">{{ scan.confidence or 0 }}%</div>
+
+        <div class="history-confidence">
+            {{ scan.confidence or 0 }}%
+        </div>
     </a>
     {% endfor %}
 </div>
 {% else %}
-<div style="text-align: center; padding: 2rem; background-color: var(--white); border-radius: 12px;">
-    <div style="font-size: 3rem; margin-bottom: 1rem;">📋</div>
-    <p style="color: #666; margin-bottom: 1rem;">{{ t.no_saved_results }}</p>
+<div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <p>{{ t.no_saved_results }}</p>
     <button class="cta-button" onclick="window.location.href='/scan'">
         {{ t.new_scan }}
     </button>
 </div>
 {% endif %}
 
-<style>
-.history-list {
-    background-color: var(--white);
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 4px 12px var(--shadow);
-}
-
-.history-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    border-bottom: 1px solid var(--grey-light);
-    transition: all 0.3s ease;
-    text-decoration: none;
-    color: inherit;
-}
-
-.history-item:hover {
-    background-color: var(--grey-light);
-    transform: translateY(-2px);
-}
-
-.history-item:last-child {
-    border-bottom: none;
-}
-
-.history-thumbnail-container {
-    width: 60px;
-    height: 60px;
-    margin-right: 1rem;
-    flex-shrink: 0;
-}
-
-.history-thumbnail {
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    object-fit: cover;
-}
-
-.history-details {
-    flex: 1;
-}
-
-.history-plant {
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-    color: var(--charcoal);
-}
-
-.history-disease {
-    color: var(--forest-green);
-    font-size: 0.9rem;
-    margin-bottom: 0.25rem;
-}
-
-.history-date {
-    color: #888;
-    font-size: 0.8rem;
-}
-
-.history-confidence {
-    background-color: var(--light-green);
-    color: var(--forest-green);
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
-    font-weight: 500;
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const uploadArea = document.getElementById('uploadArea');
-    const fileInput = document.getElementById('fileInput');
-    const uploadButton = document.getElementById('uploadButton');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const uploadText = document.getElementById('uploadText');
-
-    if (!uploadArea || !fileInput || !uploadButton) return;
-
-    // Flag to prevent multiple uploads
-    let isUploading = false;
-
-    // Button click triggers file input - ONLY ONCE
-    uploadButton.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        if (!isUploading) {
-            fileInput.click();
-        }
-    });
-
-    // File input change - handle file selection
-    fileInput.addEventListener('change', function(e) {
-        if (this.files.length > 0 && !isUploading) {
-            handleFileSelection(this.files[0]);
-        }
-    });
-
-    // Drag and drop functionality
-    uploadArea.addEventListener('dragover', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadArea.classList.add('dragover');
-    });
-
-    uploadArea.addEventListener('dragleave', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadArea.classList.remove('dragover');
-    });
-
-    uploadArea.addEventListener('drop', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        uploadArea.classList.remove('dragover');
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0 && !isUploading) {
-            handleFileSelection(files[0]);
-        }
-    });
-
-    async function handleFileSelection(file) {
-        if (isUploading) return;
-        
-        // Set uploading flag
-        isUploading = true;
-
-        // Validate file type
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!allowedTypes.includes(file.type)) {
-            alert('Please select a valid image file (JPEG, PNG, or GIF).');
-            isUploading = false;
-            return;
-        }
-
-        // Validate file size (max 10MB)
-        if (file.size > 10 * 1024 * 1024) {
-            alert('File size must be less than 10MB.');
-            isUploading = false;
-            return;
-        }
-
-        // Show loading state
-        uploadButton.disabled = true;
-        uploadText.textContent = 'Processing...';
-        loadingSpinner.style.display = 'inline-block';
-
-        // Create FormData and send to server
-        const formData = new FormData();
-        formData.append('file', file);
-        
-        // Get current language from the global selector
-        const language = document.getElementById('globalLanguage').value;
-        formData.append('language', language);
-
-        try {
-            const response = await fetch('/predict', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            
-            // Store results in localStorage and redirect to results page
-            localStorage.setItem('lastScanResult', JSON.stringify(data));
-
-            // Ensure the uploaded_image path is correct
-            if (data.uploaded_image && !data.uploaded_image.startsWith('/')) {
-                data.uploaded_image = '/uploads/' + data.uploaded_image;
-                localStorage.setItem('lastScanResult', JSON.stringify(data));
-            }
-
-            window.location.href = '/results';
-            
-        } catch (error) {
-            alert('Error uploading file: ' + error.message);
-        } finally {
-            // Reset loading state
-            uploadButton.disabled = false;
-            uploadText.textContent = '{{ t.drag_image }}';
-            loadingSpinner.style.display = 'none';
-            fileInput.value = '';
-            isUploading = false;
-        }
-    }
-});
-</script>
 {% endblock %}

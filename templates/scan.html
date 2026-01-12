@@ -5,13 +5,23 @@
 
 <div class="upload-area" id="uploadArea" style="min-height: 400px;">
     <div class="upload-icon">📸</div>
-    <h2 class="upload-text" id="uploadText">{{ t.drag_image }}</h2>
-    <p style="margin-bottom: 1.5rem; color: #666;">{{ t.supported_formats }}</p>
 
-    <!-- Hidden file input -->
-    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+    <h2 class="upload-text" id="uploadText">
+        {{ t.drag_image }}
+    </h2>
 
-    <!-- Single select button -->
+    <p style="margin-bottom: 1.5rem; color: #666;">
+        {{ t.supported_formats }}
+    </p>
+
+    <!-- Hidden input (used by global JS) -->
+    <input
+        type="file"
+        id="fileInput"
+        accept="image/*"
+        style="display:none;"
+    >
+
     <button type="button" class="upload-button" id="uploadButton">
         <span>{{ t.select_image }}</span>
         <div class="loading" id="loadingSpinner" style="display:none;"></div>
@@ -30,112 +40,4 @@
 </div>
 
 <div id="resultAlert" style="display:none;"></div>
-{% endblock %}
-
-{% block scripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    const uploadArea = document.getElementById('uploadArea');
-    const fileInput = document.getElementById('fileInput');
-    const uploadButton = document.getElementById('uploadButton');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const uploadText = document.getElementById('uploadText');
-    const resultAlert = document.getElementById('resultAlert');
-
-    let isUploading = false;
-
-    /* Button opens file picker */
-    uploadButton.addEventListener('click', function () {
-        if (!isUploading) {
-            fileInput.click();
-        }
-    });
-
-    /* File selected */
-    fileInput.addEventListener('change', function () {
-        if (this.files.length > 0 && !isUploading) {
-            handleFile(this.files[0]);
-        }
-    });
-
-    /* Drag & drop support */
-    uploadArea.addEventListener('dragover', function (e) {
-        e.preventDefault();
-        uploadArea.classList.add('dragover');
-    });
-
-    uploadArea.addEventListener('dragleave', function () {
-        uploadArea.classList.remove('dragover');
-    });
-
-    uploadArea.addEventListener('drop', function (e) {
-        e.preventDefault();
-        uploadArea.classList.remove('dragover');
-
-        if (e.dataTransfer.files.length > 0 && !isUploading) {
-            handleFile(e.dataTransfer.files[0]);
-        }
-    });
-
-    async function handleFile(file) {
-        isUploading = true;
-
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-        if (!allowedTypes.includes(file.type)) {
-            showAlert('Please select a valid image (JPG, PNG, GIF)', 'error');
-            isUploading = false;
-            return;
-        }
-
-        if (file.size > 10 * 1024 * 1024) {
-            showAlert('Image size must be less than 10MB', 'error');
-            isUploading = false;
-            return;
-        }
-
-        uploadButton.disabled = true;
-        uploadText.textContent = 'Processing...';
-        loadingSpinner.style.display = 'inline-block';
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('language', document.getElementById('globalLanguage').value);
-
-        try {
-            const response = await fetch('/predict', {
-                method: 'POST',
-                body: formData
-            });
-
-            const data = await response.json();
-            if (data.error) throw new Error(data.error);
-
-            if (data.uploaded_image && !data.uploaded_image.startsWith('/')) {
-                data.uploaded_image = '/uploads/' + data.uploaded_image;
-            }
-
-            localStorage.setItem('lastScanResult', JSON.stringify(data));
-            window.location.href = '/results';
-
-        } catch (err) {
-            showAlert(err.message, 'error');
-        } finally {
-            uploadButton.disabled = false;
-            uploadText.textContent = '{{ t.drag_image }}';
-            loadingSpinner.style.display = 'none';
-            fileInput.value = '';
-            isUploading = false;
-        }
-    }
-
-    function showAlert(message, type) {
-        resultAlert.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
-        resultAlert.style.display = 'block';
-        setTimeout(() => {
-            resultAlert.style.display = 'none';
-        }, 4000);
-    }
-});
-</script>
 {% endblock %}

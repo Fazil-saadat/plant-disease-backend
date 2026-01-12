@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const hamburger = document.getElementById('hamburger');
     const sidebar = document.getElementById('sidebar');
 
-    // Toggle sidebar
     if (hamburger && sidebar) {
         hamburger.addEventListener('click', function (e) {
             e.stopPropagation();
@@ -13,7 +12,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Close sidebar on outside click (mobile)
     document.addEventListener('click', function (event) {
         if (
             window.innerWidth <= 1023 &&
@@ -26,39 +24,17 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Reset sidebar on resize
     window.addEventListener('resize', function () {
         if (window.innerWidth > 1023 && sidebar) {
             sidebar.classList.remove('active');
         }
     });
 
-    // Tabs
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
-
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function () {
-            const tabName = this.getAttribute('data-tab');
-
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-
-            tabContents.forEach(content => {
-                content.classList.toggle('active', content.id === tabName);
-            });
-        });
-    });
-
-    if (tabs.length > 0) {
-        tabs[0].click();
-    }
-
     setupFileUpload();
 });
 
 // ==============================
-// File Upload functionality
+// File Upload (SINGLE SOURCE)
 // ==============================
 function setupFileUpload() {
     const uploadArea = document.getElementById('uploadArea');
@@ -66,39 +42,49 @@ function setupFileUpload() {
     const uploadButton = document.getElementById('uploadButton');
     const loadingSpinner = document.getElementById('loadingSpinner');
     const uploadText = document.getElementById('uploadText');
+    const languageSelect = document.getElementById('globalLanguage');
 
     if (!uploadArea || !fileInput || !uploadButton) return;
 
     let isUploading = false;
+    let pickerLocked = false;
 
-    // ONLY button opens file picker
+    // Button opens picker
     uploadButton.addEventListener('click', function (e) {
         e.preventDefault();
-        if (!isUploading) fileInput.click();
+        e.stopPropagation();
+
+        if (isUploading || pickerLocked) return;
+
+        pickerLocked = true;
+        fileInput.click();
+    });
+
+    // Picker closed / file selected
+    fileInput.addEventListener('change', function () {
+        pickerLocked = false;
+
+        if (this.files.length && !isUploading) {
+            handleFile(this.files[0]);
+        }
     });
 
     // Drag & drop
-    uploadArea.addEventListener('dragover', function (e) {
+    uploadArea.addEventListener('dragover', e => {
         e.preventDefault();
         uploadArea.classList.add('dragover');
     });
 
-    uploadArea.addEventListener('dragleave', function () {
+    uploadArea.addEventListener('dragleave', () => {
         uploadArea.classList.remove('dragover');
     });
 
-    uploadArea.addEventListener('drop', function (e) {
+    uploadArea.addEventListener('drop', e => {
         e.preventDefault();
         uploadArea.classList.remove('dragover');
+
         if (e.dataTransfer.files.length && !isUploading) {
             handleFile(e.dataTransfer.files[0]);
-        }
-    });
-
-    // File selected
-    fileInput.addEventListener('change', function () {
-        if (this.files.length && !isUploading) {
-            handleFile(this.files[0]);
         }
     });
 
@@ -107,14 +93,14 @@ function setupFileUpload() {
 
         const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
         if (!allowedTypes.includes(file.type)) {
-            showAlert('Invalid image format (JPEG, PNG, GIF only)');
-            isUploading = false;
+            showAlert('Invalid image format');
+            reset();
             return;
         }
 
         if (file.size > 10 * 1024 * 1024) {
             showAlert('Image must be under 10MB');
-            isUploading = false;
+            reset();
             return;
         }
 
@@ -124,6 +110,10 @@ function setupFileUpload() {
 
         const formData = new FormData();
         formData.append('file', file);
+        formData.append(
+            'language',
+            languageSelect ? languageSelect.value : 'en'
+        );
 
         try {
             const response = await fetch('/predict', {
@@ -134,22 +124,23 @@ function setupFileUpload() {
             const data = await response.json();
             if (data.error) throw new Error(data.error);
 
-            if (data.uploaded_image && !data.uploaded_image.startsWith('/')) {
-                data.uploaded_image = '/uploads/' + data.uploaded_image;
-            }
-
             localStorage.setItem('lastScanResult', JSON.stringify(data));
             window.location.href = '/results';
 
-        } catch (error) {
-            showAlert(error.message);
+        } catch (err) {
+            showAlert(err.message);
         } finally {
-            uploadButton.disabled = false;
-            if (uploadText) uploadText.textContent = 'Drag image here or click to upload';
-            if (loadingSpinner) loadingSpinner.style.display = 'none';
-            fileInput.value = '';
-            isUploading = false;
+            reset();
         }
+    }
+
+    function reset() {
+        isUploading = false;
+        pickerLocked = false;
+        uploadButton.disabled = false;
+        if (uploadText) uploadText.textContent = 'Drag image here or click to upload';
+        if (loadingSpinner) loadingSpinner.style.display = 'none';
+        fileInput.value = '';
     }
 }
 
@@ -164,7 +155,5 @@ function showAlert(message, type = 'error') {
     const mainContent = document.querySelector('.main-content') || document.body;
     mainContent.insertBefore(alertDiv, mainContent.firstChild);
 
-    setTimeout(() => {
-        alertDiv.remove();
-    }, 5000);
+    setTimeout(() => alertDiv.remove(), 5000);
 }
